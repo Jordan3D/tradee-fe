@@ -1,0 +1,15 @@
+.view_switch{
+    &__root{
+        position: relative;
+    }
+
+    &__button {
+        padding: 0 40px;
+        margin: 0 10px;
+        border: 1px solid transparent;
+
+        &.active {
+            border-color: white;
+        }
+    }
+}

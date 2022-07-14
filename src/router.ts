@@ -1,3 +1,5 @@
+export type Routes = 'ideas' | 'notes' | 'main' | 'profile' | 'start' | 'login' | 'signup'
+
 const routes = {
     ideas: '/ideas',
     notes: '/notes',
