@@ -1,74 +1,85 @@
 import {
-    createContext,
-    ReactElement,
-    ReactFragment,
-    useState,
-  } from 'react';import { loginPOST, signupPOST } from '../api/user';
+  createContext,
+  ReactElement,
+  ReactFragment,
+  useState,
+} from 'react'; import { loginPOST, signupPOST } from '../api/user';
+
+import {useNavigate} from "react-router-dom";
 
 import { LoginForm, SignupForm, TUser } from '../interface/User';
-  
-  export type Props = Readonly<{
-    children: ReactElement | ReactFragment
-  }>;
-  
-  export type TContext = Readonly<{
-    user: TUser | undefined;
-    errorPageShown: boolean;
-    showErrorPage: (value?: boolean) => void;
-    loginHandler: (value: LoginForm) => void
-    signupHandler: (value: SignupForm) => void
-  }>;
-  
-  export const GlobalContext = createContext<TContext>({
-    user: undefined,
-    errorPageShown: false,
-    showErrorPage: () => {},
-    loginHandler: () => {},
-    signupHandler: () => {}
-  });
-  
-  export const Provider = ({
-    children,
-  }: Props): ReactElement => {
-    const [errorPageShown, setErrorPageShown] = useState(false);
-    const [user, setUser] = useState<TUser | undefined>(undefined);
+import { invokeFeedback } from '../utils/feedbacks/feedbacks';
+import routes from '../router';
 
-    const showErrorPage = (value?: boolean) => {
-        setErrorPageShown(value?? true);
+export type Props = Readonly<{
+  children: ReactElement | ReactFragment
+}>;
+
+export type TContext = Readonly<{
+  user: TUser | undefined;
+  errorPageShown: boolean;
+  showErrorPage: (value?: boolean) => void;
+  loginHandler: (value: LoginForm) => Promise<unknown>
+  signupHandler: (value: SignupForm) => Promise<unknown>
+}>;
+
+export const GlobalContext = createContext<TContext>({
+  user: undefined,
+  errorPageShown: false,
+  showErrorPage: () => { },
+  loginHandler: () => Promise.resolve(),
+  signupHandler: () => Promise.resolve()
+});
+
+export const Provider = ({
+  children,
+}: Props): ReactElement => {
+  const navigate = useNavigate(); 
+
+  const [errorPageShown, setErrorPageShown] = useState(false);
+  const [user, setUser] = useState<TUser | undefined>(undefined);
+
+  const showErrorPage = (value?: boolean) => {
+    setErrorPageShown(value ?? true);
+  }
+
+  const loginHandler = async (argData: LoginForm) => {
+    const { data, error } = await loginPOST(argData);
+
+    if (error) {
+      invokeFeedback({ msg: error.message, type: 'error' });
+      return;
     }
 
-    const loginHandler = async (argData: LoginForm) => {
-      const {data, error} = await loginPOST(argData);
+    invokeFeedback({ msg: 'Login successful', type: 'success' });
+    localStorage.setItem('token', JSON.stringify(data?.access_token));
+  };
 
-      if(error){
-        return;
-      }
+  const signupHandler = async (argData: SignupForm) => {
+    const { data, error } = await signupPOST(argData);
 
-      localStorage.setItem('token', JSON.stringify(data?.access_token));
-    };
+    if (error) {
+      invokeFeedback({ msg: error.message, type: 'error' });
+      return;
+    }
 
-    const signupHandler = async (argData: SignupForm) => {
-      const {data, error} = await signupPOST(argData);
+    invokeFeedback({ msg: 'Signup successful', type: 'success' });
+    setUser(data?.user);
 
-      if(error){
-        return;
-      }
+    navigate(routes.login);
+  };
 
-      setUser(data?.user);
-    };
-  
-    return (
+  return (
       <GlobalContext.Provider
         value={{
-            errorPageShown,
-            showErrorPage,
-            loginHandler,
-            signupHandler,
-            user
+          errorPageShown,
+          showErrorPage,
+          loginHandler,
+          signupHandler,
+          user
         }}
       >
         {children}
       </GlobalContext.Provider>
-    );
-  };
-  
+  );
+};

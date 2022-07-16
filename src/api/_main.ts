@@ -4,22 +4,34 @@ const baseURL = process.env.REACT_APP_API_URL;
 export type FetchyResult = {
     status: 'error' | 'success',
     data?: Record<string, any>,
-    error?: unknown
+    error?: Error
 }
 
-const fetchy = async (url: string, configs: RequestInit): Promise<FetchyResult> => {
-    try {
-        const response = await fetch(`${baseURL}${url}`, configs);
+const fetchy = async (url: string, argConfigs: RequestInit): Promise<FetchyResult> => {
+    const configs = {
+        headers: {
+            "Content-Type": "application/json"
+        },
+        ...argConfigs
+    };
 
-        return {
-            status: 'success',
-            data: response.json()
+    const data = await fetch(`${baseURL}${url}`, configs).then((response) => {
+        if(!response.ok){
+            throw new Error(response.statusText)
+        } else if (response.status >= 400 && response.status < 600) {
+          throw new Error("Bad response from server");
         }
-    } catch (e) {
+        return response.json();
+    }).catch((error: Error) => {
         return {
             status: 'error',
-            error: e,
-        };
+            error
+        }
+    });
+
+    return {
+        status: 'success',
+        data
     }
 }
 

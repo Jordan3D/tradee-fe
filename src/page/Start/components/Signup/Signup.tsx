@@ -1,14 +1,12 @@
 import './style.scss';
 import { Button, Form, Input } from 'antd';
-import { ReactElement } from 'react';
+import { ReactElement, useContext } from 'react';
 import { SignupForm } from '../../../../interface/User';
+import { GlobalContext } from '../../../../state/context';
 
 
 const Signup = (): ReactElement => {
-
-    const onFinish = (values: SignupForm) => {
-        console.log('Success:', values);
-      };
+    const {signupHandler} = useContext(GlobalContext)
     
       const onFinishFailed = (errorInfo: any) => {
         console.log('Failed:', errorInfo);
@@ -19,7 +17,7 @@ const Signup = (): ReactElement => {
             name="signupForm"
             className='signup__form'
             layout='vertical'
-            onFinish={onFinish}
+            onFinish={signupHandler}
             onFinishFailed={onFinishFailed}
             autoComplete="off"
         >

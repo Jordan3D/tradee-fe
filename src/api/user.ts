@@ -19,6 +19,6 @@ export const loginPOST = async (lf:LoginForm): Promise<LoginResult> => {
 
 
 export const signupPOST = async (sf:SignupForm): Promise<SignupResult> => {
-    const result = await fetchy('/auth/signup', {body: JSON.stringify(sf), method: 'POST'})
+    const result = await fetchy('/user/create', {body: JSON.stringify(sf), method: 'POST'})
     return result as SignupResult;
 };

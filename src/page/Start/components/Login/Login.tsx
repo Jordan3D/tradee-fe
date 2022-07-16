@@ -1,13 +1,18 @@
 import './style.scss';
-import { ReactElement } from 'react';
+import { ReactElement, useContext } from 'react';
 import { Button, Checkbox, Form, Input } from 'antd';
 import { LoginForm } from '../../../../interface/User';
+import { GlobalContext } from '../../../../state/context';
 
 
 const Login = (): ReactElement => {
+    const {loginHandler} = useContext(GlobalContext)
 
     const onFinish = (values: LoginForm) => {
-        console.log('Success:', values);
+        loginHandler({
+            identityString: values.identityString,
+            password: values.password
+        });
       };
     
       const onFinishFailed = (errorInfo: any) => {
@@ -28,7 +33,7 @@ const Login = (): ReactElement => {
         >
             <Form.Item
                 label="Username or email"
-                name="identity"
+                name="identityString"
                 rules={[
                     {
                         required: true,
