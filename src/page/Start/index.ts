@@ -1,2 +1,2 @@
-export {default as Start} from './Start';
+export {default as StartPage} from './Start';
 export * from './Start';

@@ -1,4 +1,4 @@
-export type Routes = 'ideas' | 'notes' | 'main' | 'profile' | 'start' | 'login' | 'signup'
+export type Routes = 'ideas' | 'notes' | 'main' | 'profile' | 'start' | 'login' | 'signup' | 'tags'
 
 const routes = {
     ideas: '/ideas',
@@ -7,7 +7,8 @@ const routes = {
     profile: '/profile',
     start: '/start',
     login: '/start/login',
-    signup: '/start/signup'
+    signup: '/start/signup',
+    tags: '/tags'
 };
 
 export default routes;

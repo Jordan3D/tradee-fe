@@ -1,7 +1,6 @@
 import './style.scss';
 import { Button, Form, Input } from 'antd';
 import { ReactElement, useContext } from 'react';
-import { SignupForm } from '../../../../interface/User';
 import { GlobalContext } from '../../../../state/context';
 
 
