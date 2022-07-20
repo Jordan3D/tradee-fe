@@ -1,9 +1,10 @@
 import './style.scss';
-import { ReactElement, useEffect, useState, ChangeEvent, useCallback } from 'react';
+import { ReactElement, useEffect, useState, ChangeEvent, useCallback, useContext } from 'react';
 import { Tree as TreeComponent, TreeProps, Input } from 'antd';
 import { DataNode } from 'antd/lib/tree';
 import { Tag } from '../../../../interface/Tag';
 import { TreeNodeTitle } from './components/TreeNodeTitle';
+import { GlobalContext } from '../../../../state/context';
 
 const { Search } = Input;
 
@@ -19,39 +20,49 @@ const transferData = (tagList: ReadonlyArray<Tag>, parentKey: string): DataNode[
 
 const getExpandedKeys = (gData: DataNode[], value: string): string[] => {
   return foo(gData, undefined);
-  function foo(gData: DataNode[], parent?: string): string[]{
-    return gData.map((n:DataNode) => {
-      const res =  n.children ? foo(n.children, n.key as string) : [];
+  function foo(gData: DataNode[], parent?: string): string[] {
+    return gData.map((n: DataNode) => {
+      const res = n.children ? foo(n.children, n.key as string) : [];
       return (n.title as string).indexOf(value) !== -1 && parent ? res.concat([parent]) : res;
     }).flat();
   }
 };
 
-const TagsPage = ({ className, list }: Readonly<{ className?: string, list: ReadonlyArray<Tag> }>): ReactElement => {
+type Props = Readonly<{
+  className?: string,
+  onSetForm: (value: any) => void,
+}>
+
+const Tree = ({ className, onSetForm }: Props): ReactElement => {
+  const {tagList, tagDeleteHandler } = useContext(GlobalContext);
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
   const [autoExpandParent, setAutoExpandParent] = useState(true);
   const [searchValue, setSearchValue] = useState('');
-  const [gData, setGData] = useState(transferData(list, ''));
+  const [gData, setGData] = useState(transferData(tagList, ''));
 
-  const transferDataWithComponents = useCallback((tagList: ReadonlyArray<Tag>, parentKey: string): DataNode[] => {
+  const transferDataWithComponents = useCallback((tagList: ReadonlyArray<Tag>, parentKey?: string, parentId?: string): DataNode[] => {
+
+    const onDeleteTag = (id: string) => () => tagDeleteHandler(id);
+
     return [
       {
-        key: parentKey ? `${parentKey}-0`: 0, 
-        title: <TreeNodeTitle onAdd={()=>{}}/>
+        key: parentKey ? `${parentKey}-0` : 0,
+        title: <TreeNodeTitle onAdd={onSetForm({parentId})} />
       }
     ].concat(tagList.map((tag: Tag, i: number) => {
-      const index = i+1;
-      return  {
-        key: parentKey ? parentKey + '-' + index : '' + index,
-        title: <TreeNodeTitle title={tag.title} onDelete={() => {}} onEdit={() => {}}/>,
-        children: tag.children && tag.children.length ? transferDataWithComponents(tag.children, '' + index) : []
+      const index = i + 1;
+      const key = parentKey ? parentKey + '-' + index : '' + index;
+      return {
+        key,
+        title: <TreeNodeTitle title={tag.title} onDelete={onDeleteTag(tag.id)} onEdit={onSetForm({parentId, id:tag.id})} />,
+        children: tag.children && tag.children.length ? transferDataWithComponents(tag.children, key, tag.id) : []
       }
     }));
-  }, []);
+  }, [tagDeleteHandler, onSetForm]);
 
   const onChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value?.toLowerCase();
-    const transferedList = transferData(list, '');
+    const transferedList = transferData(tagList, '');
 
     const expandedKeys = getExpandedKeys(transferedList, value);
 
@@ -59,30 +70,36 @@ const TagsPage = ({ className, list }: Readonly<{ className?: string, list: Read
       const hasSearchTerm = (n: string) => n.toLowerCase().indexOf(value) !== -1;
       const filterData = (arr: ReadonlyArray<Tag> = []): Tag[] =>
         arr?.filter((t: Tag) => hasSearchTerm(t.title as string) || filterData(t.children)?.length > 0);
-      const filteredList = filterData(list).map((t: Tag) => {
+      const filteredList = filterData(tagList).map((t: Tag) => {
         return {
           ...t,
           children: filterData(t.children)
         };
       });
 
-      setGData(transferDataWithComponents(filteredList, ''));
+      setGData(transferDataWithComponents(filteredList));
       setExpandedKeys(expandedKeys);
       setSearchValue(value);
       setAutoExpandParent(true);
     } else {
-      setGData(transferDataWithComponents(list, ''));
+      setGData(transferDataWithComponents(tagList));
       setExpandedKeys([]);
       setSearchValue("");
       setAutoExpandParent(false);
     }
-  }, [list, transferDataWithComponents]);
+  }, [tagList, transferDataWithComponents]);
 
   const onDragEnter: TreeProps['onDragEnter'] = info => {
     console.log(info);
   };
 
   const onDrop: TreeProps['onDrop'] = info => {
+    const splitedKey = (info.dragNode.key as string).split('');
+    if(splitedKey.pop() === '0'){
+      console.log(1);
+      return;
+    }
+
     const dropKey = info.node.key;
     const dragKey = info.dragNode.key;
     const dropPos = info.node.pos.split('-');
@@ -149,8 +166,8 @@ const TagsPage = ({ className, list }: Readonly<{ className?: string, list: Read
   const onExpand = (keys: DataNode["key"][]) => setExpandedKeys(keys as string[])
 
   useEffect(() => {
-    setGData(transferDataWithComponents(list, ''));
-  }, [list]);
+    setGData(transferDataWithComponents(tagList, ''));
+  }, [tagList, transferDataWithComponents]);
 
   return (
     <div className={className}>
@@ -170,4 +187,4 @@ const TagsPage = ({ className, list }: Readonly<{ className?: string, list: Read
   );
 };
 
-export default TagsPage;
+export default Tree;
