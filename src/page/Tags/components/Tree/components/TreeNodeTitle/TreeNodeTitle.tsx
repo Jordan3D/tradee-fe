@@ -9,19 +9,23 @@ const TreeNodeTitle = ({ onAdd, onDelete, onEdit, title, }: Readonly<{ onAdd?: a
             onEdit();
             return;
         }
-        if(onAdd){
-            onAdd();
-        }
     };
 
     const onDeleteClick = (e: React.MouseEvent) => {
         e.stopPropagation();
     }
+
+    const onAddClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onAdd();
+    }
     
     return <div className="tree-node-title__root" onClick={onRootClick}>
-        {onAdd && <PlusOutlined />}
         <div className="tree-node-title__text">{title}</div>
         <div className="tree-node-title__buttons">
+            {
+                onAdd && <Button className="button" onClick={onAddClick}><PlusOutlined /></Button>
+            }
             {
                 onDelete && <Popconfirm
                     title="Are you sure to delete this task?"

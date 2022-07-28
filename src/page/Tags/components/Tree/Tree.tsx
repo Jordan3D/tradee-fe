@@ -1,15 +1,15 @@
 import './style.scss';
 import { ReactElement, useEffect, useState, ChangeEvent, useCallback, useContext } from 'react';
-import { Tree as TreeComponent, TreeProps, Input } from 'antd';
+import { Tree as TreeComponent, TreeProps, Input, Button } from 'antd';
 import { DataNode } from 'antd/lib/tree';
-import { Tag } from '../../../../interface/Tag';
+import { TagWithChildren } from '../../../../interface/Tag';
 import { TreeNodeTitle } from './components/TreeNodeTitle';
 import { GlobalContext } from '../../../../state/context';
 
 const { Search } = Input;
 
-const transferData = (tagList: ReadonlyArray<Tag>, parentKey: string): DataNode[] => {
-  return tagList.map((tag: Tag, i: number) => (
+const transferData = (tagList: ReadonlyArray<TagWithChildren>, parentKey: string): DataNode[] => {
+  return tagList.map((tag: TagWithChildren, i: number) => (
     {
       key: parentKey ? parentKey + '-' + i : '' + i,
       title: tag.title,
@@ -30,7 +30,7 @@ const getExpandedKeys = (gData: DataNode[], value: string): string[] => {
 
 type Props = Readonly<{
   className?: string,
-  onSetForm: (value: any) => void,
+  onSetForm: (value: any) => () => void,
 }>
 
 const Tree = ({ className, onSetForm }: Props): ReactElement => {
@@ -40,24 +40,20 @@ const Tree = ({ className, onSetForm }: Props): ReactElement => {
   const [searchValue, setSearchValue] = useState('');
   const [gData, setGData] = useState(transferData(tagList, ''));
 
-  const transferDataWithComponents = useCallback((tagList: ReadonlyArray<Tag>, parentKey?: string, parentId?: string): DataNode[] => {
+  const transferDataWithComponents = useCallback((tagList: ReadonlyArray<TagWithChildren>, parentKey?: string, parentId?: string): DataNode[] => {
 
     const onDeleteTag = (id: string) => () => tagDeleteHandler(id);
 
-    return [
-      {
-        key: parentKey ? `${parentKey}-0` : 0,
-        title: <TreeNodeTitle onAdd={onSetForm({parentId})} />
-      }
-    ].concat(tagList.map((tag: Tag, i: number) => {
+    return tagList.map((tag: TagWithChildren, i: number) => {
       const index = i + 1;
       const key = parentKey ? parentKey + '-' + index : '' + index;
       return {
         key,
-        title: <TreeNodeTitle title={tag.title} onDelete={onDeleteTag(tag.id)} onEdit={onSetForm({parentId, id:tag.id})} />,
+        title: <TreeNodeTitle 
+        title={tag.title} onDelete={onDeleteTag(tag.id)} onEdit={onSetForm({parentId, id:tag.id})} onAdd={onSetForm({parentId: tag.id})}/>,
         children: tag.children && tag.children.length ? transferDataWithComponents(tag.children, key, tag.id) : []
       }
-    }));
+    });
   }, [tagDeleteHandler, onSetForm]);
 
   const onChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -68,9 +64,9 @@ const Tree = ({ className, onSetForm }: Props): ReactElement => {
 
     if (value) {
       const hasSearchTerm = (n: string) => n.toLowerCase().indexOf(value) !== -1;
-      const filterData = (arr: ReadonlyArray<Tag> = []): Tag[] =>
-        arr?.filter((t: Tag) => hasSearchTerm(t.title as string) || filterData(t.children)?.length > 0);
-      const filteredList = filterData(tagList).map((t: Tag) => {
+      const filterData = (arr: ReadonlyArray<TagWithChildren> = []): TagWithChildren[] =>
+        arr?.filter((t: TagWithChildren) => hasSearchTerm(t.title as string) || filterData(t.children)?.length > 0);
+      const filteredList = filterData(tagList).map((t: TagWithChildren) => {
         return {
           ...t,
           children: filterData(t.children)
@@ -163,15 +159,22 @@ const Tree = ({ className, onSetForm }: Props): ReactElement => {
     setGData(data);
   };
 
-  const onExpand = (keys: DataNode["key"][]) => setExpandedKeys(keys as string[])
+  const onExpand = (keys: DataNode["key"][]) => setExpandedKeys(keys as string[]);
+
+  const onAddClick = () => {
+    onSetForm({})();
+  }
 
   useEffect(() => {
     setGData(transferDataWithComponents(tagList, ''));
   }, [tagList, transferDataWithComponents]);
 
   return (
-    <div className={className}>
+    <div className={`${className} tree-root`}>
       <Search value={searchValue} placeholder="Search by name" onChange={onChange} />
+      <div className="tree-add-item-container">
+        <Button onClick={onAddClick}>Add new tag</Button>
+      </div>
       <TreeComponent
         className={"draggable-tree"}
         draggable

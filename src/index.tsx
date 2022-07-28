@@ -18,4 +18,5 @@ reportWebVitals();
 
 // TODO
 // - refresh token
-// - tags page
+// - tags page expand keys
+// - notes page

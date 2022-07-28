@@ -1,7 +1,7 @@
-import { Tag, TCreateTag, TUpdateTag } from "../interface/Tag";
+import { Tag, CreateTag, UpdateTag, TagWithChildren } from "../interface/Tag";
 import fetchy, { FetchyResult } from "./_main";
 
-export type TTagMap = Record<string, Tag>;
+export type TTagMap = Record<string, TagWithChildren>;
 
 export type TagsListResult = FetchyResult & Readonly<{data?: Tag[]}>;
 export const tagListGetApi = async (): Promise<TagsListResult> => {
@@ -11,7 +11,7 @@ export const tagListGetApi = async (): Promise<TagsListResult> => {
 };
 
 export type TagCreateResult = FetchyResult & Readonly<{data?: Tag}>;
-export const tagCreateApi = async (data: TCreateTag): Promise<TagCreateResult> => {
+export const tagCreateApi = async (data: CreateTag): Promise<TagCreateResult> => {
     const token = localStorage.getItem('access_token');
     const result = await fetchy('/tag/create', {
         headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`}, 
@@ -22,7 +22,7 @@ export const tagCreateApi = async (data: TCreateTag): Promise<TagCreateResult> =
 };
 
 export type TagUpdateResult = FetchyResult & Readonly<{data?: Tag}>;
-export const tagUpdateApi = async (id: string, data: TUpdateTag): Promise<TagUpdateResult> => {
+export const tagUpdateApi = async (id: string, data: UpdateTag): Promise<TagUpdateResult> => {
     const token = localStorage.getItem('access_token');
     const result = await fetchy('/tag/'+id, {
         headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`}, 

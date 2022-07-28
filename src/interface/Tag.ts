@@ -1,23 +1,24 @@
 export type Tag = {
     id: string;
     title: string;
-    author: string;
-    parent?: string;
-    children?: Tag[];
+    authorId: string;
+    parentId?: string;
     isMeta?: boolean;
     level: number;
     createdAt: Date;
     updatedAt: Date;
 }
 
-export type TCreateTag = {
+export type TagWithChildren = Tag & Readonly<{children: TagWithChildren[]}>
+
+export type CreateTag = {
     title: string;
     isMeta?: boolean;
-    parent?: string | null;
+    parentId?: string | null;
 }
 
-export type TUpdateTag = {
+export type UpdateTag = {
     title?: string;
     isMeta?: boolean;
-    parent?: string | null;
+    parentId?: string | null;
 }

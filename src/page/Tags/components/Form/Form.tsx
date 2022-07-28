@@ -1,6 +1,6 @@
 import './style.scss';
 import { Button, Checkbox, Form as AntdForm, Input } from 'antd';
-import { TCreateTag, TUpdateTag } from '../../../../interface/Tag';
+import { CreateTag, UpdateTag } from '../../../../interface/Tag';
 import { useContext, useEffect } from 'react';
 import { GlobalContext } from '../../../../state/context';
 
@@ -19,12 +19,12 @@ const Form = ({id, parentId, onClose}: Props) => {
 
     const eidtTag = id ? tagMap[id] : undefined;
 
-    const onFinish = (values: TCreateTag | TUpdateTag) => {
+    const onFinish = (values: CreateTag | UpdateTag) => {
         if(id){
-            tagUpdateHandler(id, values as TUpdateTag);
+            tagUpdateHandler(id, values as UpdateTag);
             return;
         }
-        tagCreateHandler(values as TCreateTag);
+        tagCreateHandler(values as CreateTag);
       };
     
       const onFinishFailed = (errorInfo: any) => {
@@ -35,7 +35,7 @@ const Form = ({id, parentId, onClose}: Props) => {
         form.setFieldsValue({
             title: eidtTag?.title,
             isMeta: eidtTag?.isMeta,
-            parent: eidtTag?.parent || parentId
+            parentId: eidtTag?.parentId || parentId
         })
        }, [form, eidtTag, parentId])
 
@@ -69,7 +69,7 @@ const Form = ({id, parentId, onClose}: Props) => {
 
             <Item
                 label="Parent Id"
-                name="parent"
+                name="parentId"
             >
                 <Input />
             </Item>

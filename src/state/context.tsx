@@ -15,22 +15,21 @@ import { isExpired } from 'react-jwt';
 import { LoginForm, SignupForm, TUser } from '../interface/User';
 import { invokeFeedback } from '../utils/feedbacks/feedbacks';
 import routes from '../router';
-import { TCreateTag, Tag, TUpdateTag } from '../interface/Tag';
+import { CreateTag, Tag, TagWithChildren, UpdateTag } from '../interface/Tag';
 
 
-const treeAndMapFromList = (list: Tag[]): Readonly<{tree: Tag[], map: TTagMap}> => {
-  const tree = [] as Tag[];
+const treeAndMapFromList = (list: Tag[]): Readonly<{tree: TagWithChildren[], map: TTagMap}> => {
+  const tree = [] as TagWithChildren[];
   const map = {} as TTagMap;
 
   list.slice().forEach(item => {
-    const copidItem = {...item};
+    const copidItem = {...item, children: []};
     map[item.id] = copidItem;
-    copidItem.children = [];
     if (copidItem.level === 0)
       tree.push(copidItem);
 
-    if(copidItem.parent)
-    (map[copidItem.parent as string].children as Tag[]).push(copidItem);
+    if(copidItem.parentId)
+    (map[copidItem.parentId as string].children as TagWithChildren[]).push(copidItem);
     
   })
 
@@ -54,7 +53,7 @@ export type Props = Readonly<{
 
 export type TContext = Readonly<{
   user: TUser | undefined;
-  tagList: ReadonlyArray<Tag>,
+  tagList: ReadonlyArray<TagWithChildren>,
   tagMap: TTagMap,
   errorPageShown: boolean;
   showErrorPage: (value?: boolean) => void;
@@ -62,8 +61,8 @@ export type TContext = Readonly<{
   signupHandler: (value: SignupForm) => Promise<unknown>
   accessCheck: () => Promise<boolean>
   tagsListHandler: () => void;
-  tagCreateHandler: (data: TCreateTag) => void;
-  tagUpdateHandler: (id: string, data: TUpdateTag) => void;
+  tagCreateHandler: (data: CreateTag) => void;
+  tagUpdateHandler: (id: string, data: UpdateTag) => void;
   tagDeleteHandler: (id: string) => void;
 }>;
 
@@ -90,7 +89,7 @@ export const Provider = ({
   const [errorPageShown, setErrorPageShown] = useState(false);
   const [user, setUser] = useState<TUser | undefined>(undefined);
 
-  const [{tree: tagList, map: tagMap}, setTagStructures] = useState<Readonly<{tree: Tag[], map: TTagMap}>>({tree: [], map: {}});
+  const [{tree: tagList, map: tagMap}, setTagStructures] = useState<Readonly<{tree: TagWithChildren[], map: TTagMap}>>({tree: [], map: {}});
 
   const showErrorPage = (value?: boolean) => {
     setErrorPageShown(value ?? true);
@@ -145,7 +144,7 @@ export const Provider = ({
     }
   }, [setTagStructures]);
 
-  const tagCreateHandler = async (argData: TCreateTag) => {
+  const tagCreateHandler = async (argData: CreateTag) => {
     const { data, error } = await tagCreateApi(argData);
 
     if (error) {
@@ -158,7 +157,7 @@ export const Provider = ({
     }
   };
 
-  const tagUpdateHandler = async (id: string, argData: TUpdateTag) => {
+  const tagUpdateHandler = async (id: string, argData: UpdateTag) => {
     const { data, error } = await tagUpdateApi(id, argData);
 
     if (error) {

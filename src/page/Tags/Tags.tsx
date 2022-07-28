@@ -12,6 +12,7 @@ const TagsPage = (): ReactElement => {
     const [ setForm, setSetForm ] = useState<TTagForm| undefined>(undefined);
 
     const onSetForm = (value: Readonly<{ id?: string, parentId?: string }>) => () => {
+        console.log(value);
         setSetForm(value)
     }
 
