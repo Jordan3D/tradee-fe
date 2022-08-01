@@ -10,7 +10,7 @@ export type SignupForm = {
     username: string;
 }
 
-export type TUser = {
+export interface IUser {
     id: string;
     username: string;
     email: string;

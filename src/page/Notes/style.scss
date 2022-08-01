@@ -1,0 +1,12 @@
+.tags_page {
+    &__root{
+        position: relative;
+        display: flex;
+        max-width: 1460px;
+        margin: 0 auto;
+
+        @media screen and (max-width: 1200px){
+            flex-direction: column;
+        }
+    }
+}

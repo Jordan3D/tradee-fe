@@ -20,3 +20,4 @@ reportWebVitals();
 // - refresh token
 // - tags page expand keys
 // - notes page
+// - rate comments

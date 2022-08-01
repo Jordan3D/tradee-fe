@@ -1,15 +1,15 @@
-import { LoginForm, SignupForm, TUser } from "../interface/User";
+import { LoginForm, SignupForm, IUser } from "../interface/User";
 import fetchy, { FetchyResult } from "./_main";
 
 export type LoginResult = FetchyResult & Readonly<{data?: {
-    user: TUser,
+    user: IUser,
     access_token: string,
     refresh_token: string,
     expiresIn: number,
 }}>;
 
 export type SignupResult = FetchyResult & Readonly<{data?: {
-    user: TUser
+    user: IUser
 }}>;
 
 export const loginPOST = async (lf:LoginForm): Promise<LoginResult> => {

@@ -1,4 +1,4 @@
-export type Tag = {
+export interface ITag {
     id: string;
     title: string;
     authorId: string;
@@ -9,7 +9,7 @@ export type Tag = {
     updatedAt: Date;
 }
 
-export type TagWithChildren = Tag & Readonly<{children: TagWithChildren[]}>
+export type TagWithChildren = ITag & Readonly<{children: TagWithChildren[]}>
 
 export type CreateTag = {
     title: string;

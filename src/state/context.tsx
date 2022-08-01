@@ -12,13 +12,13 @@ import { tagListGetApi, tagCreateApi, tagUpdateApi, tagDeleteApi, TTagMap } from
 import { useNavigate } from "react-router-dom";
 import { isExpired } from 'react-jwt';
 
-import { LoginForm, SignupForm, TUser } from '../interface/User';
+import { LoginForm, SignupForm, IUser } from '../interface/User';
 import { invokeFeedback } from '../utils/feedbacks/feedbacks';
 import routes from '../router';
-import { CreateTag, Tag, TagWithChildren, UpdateTag } from '../interface/Tag';
+import { CreateTag, ITag, TagWithChildren, UpdateTag } from '../interface/Tag';
 
 
-const treeAndMapFromList = (list: Tag[]): Readonly<{tree: TagWithChildren[], map: TTagMap}> => {
+const treeAndMapFromList = (list: ITag[]): Readonly<{tree: TagWithChildren[], map: TTagMap}> => {
   const tree = [] as TagWithChildren[];
   const map = {} as TTagMap;
 
@@ -52,7 +52,7 @@ export type Props = Readonly<{
 }>;
 
 export type TContext = Readonly<{
-  user: TUser | undefined;
+  user: IUser | undefined;
   tagList: ReadonlyArray<TagWithChildren>,
   tagMap: TTagMap,
   errorPageShown: boolean;
@@ -87,7 +87,7 @@ export const Provider = ({
   const navigate = useNavigate();
 
   const [errorPageShown, setErrorPageShown] = useState(false);
-  const [user, setUser] = useState<TUser | undefined>(undefined);
+  const [user, setUser] = useState<IUser | undefined>(undefined);
 
   const [{tree: tagList, map: tagMap}, setTagStructures] = useState<Readonly<{tree: TagWithChildren[], map: TTagMap}>>({tree: [], map: {}});
 
