@@ -1,24 +1,33 @@
 import { LoginForm, SignupForm, IUser } from "../interface/User";
-import fetchy, { FetchyResult } from "./_main";
+import fetchy from "./_main";
 
-export type LoginResult = FetchyResult & Readonly<{data?: {
+export type LoginPostApiResult = Readonly<{
     user: IUser,
     access_token: string,
     refresh_token: string,
     expiresIn: number,
-}}>;
+}>;
+export const loginPost = async (lf:LoginForm): Promise<LoginPostApiResult> => 
+fetchy<LoginPostApiResult>('/auth/signin', {body: JSON.stringify(lf), method: 'POST'});
 
-export type SignupResult = FetchyResult & Readonly<{data?: {
+export type RefreshTokenApiResult = Readonly<{
+    access_token: string,
+    refresh_token: string,
+}>;
+export const refreshTokenApi = async (): Promise<RefreshTokenApiResult> => {
+    const refresh_token = localStorage.getItem('refresh_token');
+    return fetchy<RefreshTokenApiResult>('/auth/refresh', {body: JSON.stringify({refresh_token}), method: 'POST'});
+}
+
+export type SignupPostApiResult = Readonly<{
     user: IUser
-}}>;
-
-export const loginPOST = async (lf:LoginForm): Promise<LoginResult> => {
-    const result = await fetchy('/auth/signin', {body: JSON.stringify(lf), method: 'POST'})
-    return result as LoginResult;
-};
+}>;
+export const signupPost = async (sf:SignupForm): Promise<SignupPostApiResult> => 
+fetchy<SignupPostApiResult>('/user/create', {body: JSON.stringify(sf), method: 'POST'});
 
 
-export const signupPOST = async (sf:SignupForm): Promise<SignupResult> => {
-    const result = await fetchy('/user/create', {body: JSON.stringify(sf), method: 'POST'})
-    return result as SignupResult;
+export type SelfGetApiResult = IUser;
+export const selfGetApi = async ():Promise<SelfGetApiResult> => {
+    const token = localStorage.getItem('access_token');
+    return fetchy<SelfGetApiResult>('/user/self', { headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }});
 };

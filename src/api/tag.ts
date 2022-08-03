@@ -1,40 +1,36 @@
 import { ITag, CreateTag, UpdateTag, TagWithChildren } from "../interface/Tag";
-import fetchy, { FetchyResult } from "./_main";
+import fetchy from "./_main";
 
 export type TTagMap = Record<string, TagWithChildren>;
 
-export type TagsListResult = FetchyResult & Readonly<{data?: ITag[]}>;
-export const tagListGetApi = async (): Promise<TagsListResult> => {
+export type TagsListGetApiResult = ITag[];
+export const tagListGetApi = async (): Promise<TagsListGetApiResult> => {
     const token = localStorage.getItem('access_token');
-    const result = await fetchy('/tag/list', {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`}})
-    return result as TagsListResult;
+    return await fetchy<TagsListGetApiResult>('/tag/list', {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`}});
 };
 
-export type TagCreateResult = FetchyResult & Readonly<{data?: ITag}>;
-export const tagCreateApi = async (data: CreateTag): Promise<TagCreateResult> => {
+export type TagCreateApiResult = ITag;
+export const tagCreateApi = async (data: CreateTag): Promise<TagCreateApiResult> => {
     const token = localStorage.getItem('access_token');
-    const result = await fetchy('/tag/create', {
+    return fetchy<TagCreateApiResult>('/tag/create', {
         headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`}, 
         method: 'POST',
         body: JSON.stringify(data)
     });
-    return result as TagCreateResult;
 };
 
-export type TagUpdateResult = FetchyResult & Readonly<{data?: ITag}>;
-export const tagUpdateApi = async (id: string, data: UpdateTag): Promise<TagUpdateResult> => {
+export type TagUpdateApiResult = ITag;
+export const tagUpdateApi = async (id: string, data: UpdateTag): Promise<TagUpdateApiResult> => {
     const token = localStorage.getItem('access_token');
-    const result = await fetchy('/tag/'+id, {
+    return fetchy<TagUpdateApiResult>('/tag/'+id, {
         headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`}, 
         method: 'POST',
         body: JSON.stringify(data)
     });
-    return result as TagUpdateResult;
 };
 
-export type TagDeleteResult = FetchyResult & Readonly<{data?: Boolean}>;
-export const tagDeleteApi = async (id: string): Promise<TagDeleteResult> => {
+export type TagDeleteApiResult = boolean;
+export const tagDeleteApi = async (id: string): Promise<TagDeleteApiResult> => {
     const token = localStorage.getItem('access_token');
-    const result = await fetchy('/tag/'+id, {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`}, method: 'DELETE'});
-    return result as TagDeleteResult;
+    return await fetchy<TagDeleteApiResult>('/tag/'+id, {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`}, method: 'DELETE'});
 };

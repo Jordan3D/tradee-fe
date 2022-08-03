@@ -11,23 +11,16 @@ export type Props = {
 
 const Page = memo(({children, isSecure = false}: Props):ReactElement => {
     const navigate = useNavigate();
-    const {accessCheck} = useContext(GlobalContext);
+    const {selfCheck} = useContext(GlobalContext);
 
     const [ready, setReady] = useState(!isSecure);
 
     useEffect(() => {
-        if(isSecure){
-            (async() => {
-                const result = await accessCheck();
-
-                if(result){
-                    setReady(result);
-                } else {
-                    navigate(routes.login);
-                }
-            })()
-        }
-    }, [navigate, accessCheck, isSecure]);
+        (async() => {
+            await selfCheck();
+            setReady(true);
+        })()
+    }, [navigate, selfCheck, isSecure]);
 
     return ready ? <div className="page__root">
         {children}

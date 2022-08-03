@@ -10,6 +10,13 @@
     &__content {
         height: 100%;
         display: flex;
+        justify-content: space-between;
         align-items: center;
+    }
+    &__routes {
+        display: flex;
+    }
+    &__route {
+        text-transform: capitalize;
     }
 }

@@ -1,6 +1,6 @@
 export type Routes = 'ideas' | 'notes' | 'main' | 'profile' | 'start' | 'login' | 'signup' | 'tags'
 
-const routes = {
+const routes: Record<Routes,string> = {
     ideas: '/ideas',
     notes: '/notes',
     main: '/main',

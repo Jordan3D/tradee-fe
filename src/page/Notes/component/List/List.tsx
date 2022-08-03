@@ -1,7 +1,7 @@
 import { memo, ReactElement, useContext } from 'react';
 import { INote } from '../../../../interface/Note';
 import { NotesContext } from '../../../../state/notePageContext';
-import './styles.scss';
+import './style.scss';
 
 type ItemProps = {
     id: string,
@@ -31,7 +31,7 @@ const List = ({selectedItem, onSelectItem}: ListProps): ReactElement => {
 
     return <div className='notes-list__root'>
         <div className='list'>
-            {noteIds.map(id => <Item id={id} onSelectItem={onSelectItem}/>)}
+            {noteIds.map(id => <Item key={id} id={id} onSelectItem={onSelectItem}/>)}
         </div>
     </div>
 };
