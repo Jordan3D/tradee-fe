@@ -9,15 +9,15 @@ import { TTagForm, Form } from './components/Form';
 const TagsPage = (): ReactElement => {
 
     const { tagsListHandler } = useContext(GlobalContext);
-    const [ setForm, setSetForm ] = useState<TTagForm| undefined>(undefined);
+    const [ formValues, setFormValues ] = useState<TTagForm| undefined>(undefined);
 
     const onSetForm = (value: Readonly<{ id?: string, parentId?: string }>) => () => {
         console.log(value);
-        setSetForm(value)
+        setFormValues(value)
     }
 
     const onCloseForm = () => {
-        setSetForm(undefined);
+        setFormValues(undefined);
     };
 
     useEffect(() => {
@@ -35,7 +35,7 @@ const TagsPage = (): ReactElement => {
                     onSetForm={onSetForm}
                 />
                 <div className="tags_page__tag-info">
-                    {setForm && <Form id={setForm.id} parentId={setForm.parentId} onClose={onCloseForm}/>}
+                    {formValues && <Form values={formValues} onClose={onCloseForm}/>}
                 </div>
             </div>
         </>

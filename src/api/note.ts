@@ -1,8 +1,8 @@
-import { INote } from "../interface/Note";
+import { INoteFull } from "../interface/Note";
 import { CreateTag, UpdateTag } from "../interface/Tag";
 import fetchy from "./_main";
 
-export type NoteListGetApiResult = INote[];
+export type NoteListGetApiResult = INoteFull[];
 export const noteListGetApi = async (
     { lastId, limit, text }: Readonly<{ lastId?: string, limit?: number, text?: string }>
 ): Promise<NoteListGetApiResult> => {
@@ -13,7 +13,7 @@ export const noteListGetApi = async (
     )
 };
 
-export type NoteCreateApiResult = INote;
+export type NoteCreateApiResult = INoteFull;
 export const noteCreateApi = async (data: CreateTag): Promise<NoteCreateApiResult> => {
     const token = localStorage.getItem('access_token');
     return fetchy<NoteCreateApiResult>('/note/create', {
@@ -23,7 +23,7 @@ export const noteCreateApi = async (data: CreateTag): Promise<NoteCreateApiResul
     });
 };
 
-export type NoteUpdateApiResult = INote;
+export type NoteUpdateApiResult = INoteFull;
 export const noteUpdateApi = async (id: string, data: UpdateTag): Promise<NoteUpdateApiResult> => {
     const token = localStorage.getItem('access_token');
     return fetchy<NoteUpdateApiResult>('/note/' + id, {

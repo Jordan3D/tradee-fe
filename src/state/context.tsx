@@ -55,7 +55,8 @@ export type Props = Readonly<{
 
 export type TContext = Readonly<{
   user: IUser | undefined;
-  tagList: ReadonlyArray<TagWithChildren>,
+  tagTree: ReadonlyArray<TagWithChildren>,
+  tagList: ReadonlyArray<ITag>,
   tagMap: TTagMap,
   errorPageShown: boolean;
   showErrorPage: (value?: boolean) => void;
@@ -72,10 +73,11 @@ export type TContext = Readonly<{
 
 export const GlobalContext = createContext<TContext>({
   user: undefined,
+  tagTree: [],
   tagList: [],
   tagMap: {},
   errorPageShown: false,
-  showErrorPage: () => { },
+  showErrorPage: () => {},
   logoutHandler: () => {},
   loginHandler: () => Promise.resolve(),
   signupHandler: () => Promise.resolve(),
@@ -96,7 +98,8 @@ export const Provider = ({
   const [errorPageShown, setErrorPageShown] = useState(false);
   const [user, setUser] = useState<IUser | undefined>(undefined);
 
-  const [{ tree: tagList, map: tagMap }, setTagStructures] = useState<Readonly<{ tree: TagWithChildren[], map: TTagMap }>>({ tree: [], map: {} });
+  const [tagList, setTagList] = useState<ReadonlyArray<ITag>>([]);
+  const [{ tree: tagTree, map: tagMap }, setTagStructures] = useState<Readonly<{ tree: TagWithChildren[], map: TTagMap }>>({ tree: [], map: {} });
 
   const showErrorPage = (value?: boolean) => {
     setErrorPageShown(value ?? true);
@@ -143,7 +146,10 @@ export const Provider = ({
   const tagsListHandler = useCallback(async () => {
     await processFetch<TagsListGetApiResult>({
       request: tagListGetApi(),
-      onData: (data) => setTagStructures(treeAndMapFromList(data)),
+      onData: (data) => {
+        setTagList(data);
+        setTagStructures(treeAndMapFromList(data));
+      },
       onError: processError 
     });
   }, [setTagStructures, processError]);
@@ -227,6 +233,7 @@ export const Provider = ({
         logoutHandler,
         signupHandler,
         user,
+        tagTree,
         tagList,
         tagMap,
         tagsListHandler,

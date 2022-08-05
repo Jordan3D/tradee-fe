@@ -1,5 +1,5 @@
 import './style.scss';
-import { ReactElement, useCallback, useContext } from 'react';
+import { forwardRef, ReactElement, RefObject, useCallback, useContext } from 'react';
 import { Button } from 'antd';
 import routes, { Routes } from '../../router';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +9,7 @@ export type Props = {
     children: ReactElement
 }
 
-const Header = ({ children }: Props): ReactElement => {
+const Header = forwardRef(({ children }: Props, ref: any): ReactElement => {
     const navigate = useNavigate();
     const { user, logoutHandler } = useContext(GlobalContext);
     const isAuth = !!user;
@@ -39,7 +39,7 @@ const Header = ({ children }: Props): ReactElement => {
         )
     }, [onRoute]);
 
-    return <div className="header__root">
+    return <header className="header__root" ref={ref}>
         <div className="header__content">
             {
                 isAuth ? <div className="header__routes">
@@ -61,7 +61,7 @@ const Header = ({ children }: Props): ReactElement => {
                 }
             </div>
         </div>
-    </div>
-};
+    </header>
+});
 
 export default Header;

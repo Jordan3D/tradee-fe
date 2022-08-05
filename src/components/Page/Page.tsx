@@ -1,29 +1,44 @@
 import './style.scss';
-import { ReactElement, memo, useContext, useState, useEffect } from 'react';
+import { ReactElement, memo, useContext, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import routes from '../../router';
 import { GlobalContext } from '../../state/context';
+import { Header } from '../Header';
 
 export type Props = {
     children: ReactElement,
     isSecure?: boolean
 }
 
-const Page = memo(({children, isSecure = false}: Props):ReactElement => {
+const Page = memo(({ children, isSecure = false }: Props): ReactElement => {
     const navigate = useNavigate();
-    const {selfCheck} = useContext(GlobalContext);
+    const { selfCheck } = useContext(GlobalContext);
+    const [contentReady, setContentReady] = useState(false);
+    const headerRef = useRef<HTMLDivElement>(null);
+    const [paddingTop, setPaddingTop] = useState(0);
 
     const [ready, setReady] = useState(!isSecure);
 
     useEffect(() => {
-        (async() => {
+        (async () => {
             await selfCheck();
             setReady(true);
         })()
     }, [navigate, selfCheck, isSecure]);
 
-    return ready ? <div className="page__root">
-        {children}
+    useEffect(() => {
+        setContentReady(true);
+        console.log(headerRef.current?.clientHeight || 0);
+        setPaddingTop(headerRef.current?.clientHeight || 0);
+    }, [])
+
+    return ready ? <div className="page__root" style={{paddingTop}}>
+        <Header ref={headerRef}>
+            <>Header</>
+        </Header>
+        <div className='page__content'>
+            {contentReady && children}
+        </div>
+
     </div> : <></>;
 });
 

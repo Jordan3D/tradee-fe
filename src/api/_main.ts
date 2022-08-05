@@ -3,7 +3,7 @@ import { invokeFeedback } from "../utils/feedbacks/feedbacks";
 const baseURL = process.env.REACT_APP_API_URL;
 
 export async function processFetch<T>({request, onData, onError, tries = 2}: Readonly<{request: Promise<T>, onData: (data: T)=>void, onError: (r: Response) => void, tries?: number}>): Promise<boolean> {
-  let failed = false
+  let failed = false;
   while(tries > 0){
     try {
       const data = await request;

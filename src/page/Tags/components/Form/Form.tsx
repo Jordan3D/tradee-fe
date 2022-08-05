@@ -1,7 +1,8 @@
 import './style.scss';
-import { Button, Checkbox, Form as AntdForm, Input } from 'antd';
+import { Button, Checkbox, Form as AntdForm, Input, Select, Tag } from 'antd';
+import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import { CreateTag, UpdateTag } from '../../../../interface/Tag';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { GlobalContext } from '../../../../state/context';
 
 const Item = AntdForm.Item;
@@ -9,35 +10,58 @@ const useForm = AntdForm.useForm;
 
 export type TTagForm = Readonly<{ id?: string, parentId?: string }>;
 
-type Props = TTagForm &{
+type Props = TTagForm & {
+    values: TTagForm
     onClose: () => void
 }
 
-const Form = ({id, parentId, onClose}: Props) => {
+const tagRender = (props: CustomTagProps) => {
+    const { label, value, closable, onClose } = props;
+    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+    };
+    return (
+        <Tag
+            color={value}
+            onMouseDown={onPreventMouseDown}
+            closable={closable}
+            onClose={onClose}
+            style={{ marginRight: 3 }}
+        >
+            {label}
+        </Tag>
+    );
+};
+
+const Form = ({ values, onClose }: Props) => {
+    const { id, parentId } = values;
     const [form] = useForm();
-    const {tagMap, tagCreateHandler, tagUpdateHandler} = useContext(GlobalContext);
+    const { tagList, tagMap, tagCreateHandler, tagUpdateHandler } = useContext(GlobalContext);
 
     const eidtTag = id ? tagMap[id] : undefined;
 
+    const tagOptions = useMemo(() => tagList.map(tag => ({ label: tag.title, value: tag.id }) as CustomTagProps), [tagList]);
+
     const onFinish = (values: CreateTag | UpdateTag) => {
-        if(id){
+        if (id) {
             tagUpdateHandler(id, values as UpdateTag);
             return;
         }
         tagCreateHandler(values as CreateTag);
-      };
-    
-      const onFinishFailed = (errorInfo: any) => {
-        console.log('Failed:', errorInfo);
-      };
+    };
 
-      useEffect(() => {
+    const onFinishFailed = (errorInfo: any) => {
+        console.log('Failed:', errorInfo);
+    };
+
+    useEffect(() => {
         form.setFieldsValue({
             title: eidtTag?.title,
             isMeta: eidtTag?.isMeta,
             parentId: eidtTag?.parentId || parentId
         })
-       }, [form, eidtTag, parentId])
+    }, [form, eidtTag, parentId])
 
     return <div className="form__root">
         <AntdForm
@@ -51,9 +75,9 @@ const Form = ({id, parentId, onClose}: Props) => {
             <Item
                 label="ID"
             >
-                <Input value={id} disabled/>
+                <Input value={id} disabled />
             </Item>
-            
+
             <Item
                 label="Title"
                 name="title"
@@ -68,10 +92,15 @@ const Form = ({id, parentId, onClose}: Props) => {
             </Item>
 
             <Item
-                label="Parent Id"
+                label="Parent"
                 name="parentId"
             >
-                <Input />
+                <Select
+                    showArrow
+                    tagRender={tagRender}
+                    style={{ width: '100%' }}
+                    options={tagOptions}
+                />
             </Item>
 
             <Item
@@ -82,12 +111,12 @@ const Form = ({id, parentId, onClose}: Props) => {
 
             <Item>
                 <div className="form__buttons">
-                <Button type="default" size='large' htmlType="button" onClick={onClose}>
-                    Close
-                </Button>
-                <Button type="primary" size='large' htmlType="submit">
-                    Submit
-                </Button>
+                    <Button type="default" size='large' htmlType="button" onClick={onClose}>
+                        Close
+                    </Button>
+                    <Button type="primary" size='large' htmlType="submit">
+                        Submit
+                    </Button>
                 </div>
             </Item>
         </AntdForm>

@@ -1,0 +1,11 @@
+.note_form {
+    &__root {
+        padding: 1.2em;
+    }
+    &__buttons {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1em;
+    }
+}

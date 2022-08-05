@@ -15,10 +15,12 @@ export type CreateTag = {
     title: string;
     isMeta?: boolean;
     parentId?: string | null;
+    tags?: string[];
 }
 
 export type UpdateTag = {
     title?: string;
     isMeta?: boolean;
     parentId?: string | null;
+    tags?: string[];
 }

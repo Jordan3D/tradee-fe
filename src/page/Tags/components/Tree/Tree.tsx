@@ -34,11 +34,11 @@ type Props = Readonly<{
 }>
 
 const Tree = ({ className, onSetForm }: Props): ReactElement => {
-  const {tagList, tagDeleteHandler } = useContext(GlobalContext);
+  const {tagTree, tagDeleteHandler } = useContext(GlobalContext);
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
   const [autoExpandParent, setAutoExpandParent] = useState(true);
   const [searchValue, setSearchValue] = useState('');
-  const [gData, setGData] = useState(transferData(tagList, ''));
+  const [gData, setGData] = useState(transferData(tagTree, ''));
 
   const transferDataWithComponents = useCallback((tagList: ReadonlyArray<TagWithChildren>, parentKey?: string, parentId?: string): DataNode[] => {
 
@@ -58,7 +58,7 @@ const Tree = ({ className, onSetForm }: Props): ReactElement => {
 
   const onChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value?.toLowerCase();
-    const transferedList = transferData(tagList, '');
+    const transferedList = transferData(tagTree, '');
 
     const expandedKeys = getExpandedKeys(transferedList, value);
 
@@ -66,7 +66,7 @@ const Tree = ({ className, onSetForm }: Props): ReactElement => {
       const hasSearchTerm = (n: string) => n.toLowerCase().indexOf(value) !== -1;
       const filterData = (arr: ReadonlyArray<TagWithChildren> = []): TagWithChildren[] =>
         arr?.filter((t: TagWithChildren) => hasSearchTerm(t.title as string) || filterData(t.children)?.length > 0);
-      const filteredList = filterData(tagList).map((t: TagWithChildren) => {
+      const filteredList = filterData(tagTree).map((t: TagWithChildren) => {
         return {
           ...t,
           children: filterData(t.children)
@@ -78,12 +78,12 @@ const Tree = ({ className, onSetForm }: Props): ReactElement => {
       setSearchValue(value);
       setAutoExpandParent(true);
     } else {
-      setGData(transferDataWithComponents(tagList));
+      setGData(transferDataWithComponents(tagTree));
       setExpandedKeys([]);
       setSearchValue("");
       setAutoExpandParent(false);
     }
-  }, [tagList, transferDataWithComponents]);
+  }, [tagTree, transferDataWithComponents]);
 
   const onDragEnter: TreeProps['onDragEnter'] = info => {
     console.log(info);
@@ -166,8 +166,8 @@ const Tree = ({ className, onSetForm }: Props): ReactElement => {
   }
 
   useEffect(() => {
-    setGData(transferDataWithComponents(tagList, ''));
-  }, [tagList, transferDataWithComponents]);
+    setGData(transferDataWithComponents(tagTree, ''));
+  }, [tagTree, transferDataWithComponents]);
 
   return (
     <div className={`${className} tree-root`}>

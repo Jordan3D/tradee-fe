@@ -7,7 +7,7 @@ import {
 } from 'react';
 
 import { invokeFeedback } from '../utils/feedbacks/feedbacks';
-import { INote, INoteCreate, INoteUpdate } from '../interface/Note';
+import { INoteCreate, INoteFull, INoteUpdate } from '../interface/Note';
 import { noteCreateApi, noteDeleteApi, noteListGetApi, NoteListGetApiResult, noteUpdateApi } from '../api/note';
 import useError from '../utils/useError';
 import { processFetch } from '../api/_main';
@@ -18,11 +18,11 @@ export type Props = Readonly<{
 
 export type TContext = Readonly<{
   noteIds: ReadonlyArray<string>,
-  noteMap: Record<string, INote>,
+  noteMap: Record<string, INoteFull>,
   noteListHandler: (argData: Readonly<{ lastId?: string, limit?: number, text?: string }>) => void;
-  noteCreateHandler: (data: INoteCreate) => void;
-  noteUpdateHandler: (id: string, data: INoteUpdate) => void;
-  noteDeleteHandler: (id: string) => void;
+  noteCreateHandler: (data: INoteCreate) => Promise<unknown>;
+  noteUpdateHandler: (id: string, data: INoteUpdate) => Promise<unknown>;
+  noteDeleteHandler: (id: string) => Promise<unknown>;
 }>;
 
 export const NotesContext = createContext<TContext>({
@@ -34,11 +34,11 @@ export const NotesContext = createContext<TContext>({
   noteDeleteHandler: () => Promise.resolve(),
 });
 
-const fromListToIdsAndMap = ((list: INote[]) => {
+const fromListToIdsAndMap = ((list: INoteFull[]) => {
   const result = {
     ids: [],
     map: {}
-  } as Readonly<{ ids: string[], map: Record<string, INote> }>;
+  } as Readonly<{ ids: string[], map: Record<string, INoteFull> }>;
   list.forEach((n) => {
     result.map[n.id] = n;
     result.ids.push(n.id);
@@ -51,7 +51,7 @@ export const Provider = ({
   children,
 }: Props): ReactElement => {
   const [noteIds, setNoteIds] = useState<string[]>([]); // ids list
-  const [noteMap, setNoteMap] = useState<Record<string, INote>>({})
+  const [noteMap, setNoteMap] = useState<Record<string, INoteFull>>({})
   const {processError} = useError();
 
 
@@ -68,10 +68,12 @@ export const Provider = ({
   }, [setNoteIds, setNoteMap, processError]);
 
   const noteCreateHandler = async (argData: INoteCreate) => {
-    await processFetch<INote>({
+    let res;
+    await processFetch<INoteFull>({
       request: noteCreateApi(argData),
       onData: (data) => {
         if (data.id) {
+          res = data;
           setNoteIds(noteIds.concat([data.id]));
           setNoteMap({ ...noteMap, [data.id]: data });
           invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
@@ -79,25 +81,36 @@ export const Provider = ({
       },
       onError: processError 
     });
+    return res;
   };
 
   const noteUpdateHandler = async (id: string, argData: INoteUpdate) => {
-    await processFetch<INote>({
+    let res;
+    await processFetch<INoteFull>({
       request: noteUpdateApi(id, argData),
       onData: (data) => {
         if (data) {
+          res = data;
           setNoteMap({ ...noteMap, [data.id]: data });
           invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
         }
       },
       onError: processError 
     });
+    return res;
   };
 
   const noteDeleteHandler = async (id: string) => {
-    await processFetch({
+    return processFetch({
       request: noteDeleteApi(id),
-      onData: () => {},
+      onData: (res) => {
+        if(res){
+          const index = noteIds.findIndex(nId => nId === id);
+          const copiedIds = noteIds.slice();
+          copiedIds.splice(index, 1);
+          setNoteIds(copiedIds);
+        }
+      },
       onError: processError 
     });
   };

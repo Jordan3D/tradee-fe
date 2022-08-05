@@ -13,7 +13,7 @@ export interface INote extends IBase {
 }
 
 export interface INoteFull extends INote {
-    tags: ITag[];
+    tags: string[];
 }
 
 export interface INoteCreate {
@@ -25,6 +25,7 @@ export interface INoteCreate {
 export interface INoteUpdate {
     title?: string;
     content?: string;
-    tags?: string[];
+    tagsAdded?: string[];
+    tagsDeleted?: string[];
     settings?: INoteSettings[];
 }
