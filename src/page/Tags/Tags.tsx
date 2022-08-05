@@ -26,9 +26,6 @@ const TagsPage = (): ReactElement => {
 
     return <Page>
         <>
-            <Header>
-                <>Header</>
-            </Header>
             <div className="tags_page__root">
                 <Tree
                     className="tags_page__tree"

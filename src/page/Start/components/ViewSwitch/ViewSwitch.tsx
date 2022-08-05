@@ -2,14 +2,14 @@ import './style.scss';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ReactElement, useCallback } from 'react';
 import { Button } from 'antd';
-import routes, { Routes } from '../../../../router';
+import routes, { Route } from '../../../../router';
 
 
 const ViewSwitch = ():ReactElement => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const switchTo = useCallback((view: Routes) => () => {
+    const switchTo = useCallback((view: Route) => () => {
         if(view === 'signup'){
             navigate(routes.signup);
             return;
@@ -17,7 +17,7 @@ const ViewSwitch = ():ReactElement => {
         navigate(routes.login);
     }, [navigate])
 
-    const isActive = useCallback((view: Routes) => location.pathname === routes[view] ? 'active' : '',[location])
+    const isActive = useCallback((view: Route) => location.pathname === routes[view] ? 'active' : '',[location])
 
     return <div className="view_switch__root">
         <Button 

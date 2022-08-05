@@ -4,9 +4,11 @@ import { Page } from '../../components/Page';
 import { NotesContext } from '../../state/notePageContext';
 import { List } from './component/List';
 import { Form, TNoteForm } from './component/Form';
+import { GlobalContext } from '../../state/context';
 
 const NotesPage = (): ReactElement => {
 
+    const {tagsListHandler} = useContext(GlobalContext);
     const { noteListHandler } = useContext(NotesContext);
     const [formValues, setFormValues] = useState<TNoteForm | undefined>(undefined);
 
@@ -19,8 +21,9 @@ const NotesPage = (): ReactElement => {
     };
 
     useEffect(() => {
+        tagsListHandler();
         noteListHandler({});
-    }, [noteListHandler])
+    }, [noteListHandler, tagsListHandler])
 
     return <Page>
         <div className="notes_page__root">

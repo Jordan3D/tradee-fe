@@ -1,7 +1,7 @@
 import './style.scss';
 import { forwardRef, ReactElement, RefObject, useCallback, useContext } from 'react';
 import { Button } from 'antd';
-import routes, { Routes } from '../../router';
+import routes, { Route } from '../../router';
 import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../../state/context';
 
@@ -31,9 +31,9 @@ const Header = forwardRef(({ children }: Props, ref: any): ReactElement => {
     }
 
     const renderRoutes = useCallback(() => {
-        const excludeRoutes = ['login', 'signup'] as Routes[];
+        const excludeRoutes = ['login', 'signup'] as Route[];
         return Object.entries(routes).map(([key, value]) =>
-            !excludeRoutes.includes(key as Routes) ?
+            !excludeRoutes.includes(key as Route) ?
                 <Button key={key} className="header__route" onClick={onRoute(value)}>{key}</Button> :
                 <></>
         )

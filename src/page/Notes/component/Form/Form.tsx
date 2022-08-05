@@ -30,7 +30,7 @@ const tagRender = (props: CustomTagProps) => {
     };
     return (
         <Tag
-            color={value}
+            color={'orange'}
             onMouseDown={onPreventMouseDown}
             closable={closable}
             onClose={onClose}
@@ -102,6 +102,10 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
         e.stopPropagation();
     }
 
+    const onSearch = (v: string) => {
+        console.log(v);
+    }
+
     useEffect(() => {
         const state = (() => {
             const blocks = convertFromHTML(editNote?.content || '');
@@ -128,6 +132,7 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
         >
             <Item
                 label="ID"
+                className='note_form__item'
             >
                 <Input value={id} disabled />
             </Item>
@@ -135,6 +140,7 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
             <Item
                 label="Title"
                 name="title"
+                className='note_form__item'
                 rules={[
                     {
                         required: true,
@@ -148,6 +154,7 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
             <Item
                 label="Content"
                 name="content"
+                className='note_form__item'
             >
                 <Editor
                     editorState={eState}
@@ -155,17 +162,18 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
                     wrapperClassName="wrapperClassName"
                     editorClassName="editorClassName"
                     onEditorStateChange={onEditorStateChange}
-                />;
+                />
             </Item>
 
             <Item
                 label="Tags"
                 name="tags"
+                className='note_form__item'
             >
                 <Select
-                    showArrow
                     mode="multiple"
                     tagRender={tagRender}
+                    onSearch={onSearch}
                     style={{ width: '100%' }}
                     options={tagOptions}
                 />

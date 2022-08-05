@@ -4,7 +4,7 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import { Page } from '../../components/Page';
 import { Header } from '../../components/Header';
 import { ViewSwitch } from './components/ViewSwitch';
-import routes, { Routes } from '../../router';
+import routes, { Route } from '../../router';
 import { Login } from './components/Login';
 import { Signup } from './components/Signup';
 import { Button } from 'antd';
@@ -17,7 +17,7 @@ const StartPage = (): ReactElement => {
     const navigate = useNavigate();
     const {user} = useContext(GlobalContext);
 
-    const currentLocation = (Object.keys(routes) as Routes[]).find((route: Routes) => routes[route] === location.pathname);
+    const currentLocation = (Object.keys(routes) as Route[]).find((route: Route) => routes[route] === location.pathname);
 
     const onNavigate = (path: string) => () => {
         navigate(path)

@@ -3,6 +3,7 @@ import { ReactElement, memo, useContext, useState, useEffect, useRef } from 'rea
 import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../../state/context';
 import { Header } from '../Header';
+import { Sidebar } from '../Sidebar';
 
 export type Props = {
     children: ReactElement,
@@ -27,14 +28,11 @@ const Page = memo(({ children, isSecure = false }: Props): ReactElement => {
 
     useEffect(() => {
         setContentReady(true);
-        console.log(headerRef.current?.clientHeight || 0);
         setPaddingTop(headerRef.current?.clientHeight || 0);
     }, [])
 
     return ready ? <div className="page__root" style={{paddingTop}}>
-        <Header ref={headerRef}>
-            <>Header</>
-        </Header>
+        <Sidebar/>
         <div className='page__content'>
             {contentReady && children}
         </div>

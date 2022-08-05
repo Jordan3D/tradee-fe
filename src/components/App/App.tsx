@@ -15,6 +15,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import routes from '../../router';
 import { NotesPage } from '../../page/Notes';
 import { MainPage } from '../../page/Main';
+import { IdeasPage } from '../../page/Ideas';
+import { CalendarPage } from '../../page/Calendar';
 
 function App() {
 
@@ -32,6 +34,8 @@ function App() {
                     <Route path={routes.start} element={<StartPage />} />
                     <Route path={routes.signup} element={<StartPage />} />
                     <Route path={routes.login} element={<StartPage />} />
+                    <Route path={routes.ideas} element={<IdeasPage />} />
+                    <Route path={routes.calendar} element={<CalendarPage />} />
                     <Route path={routes.tags} element={<TagsPage />} />
                     <Route path={routes.main} element={<MainPage />} />
                     <Route path={routes.notes} element={
