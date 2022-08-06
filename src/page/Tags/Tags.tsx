@@ -6,10 +6,10 @@ import { Tree } from './components/Tree';
 import { GlobalContext } from '../../state/context';
 import { TTagForm, Form } from './components/Form';
 
-const TagsPage = (): ReactElement => {
+const Tags = (): ReactElement => {
 
     const { tagsListHandler } = useContext(GlobalContext);
-    const [ formValues, setFormValues ] = useState<TTagForm| undefined>(undefined);
+    const [formValues, setFormValues] = useState<TTagForm | undefined>(undefined);
 
     const onSetForm = (value: Readonly<{ id?: string, parentId?: string }>) => () => {
         console.log(value);
@@ -24,19 +24,17 @@ const TagsPage = (): ReactElement => {
         tagsListHandler();
     }, [tagsListHandler])
 
-    return <Page>
-        <>
-            <div className="tags_page__root">
-                <Tree
-                    className="tags_page__tree"
-                    onSetForm={onSetForm}
-                />
-                <div className="tags_page__tag-info">
-                    {formValues && <Form values={formValues} onClose={onCloseForm}/>}
-                </div>
-            </div>
-        </>
-    </Page>
+    return <div className="tags_page__root">
+        <Tree
+            className="tags_page__tree"
+            onSetForm={onSetForm}
+        />
+        <div className="tags_page__tag-info">
+            {formValues && <Form values={formValues} onClose={onCloseForm} />}
+        </div>
+    </div>
 };
+
+const TagsPage  = (): ReactElement => <Page isSecure><Tags/></Page>;
 
 export default TagsPage;

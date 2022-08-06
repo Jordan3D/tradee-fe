@@ -6,9 +6,9 @@ import { List } from './component/List';
 import { Form, TNoteForm } from './component/Form';
 import { GlobalContext } from '../../state/context';
 
-const NotesPage = (): ReactElement => {
+const Notes = (): ReactElement => {
 
-    const {tagsListHandler} = useContext(GlobalContext);
+    const { tagsListHandler } = useContext(GlobalContext);
     const { noteListHandler } = useContext(NotesContext);
     const [formValues, setFormValues] = useState<TNoteForm | undefined>(undefined);
 
@@ -25,16 +25,16 @@ const NotesPage = (): ReactElement => {
         noteListHandler({});
     }, [noteListHandler, tagsListHandler])
 
-    return <Page>
-        <div className="notes_page__root">
-            <div className="notes_page__list">
-                <List selectedItem={formValues?.id} onSelectItem={onSelectNote} />
-            </div>
-            <div className="notes_page__item">
-                {formValues && <Form values={formValues} onClose={onCloseForm} onSelectNote={onSelectNote}/>}
-            </div>
+    return <div className="notes_page__root">
+        <div className="notes_page__list">
+            <List selectedItem={formValues?.id} onSelectItem={onSelectNote} />
         </div>
-    </Page>
+        <div className="notes_page__item">
+            {formValues && <Form values={formValues} onClose={onCloseForm} onSelectNote={onSelectNote} />}
+        </div>
+    </div>
 };
+
+const NotesPage = ():ReactElement => <Page isSecure><Notes/></Page>
 
 export default NotesPage;

@@ -2,12 +2,11 @@ import { invokeFeedback } from "../utils/feedbacks/feedbacks";
 
 const baseURL = process.env.REACT_APP_API_URL;
 
-export async function processFetch<T>({request, onData, onError, tries = 2}: Readonly<{request: Promise<T>, onData: (data: T)=>void, onError: (r: Response) => void, tries?: number}>): Promise<boolean> {
+export async function processFetch<T>({onRequest, onData, onError, tries = 3}: Readonly<{onRequest: () => Promise<T>, onData: (data: T)=>void, onError: (r: Response) => Promise<void>, tries?: number}>): Promise<boolean> {
   let failed = false;
   while(tries > 0){
     try {
-      const data = await request;
-
+      const data = await onRequest();
       if (data) {
         onData(data);
         break;
@@ -17,7 +16,8 @@ export async function processFetch<T>({request, onData, onError, tries = 2}: Rea
     } catch (e) {
       const response = e as Response;
       invokeFeedback({ msg: response.statusText, type: 'error' });
-      onError(response);
+      await onError(response);
+
     } finally {
       tries-=1;
       if(tries === 0){

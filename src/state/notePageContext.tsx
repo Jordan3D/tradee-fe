@@ -57,7 +57,7 @@ export const Provider = ({
 
   const noteListHandler = useCallback(async (argData: Readonly<{ lastId?: string, limit?: number, text?: string }>) => {
     await processFetch<NoteListGetApiResult>({
-      request: noteListGetApi(argData),
+      onRequest: () => noteListGetApi(argData),
       onData: (data) => {
         const { ids, map } = fromListToIdsAndMap(data);
         setNoteIds(ids);
@@ -70,7 +70,7 @@ export const Provider = ({
   const noteCreateHandler = async (argData: INoteCreate) => {
     let res;
     await processFetch<INoteFull>({
-      request: noteCreateApi(argData),
+      onRequest: () => noteCreateApi(argData),
       onData: (data) => {
         if (data.id) {
           res = data;
@@ -87,7 +87,7 @@ export const Provider = ({
   const noteUpdateHandler = async (id: string, argData: INoteUpdate) => {
     let res;
     await processFetch<INoteFull>({
-      request: noteUpdateApi(id, argData),
+      onRequest: () => noteUpdateApi(id, argData),
       onData: (data) => {
         if (data) {
           res = data;
@@ -102,7 +102,7 @@ export const Provider = ({
 
   const noteDeleteHandler = async (id: string) => {
     return processFetch({
-      request: noteDeleteApi(id),
+      onRequest: () => noteDeleteApi(id),
       onData: (res) => {
         if(res){
           const index = noteIds.findIndex(nId => nId === id);

@@ -145,7 +145,7 @@ export const Provider = ({
 
   const tagsListHandler = useCallback(async () => {
     await processFetch<TagsListGetApiResult>({
-      request: tagListGetApi(),
+      onRequest: () => tagListGetApi(),
       onData: (data) => {
         setTagList(data);
         setTagStructures(treeAndMapFromList(data));
@@ -156,7 +156,7 @@ export const Provider = ({
 
   const tagCreateHandler = async (argData: CreateTag) => {
     await processFetch({
-      request: tagCreateApi(argData),
+      onRequest: () => tagCreateApi(argData),
       onData: () => {
         invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
         tagsListHandler();
@@ -167,7 +167,7 @@ export const Provider = ({
 
   const tagUpdateHandler = async (id: string, argData: UpdateTag) => {
     await processFetch({
-      request: tagUpdateApi(id, argData),
+      onRequest: () => tagUpdateApi(id, argData),
       onData: () => {
         invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
         tagsListHandler();
@@ -178,7 +178,7 @@ export const Provider = ({
 
   const tagDeleteHandler = async (id: string) => {
     await processFetch({
-      request: tagDeleteApi(id),
+      onRequest: () => tagDeleteApi(id),
       onData: () => {
         invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
         tagsListHandler();
@@ -202,18 +202,14 @@ export const Provider = ({
   }
 
   const selfCheck = useCallback(async () => {
-    try {
-      const data = await selfGetApi();
-
-      if (data) {
+    await processFetch({
+      onRequest: () => selfGetApi(),
+      onData: (data) => {
+        invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
         setUser(data);
-      } else {
-        invokeFeedback({ msg: 'Server gave no data', type: 'warning' });
-      }
-    } catch (e) {
-      const response = e as Response;
-      processError(response);
-    }
+      },
+      onError: processError 
+    });
   }, [setUser, processError])
 
   const logoutHandler = () => {

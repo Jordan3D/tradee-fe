@@ -2,7 +2,6 @@ import './style.scss';
 import { ReactElement, memo, useContext, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../../state/context';
-import { Header } from '../Header';
 import { Sidebar } from '../Sidebar';
 
 export type Props = {
@@ -12,7 +11,7 @@ export type Props = {
 
 const Page = memo(({ children, isSecure = false }: Props): ReactElement => {
     const navigate = useNavigate();
-    const { selfCheck } = useContext(GlobalContext);
+    const { selfCheck, user } = useContext(GlobalContext);
     const [contentReady, setContentReady] = useState(false);
     const headerRef = useRef<HTMLDivElement>(null);
     const [paddingTop, setPaddingTop] = useState(0);
@@ -20,11 +19,15 @@ const Page = memo(({ children, isSecure = false }: Props): ReactElement => {
     const [ready, setReady] = useState(!isSecure);
 
     useEffect(() => {
-        (async () => {
-            await selfCheck();
-            setReady(true);
-        })()
-    }, [navigate, selfCheck, isSecure]);
+        if(isSecure){
+            (async () => {
+                if(!user){
+                    await selfCheck();
+                }
+                setReady(true);
+            })()
+        }
+    }, [navigate, selfCheck, isSecure, user]);
 
     useEffect(() => {
         setContentReady(true);

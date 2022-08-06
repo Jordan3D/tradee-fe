@@ -21,8 +21,7 @@ import { CalendarPage } from '../../page/Calendar';
 function App() {
 
   return (
-    <StrictMode>
-      <BrowserRouter>
+    <BrowserRouter>
         <HelmetProvider>
           <ContextProvider>
             <ContextLoaderProvider>
@@ -34,7 +33,7 @@ function App() {
                     <Route path={routes.start} element={<StartPage />} />
                     <Route path={routes.signup} element={<StartPage />} />
                     <Route path={routes.login} element={<StartPage />} />
-                    <Route path={routes.ideas} element={<IdeasPage />} />
+                    <Route path={routes.ideas} element={<IdeasPage/>} />
                     <Route path={routes.calendar} element={<CalendarPage />} />
                     <Route path={routes.tags} element={<TagsPage />} />
                     <Route path={routes.main} element={<MainPage />} />
@@ -48,7 +47,6 @@ function App() {
           </ContextProvider>
         </HelmetProvider>
       </BrowserRouter>
-    </StrictMode>
   );
 }
 
