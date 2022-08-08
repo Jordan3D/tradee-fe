@@ -1,7 +1,9 @@
 import { Button, Input } from 'antd';
 import { ChangeEvent, memo, ReactElement, useCallback, useContext, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { INote } from '../../../../interface/Note';
 import { NotesContext } from '../../../../state/notePageContext';
+import { selectNoteIds, selectNoteMap } from '../../../../store/common/notes';
 import './style.scss';
 
 const {Search} = Input;
@@ -13,7 +15,7 @@ type ItemProps = {
 }
 
 const Item = memo(({id, isSelected, onSelectItem}:ItemProps): ReactElement => {
-    const { noteMap } = useContext(NotesContext);
+    const noteMap = useSelector(selectNoteMap);
     const item = noteMap[id] as INote;
     const className = `note-item__root${isSelected ? ' --selected' : ''}`;
 
@@ -33,7 +35,7 @@ type ListProps = {
 }
 
 const List = ({className = '', selectedItem, onSelectItem}: ListProps): ReactElement => {
-    const { noteIds} = useContext(NotesContext);
+    const noteIds = useSelector(selectNoteIds);
     const [searchValue, setSearchValue] = useState('');
 
     const onAddNoteHandler = () => {

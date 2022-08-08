@@ -1,8 +1,10 @@
 import './style.scss';
 import { ReactElement, memo, useContext, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {useSelector} from 'react-redux';
 import { GlobalContext } from '../../state/context';
 import { Sidebar } from '../Sidebar';
+import { selectUser } from '../../store/common/meta';
 
 export type Props = {
     children: ReactElement,
@@ -11,7 +13,8 @@ export type Props = {
 
 const Page = memo(({ children, isSecure = false }: Props): ReactElement => {
     const navigate = useNavigate();
-    const { selfCheck, user } = useContext(GlobalContext);
+    const user = useSelector(selectUser);
+    const { selfCheck } = useContext(GlobalContext);
     const [contentReady, setContentReady] = useState(false);
     const headerRef = useRef<HTMLDivElement>(null);
     const [paddingTop, setPaddingTop] = useState(0);

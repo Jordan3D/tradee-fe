@@ -1,6 +1,5 @@
 import './style.scss';
 import { Button, Form as AntdForm, Input, Popconfirm, Select, Tag } from 'antd';
-import { UpdateTag } from '../../../../interface/Tag';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import { Editor } from "react-draft-wysiwyg";
@@ -9,7 +8,9 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { EditorState, convertToRaw, convertFromHTML, ContentState } from 'draft-js';
 import { NotesContext } from '../../../../state/notePageContext';
 import { INote, INoteCreate, INoteUpdate } from '../../../../interface/Note';
-import { GlobalContext } from '../../../../state/context';
+import { useSelector } from 'react-redux';
+import { selectTagList } from '../../../../store/common/tags';
+import { selectNoteMap } from '../../../../store/common/notes';
 
 const Item = AntdForm.Item;
 const useForm = AntdForm.useForm;
@@ -45,8 +46,9 @@ const tagRender = (props: CustomTagProps) => {
 const Form = ({ values, onClose, onSelectNote }: Props) => {
     const { id } = values;
     const [form] = useForm();
-    const { tagList } = useContext(GlobalContext);
-    const { noteMap, noteCreateHandler, noteUpdateHandler, noteDeleteHandler } = useContext(NotesContext);
+    const tagList = useSelector(selectTagList); 
+    const noteMap = useSelector(selectNoteMap);
+    const { noteCreateHandler, noteUpdateHandler, noteDeleteHandler } = useContext(NotesContext);
     const [eState, setEState] = useState<EditorState>();
 
     const editNote = id ? noteMap[id] : undefined;

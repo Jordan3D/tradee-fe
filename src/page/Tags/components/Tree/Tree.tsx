@@ -5,6 +5,8 @@ import { DataNode } from 'antd/lib/tree';
 import { TagWithChildren } from '../../../../interface/Tag';
 import { TreeNodeTitle } from './components/TreeNodeTitle';
 import { GlobalContext } from '../../../../state/context';
+import { selectTagTree } from '../../../../store/common/tags';
+import { useSelector } from 'react-redux';
 
 const { Search } = Input;
 
@@ -34,7 +36,8 @@ type Props = Readonly<{
 }>
 
 const Tree = ({ className, onSetForm }: Props): ReactElement => {
-  const {tagTree, tagDeleteHandler } = useContext(GlobalContext);
+  const tagTree = useSelector(selectTagTree);
+  const {tagDeleteHandler } = useContext(GlobalContext);
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
   const [autoExpandParent, setAutoExpandParent] = useState(true);
   const [searchValue, setSearchValue] = useState('');

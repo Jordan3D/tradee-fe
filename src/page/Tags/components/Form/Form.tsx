@@ -4,6 +4,8 @@ import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import { CreateTag, UpdateTag } from '../../../../interface/Tag';
 import { useContext, useEffect, useMemo } from 'react';
 import { GlobalContext } from '../../../../state/context';
+import { useSelector } from 'react-redux';
+import { selectTagList, selectTagMap } from '../../../../store/common/tags';
 
 const Item = AntdForm.Item;
 const useForm = AntdForm.useForm;
@@ -37,7 +39,9 @@ const tagRender = (props: CustomTagProps) => {
 const Form = ({ values, onClose }: Props) => {
     const { id, parentId } = values;
     const [form] = useForm();
-    const { tagList, tagMap, tagCreateHandler, tagUpdateHandler } = useContext(GlobalContext);
+    const tagList = useSelector(selectTagList);
+    const tagMap = useSelector(selectTagMap); 
+    const { tagCreateHandler, tagUpdateHandler } = useContext(GlobalContext);
 
     const eidtTag = id ? tagMap[id] : undefined;
 

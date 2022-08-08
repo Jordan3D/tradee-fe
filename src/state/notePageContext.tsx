@@ -2,23 +2,23 @@ import {
   createContext,
   ReactElement,
   ReactFragment,
-  useCallback,
   useState,
 } from 'react';
 
 import { invokeFeedback } from '../utils/feedbacks/feedbacks';
 import { INoteCreate, INoteFull, INoteUpdate } from '../interface/Note';
-import { noteCreateApi, noteDeleteApi, noteListGetApi, NoteListGetApiResult, noteUpdateApi } from '../api/note';
+import { noteCreateApi, noteDeleteApi, noteUpdateApi } from '../api/note';
 import useError from '../utils/useError';
 import { processFetch } from '../api/_main';
+import { useDispatch } from 'react-redux';
+import { fetchData } from '../store/common/notes';
+import { AppDispatch } from '../store';
 
 export type Props = Readonly<{
   children: ReactElement | ReactFragment
 }>;
 
 export type TContext = Readonly<{
-  noteIds: ReadonlyArray<string>,
-  noteMap: Record<string, INoteFull>,
   noteListHandler: (argData: Readonly<{ lastId?: string, limit?: number, text?: string }>) => void;
   noteCreateHandler: (data: INoteCreate) => Promise<unknown>;
   noteUpdateHandler: (id: string, data: INoteUpdate) => Promise<unknown>;
@@ -26,26 +26,11 @@ export type TContext = Readonly<{
 }>;
 
 export const NotesContext = createContext<TContext>({
-  noteIds: [],
-  noteMap: {},
   noteListHandler: () => Promise.resolve(),
   noteCreateHandler: () => Promise.resolve(),
   noteUpdateHandler: () => Promise.resolve(),
   noteDeleteHandler: () => Promise.resolve(),
 });
-
-const fromListToIdsAndMap = ((list: INoteFull[]) => {
-  const result = {
-    ids: [],
-    map: {}
-  } as Readonly<{ ids: string[], map: Record<string, INoteFull> }>;
-  list.forEach((n) => {
-    result.map[n.id] = n;
-    result.ids.push(n.id);
-  });
-
-  return result;
-})
 
 export const Provider = ({
   children,
@@ -53,19 +38,10 @@ export const Provider = ({
   const [noteIds, setNoteIds] = useState<string[]>([]); // ids list
   const [noteMap, setNoteMap] = useState<Record<string, INoteFull>>({})
   const {processError} = useError();
+  const dispatch = useDispatch<AppDispatch>();
 
 
-  const noteListHandler = useCallback(async (argData: Readonly<{ lastId?: string, limit?: number, text?: string }>) => {
-    await processFetch<NoteListGetApiResult>({
-      onRequest: () => noteListGetApi(argData),
-      onData: (data) => {
-        const { ids, map } = fromListToIdsAndMap(data);
-        setNoteIds(ids);
-        setNoteMap(map);
-      },
-      onError: processError 
-    });
-  }, [setNoteIds, setNoteMap, processError]);
+  const noteListHandler = (argData: Readonly<{ lastId?: string, limit?: number, text?: string }>) => dispatch(fetchData(argData));
 
   const noteCreateHandler = async (argData: INoteCreate) => {
     let res;
@@ -119,8 +95,6 @@ export const Provider = ({
   return (
     <NotesContext.Provider
       value={{
-        noteIds,
-        noteMap,
         noteListHandler,
         noteCreateHandler,
         noteUpdateHandler,

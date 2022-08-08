@@ -1,6 +1,9 @@
 .login {
     &__root {
         width: 40%;
+        height: 100vh;
+        display: flex;
+        align-items: center;
         margin: 0 auto;
     }
 

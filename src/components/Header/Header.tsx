@@ -4,6 +4,8 @@ import { Button } from 'antd';
 import routes, { Route } from '../../router';
 import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../../state/context';
+import { useSelector } from 'react-redux';
+import { selectUser } from '../../store/common/meta';
 
 export type Props = {
     children: ReactElement
@@ -11,7 +13,8 @@ export type Props = {
 
 const Header = forwardRef(({ children }: Props, ref: any): ReactElement => {
     const navigate = useNavigate();
-    const { user, logoutHandler } = useContext(GlobalContext);
+    const { logoutHandler } = useContext(GlobalContext);
+    const user = useSelector(selectUser);
     const isAuth = !!user;
 
     const onRoute = useCallback((path: string) => () => {

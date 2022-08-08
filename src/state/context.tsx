@@ -6,58 +6,28 @@ import {
   useState,
 } from 'react';
 
-import { loginPost, selfGetApi, signupPost } from '../api/user';
-import { tagListGetApi, tagCreateApi, tagUpdateApi, tagDeleteApi, TTagMap, TagsListGetApiResult } from '../api/tag';
+import { loginPost, signupPost } from '../api/user';
+import { tagCreateApi, tagUpdateApi, tagDeleteApi } from '../api/tag';
 
 import { useNavigate } from "react-router-dom";
 import { isExpired } from 'react-jwt';
+import {useDispatch} from 'react-redux';
 
-import { LoginForm, SignupForm, IUser } from '../interface/User';
+import { LoginForm, SignupForm } from '../interface/User';
 import { invokeFeedback } from '../utils/feedbacks/feedbacks';
 import routes from '../router';
-import { CreateTag, ITag, TagWithChildren, UpdateTag } from '../interface/Tag';
+import { CreateTag, UpdateTag } from '../interface/Tag';
 import { processFetch } from '../api/_main';
 import useError from '../utils/useError';
-
-
-const treeAndMapFromList = (list: ITag[]): Readonly<{ tree: TagWithChildren[], map: TTagMap }> => {
-  const tree = [] as TagWithChildren[];
-  const map = {} as TTagMap;
-
-  list.slice().forEach(item => {
-    const copidItem = { ...item, children: [] };
-    map[item.id] = copidItem;
-    if (copidItem.level === 0)
-      tree.push(copidItem);
-
-    if (copidItem.parentId)
-      (map[copidItem.parentId as string].children as TagWithChildren[]).push(copidItem);
-
-  })
-
-  return {
-    tree: tree.sort((a, b) => {
-      if (a.title < b.title) {
-        return -1;
-      }
-      if (a.title > b.title) {
-        return 1;
-      }
-      return 0;
-    }),
-    map
-  }
-};
+import { fetchUser, logout } from '../store/common/meta';
+import { AppDispatch } from '../store';
+import { fetchTagData } from '../store/common/tags';
 
 export type Props = Readonly<{
   children: ReactElement | ReactFragment
 }>;
 
 export type TContext = Readonly<{
-  user: IUser | undefined;
-  tagTree: ReadonlyArray<TagWithChildren>,
-  tagList: ReadonlyArray<ITag>,
-  tagMap: TTagMap,
   errorPageShown: boolean;
   showErrorPage: (value?: boolean) => void;
   logoutHandler: () => void;
@@ -72,10 +42,6 @@ export type TContext = Readonly<{
 }>;
 
 export const GlobalContext = createContext<TContext>({
-  user: undefined,
-  tagTree: [],
-  tagList: [],
-  tagMap: {},
   errorPageShown: false,
   showErrorPage: () => {},
   logoutHandler: () => {},
@@ -94,12 +60,13 @@ export const Provider = ({
 }: Props): ReactElement => {
   const navigate = useNavigate();
   const {processError} = useError();
+  const dispatch = useDispatch<AppDispatch>();
 
   const [errorPageShown, setErrorPageShown] = useState(false);
-  const [user, setUser] = useState<IUser | undefined>(undefined);
 
-  const [tagList, setTagList] = useState<ReadonlyArray<ITag>>([]);
-  const [{ tree: tagTree, map: tagMap }, setTagStructures] = useState<Readonly<{ tree: TagWithChildren[], map: TTagMap }>>({ tree: [], map: {} });
+  const tagsListHandler = () => {
+    dispatch(fetchTagData());
+  }
 
   const showErrorPage = (value?: boolean) => {
     setErrorPageShown(value ?? true);
@@ -131,7 +98,6 @@ export const Provider = ({
 
       if (data) {
         invokeFeedback({ msg: 'Signup successful', type: 'success' });
-        setUser(data?.user);
         navigate(routes.login);
       } else {
         invokeFeedback({ msg: 'Server gave no data', type: 'warning' });
@@ -142,17 +108,6 @@ export const Provider = ({
       processError(response);
     }
   };
-
-  const tagsListHandler = useCallback(async () => {
-    await processFetch<TagsListGetApiResult>({
-      onRequest: () => tagListGetApi(),
-      onData: (data) => {
-        setTagList(data);
-        setTagStructures(treeAndMapFromList(data));
-      },
-      onError: processError 
-    });
-  }, [setTagStructures, processError]);
 
   const tagCreateHandler = async (argData: CreateTag) => {
     await processFetch({
@@ -202,21 +157,11 @@ export const Provider = ({
   }
 
   const selfCheck = useCallback(async () => {
-    await processFetch({
-      onRequest: () => selfGetApi(),
-      onData: (data) => {
-        invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
-        setUser(data);
-      },
-      onError: processError 
-    });
-  }, [setUser, processError])
+    dispatch(fetchUser());
+  }, [])
 
   const logoutHandler = () => {
-    setUser(undefined);
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    navigate(routes.start)
+    dispatch(logout())
   }
 
   return (
@@ -228,10 +173,6 @@ export const Provider = ({
         loginHandler,
         logoutHandler,
         signupHandler,
-        user,
-        tagTree,
-        tagList,
-        tagMap,
         tagsListHandler,
         tagCreateHandler,
         tagUpdateHandler,

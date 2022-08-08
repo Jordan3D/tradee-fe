@@ -1,5 +1,5 @@
 import './style.scss';
-import { ReactElement, useContext, useEffect } from 'react';
+import { ReactElement, useEffect } from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import { Page } from '../../components/Page';
 import { Header } from '../../components/Header';
@@ -7,21 +7,17 @@ import { ViewSwitch } from './components/ViewSwitch';
 import routes, { Route } from '../../router';
 import { Login } from './components/Login';
 import { Signup } from './components/Signup';
-import { Button } from 'antd';
-import { GlobalContext } from '../../state/context';
+import { selectUser } from '../../store/common/meta';
+import { useSelector } from 'react-redux';
 
 
 
 const StartPage = (): ReactElement => {
     const location = useLocation();
     const navigate = useNavigate();
-    const {user} = useContext(GlobalContext);
+    const user = useSelector(selectUser);
 
     const currentLocation = (Object.keys(routes) as Route[]).find((route: Route) => routes[route] === location.pathname);
-
-    const onNavigate = (path: string) => () => {
-        navigate(path)
-    };
 
     useEffect(() => {
         if(user){
