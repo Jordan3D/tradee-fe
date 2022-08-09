@@ -59,7 +59,7 @@ export const Provider = ({
   children,
 }: Props): ReactElement => {
   const navigate = useNavigate();
-  const {processError} = useError();
+  const processError = useError();
   const dispatch = useDispatch<AppDispatch>();
 
   const [errorPageShown, setErrorPageShown] = useState(false);
@@ -88,7 +88,7 @@ export const Provider = ({
     } catch (e) {
       const response = e as Response;
       invokeFeedback({ msg: response.statusText, type: 'error' });
-      processError(response);
+      processError.onError(response);
     }
   };
 
@@ -105,7 +105,7 @@ export const Provider = ({
     } catch (e) {
       const response = e as Response;
       invokeFeedback({ msg: response.statusText, type: 'error' });
-      processError(response);
+      processError.onError(response);
     }
   };
 
@@ -116,7 +116,7 @@ export const Provider = ({
         invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
         tagsListHandler();
       },
-      onError: processError 
+      ...processError
     });
   };
 
@@ -127,7 +127,7 @@ export const Provider = ({
         invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
         tagsListHandler();
       },
-      onError: processError 
+      ...processError
     });
   };
 
@@ -138,7 +138,7 @@ export const Provider = ({
         invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
         tagsListHandler();
       },
-      onError: processError 
+      ...processError
     });
   };
 
@@ -158,7 +158,7 @@ export const Provider = ({
 
   const selfCheck = useCallback(async () => {
     dispatch(fetchUser());
-  }, [])
+  }, [dispatch])
 
   const logoutHandler = () => {
     dispatch(logout())

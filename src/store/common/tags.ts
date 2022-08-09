@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { PayloadAction , createAsyncThunk} from '@reduxjs/toolkit'
+import { PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import type { RootState } from '..'
 import { ITag, TagWithChildren } from '../../interface/Tag';
 import { tagListGetApi, TTagMap } from '../../api/tag';
@@ -21,30 +21,26 @@ const initialState: ITagState = {
     tagMap: {},
 }
 
-export const fetchTagData = createAsyncThunk('tags/fetchTagData', async (_, {rejectWithValue, dispatch, getState}) => {
+export const fetchTagData = createAsyncThunk('tags/fetchTagData', async (_, { rejectWithValue, dispatch, getState }) => {
     await processFetch({
         onRequest: () => tagListGetApi(),
         onData: (data) => {
             const result = treeAndMapFromList(data);
-          dispatch(setTagData({
-            tagTree: result.tree,
-            tagList: data,
-            tagMap: result.map
-          }))
+            dispatch(setTagData({
+                tagTree: result.tree,
+                tagList: data,
+                tagMap: result.map
+            }))
         },
         onError: async (response: Response) => {
             if(response.status === 401){
-                const refreshToken = localStorage.getItem('refresh_token');
-                if(!refreshToken){
-                    dispatch(setRedirect(routes.start));
-                } else {
-                  const {access_token, refresh_token} = await refreshTokenApi();
-                  localStorage.setItem('access_token', access_token);
-                  localStorage.setItem('refresh_token', refresh_token);
-                }
+                const {access_token, refresh_token} = await refreshTokenApi();
+                localStorage.setItem('access_token', access_token);
+                localStorage.setItem('refresh_token', refresh_token);
             }
-        }
-      });
+        },
+        afterAllTries: () => dispatch(setRedirect(routes.login))
+    });
 });
 
 export const tagSlice = createSlice({
@@ -52,14 +48,14 @@ export const tagSlice = createSlice({
     initialState,
     reducers: {
         setTagData: (state, action: PayloadAction<Partial<ITagState>>) => {
-            const {tagList, tagMap, tagTree} = action.payload;
-            if(tagTree !== undefined){
+            const { tagList, tagMap, tagTree } = action.payload;
+            if (tagTree !== undefined) {
                 state.tagTree = tagTree;
             }
-            if(tagMap !== undefined){
+            if (tagMap !== undefined) {
                 state.tagMap = tagMap;
             }
-            if(tagList !== undefined){
+            if (tagList !== undefined) {
                 state.tagList = tagList;
             }
         }

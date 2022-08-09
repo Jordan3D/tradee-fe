@@ -4,7 +4,8 @@
         left: 0;
         width: 8rem;
         height: 100vh;
-        background: aliceblue;
+        background: #afdaff30;
+        border-right: 0.1px solid #0b0e1e;
         position: relative;
         transition: 0.5s all ease;
         z-index: 1;
@@ -17,7 +18,7 @@
                 &__icon {
                     transform: translateX(100%);
                 }
-                &__item {
+                &__item, &__logout {
                     transform: translateX(-100%);
                 }
             }
@@ -29,9 +30,10 @@
         right: 0;
         cursor: pointer;
         font-size: 1.4rem;
-        background: white;
+        background: transparent;
+        border: none;
+        color: white;
         padding: 0.5rem;
-        border: 1px solid #00000040;
         border-radius: 20%;
         transition: 0.5s all ease;
     }
@@ -40,6 +42,10 @@
         position: absolute;
         bottom: 0;
         padding: 0.4rem;
+        height: 90%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     &__list {
@@ -51,6 +57,11 @@
         text-transform: capitalize;
         margin-bottom: 0.5rem;
         transition: 0.5s all ease;
+        background: #ffffff2e;
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 700;
+        border: none;
 
         &:last-child {
             margin-bottom: 0;

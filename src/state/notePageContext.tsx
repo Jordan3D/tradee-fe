@@ -37,7 +37,7 @@ export const Provider = ({
 }: Props): ReactElement => {
   const [noteIds, setNoteIds] = useState<string[]>([]); // ids list
   const [noteMap, setNoteMap] = useState<Record<string, INoteFull>>({})
-  const {processError} = useError();
+  const processError = useError();
   const dispatch = useDispatch<AppDispatch>();
 
 
@@ -55,7 +55,7 @@ export const Provider = ({
           invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
         }
       },
-      onError: processError 
+      ...processError
     });
     return res;
   };
@@ -71,7 +71,7 @@ export const Provider = ({
           invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
         }
       },
-      onError: processError 
+      ...processError
     });
     return res;
   };
@@ -87,7 +87,7 @@ export const Provider = ({
           setNoteIds(copiedIds);
         }
       },
-      onError: processError 
+      ...processError
     });
   };
 

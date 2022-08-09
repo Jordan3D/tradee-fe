@@ -2,51 +2,64 @@ import { invokeFeedback } from "../utils/feedbacks/feedbacks";
 
 const baseURL = process.env.REACT_APP_API_URL;
 
-export async function processFetch<T>({onRequest, onData, onError, tries = 3}: Readonly<{onRequest: () => Promise<T>, onData: (data: T)=>void, onError: (r: Response) => Promise<void>, tries?: number}>): Promise<boolean> {
-  let failed = false;
-  while(tries > 0){
-    try {
-      const data = await onRequest();
-      if (data) {
-        onData(data);
-        break;
-      } else {
-        invokeFeedback({ msg: 'Server gave no data', type: 'warning' });
-      }
-    } catch (e) {
-      const response = e as Response;
-      invokeFeedback({ msg: response.statusText, type: 'error' });
-      await onError(response);
+export async function processFetch<T>({ onRequest, onData, onError, tries = 2, delay = 500, afterAllTries }: Readonly<{ onRequest: () => Promise<T>, onData: (data: T) => void, onError: (r: Response) => Promise<void>, tries?: number, delay?: number, afterAllTries: () => void }>): Promise<void> {
 
-    } finally {
-      tries-=1;
-      if(tries === 0){
-        failed = true
+  function wait() {
+    return new Promise((resolve) => setTimeout(resolve, delay));
+  }
+
+  try {
+    while (tries >= 0) {
+      try {
+        const data = await onRequest();
+        if (data) {
+          console.log(2);
+          onData(data);
+          return Promise.resolve();
+        } else {
+          invokeFeedback({ msg: 'Server gave no data', type: 'warning' });
+        }
+      } catch (e) {
+        tries -= 1;
+        const response = e as Response;
+        invokeFeedback({ msg: response.statusText, type: 'error' });
+        await onError(response);
+      } finally {
+        await wait();
+        if (tries === 0) {
+          console.log('all');
+          afterAllTries();
+        }
       }
     }
+  } catch (error) {
+    const response = error as Response;
+    invokeFeedback({ msg: response.statusText, type: 'error' });
+    afterAllTries();
   }
-  return !failed;
+
+  return Promise.reject();
 }
 
 function fetchy<T>(url: string, argConfigs?: RequestInit): Promise<T> {
-    const configs = {
-        ...argConfigs,
-        headers: {
-          'Content-Type': 'application/json',
-          ...argConfigs?.headers,
-        },
-      };
-    
-      return fetch(`${baseURL}${url}`, configs)
-        .then((response) => {
-          if (!response.ok) {
-            throw response;
-          }
-          return response.json().then((data) => data as T);
-        })
-        .catch((error: Error) => {
-          throw error; /* <-- rethrow the error so consumer can still catch it */
-        });
+  const configs = {
+    ...argConfigs,
+    headers: {
+      'Content-Type': 'application/json',
+      ...argConfigs?.headers,
+    },
+  };
+
+  return fetch(`${baseURL}${url}`, configs)
+    .then((response) => {
+      if (!response.ok) {
+        throw response;
+      }
+      return response.json().then((data) => data as T);
+    })
+    .catch((error: Error) => {
+      throw error; /* <-- rethrow the error so consumer can still catch it */
+    });
 }
 
 export default fetchy;

@@ -25,12 +25,21 @@ const Page = memo(({ children, isSecure = false }: Props): ReactElement => {
         if(isSecure){
             (async () => {
                 if(!user){
+                    console.log(1);
                     await selfCheck();
+                    console.log(4);
+                } else {
+                    setReady(true);
                 }
-                setReady(true);
             })()
         }
     }, [navigate, selfCheck, isSecure, user]);
+
+    useEffect(() => {
+        if(isSecure && user){
+            setReady(true)
+        }
+    }, [user, isSecure]);
 
     useEffect(() => {
         setContentReady(true);
