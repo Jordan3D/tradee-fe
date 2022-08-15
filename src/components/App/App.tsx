@@ -20,6 +20,7 @@ import { IdeasPage } from '../../page/Ideas';
 import { CalendarPage } from '../../page/Calendar';
 import { store } from '../../store';
 import CommonLogicComponent from '../../store/common/LogicComponent';
+import { TradesPage } from '../../page/Trades';
 
 function App() {
 
@@ -41,6 +42,7 @@ function App() {
                     <Route path={routes.ideas} element={<IdeasPage />} />
                     <Route path={routes.calendar} element={<CalendarPage />} />
                     <Route path={routes.tags} element={<TagsPage />} />
+                    <Route path={routes.trades} element={<TradesPage />} />
                     <Route path={routes.main} element={<MainPage />} />
                     <Route path={routes.notes} element={
                       <NotesPageProvider><NotesPage /></NotesPageProvider>}

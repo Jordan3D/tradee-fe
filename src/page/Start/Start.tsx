@@ -1,6 +1,6 @@
 import './style.scss';
 import { ReactElement, useEffect } from 'react';
-import {useLocation, useNavigate} from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Page } from '../../components/Page';
 import { Header } from '../../components/Header';
 import { ViewSwitch } from './components/ViewSwitch';
@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 
 
 
-const StartPage = (): ReactElement => {
+const Start = (): ReactElement => {
     const location = useLocation();
     const navigate = useNavigate();
     const user = useSelector(selectUser);
@@ -20,28 +20,21 @@ const StartPage = (): ReactElement => {
     const currentLocation = (Object.keys(routes) as Route[]).find((route: Route) => routes[route] === location.pathname);
 
     useEffect(() => {
-        if(user){
+        if (user) {
             navigate(routes.main)
         }
     }, [user, navigate]);
 
-    return <Page>
-        <>
-            <Header>
-                <div className='start_page_header_content'>
-                    <ViewSwitch />
-                </div>
-            </Header>
-            <div className="start_page__root">
-                {
-                    currentLocation === 'login' && <Login/>
-                }
-                {
-                    currentLocation === 'signup' && <Signup/>
-                }
-            </div>
-        </>
-    </Page>
+    return <div className="start_page__root">
+        {
+            currentLocation === 'login' && <Login />
+        }
+        {
+            currentLocation === 'signup' && <Signup />
+        }
+    </div>
 };
+
+const StartPage = (): ReactElement => <Page><Start /></Page>
 
 export default StartPage;

@@ -7,7 +7,7 @@ import routes from '../../router';
 import { refreshTokenApi } from '../../api/user';
 import { INoteFull } from '../../interface/Note';
 import { noteListGetApi } from '../../api/note';
-import { fromListToIdsAndMap } from '../../utils/notes';
+import { fromListToIdsAndMap } from '../../utils/common';
 
 interface INotesState {
     noteIds: string[],

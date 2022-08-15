@@ -1,7 +1,6 @@
 import './style.scss';
 import { ReactElement, useContext, useEffect, useState } from 'react';
 import { Page } from '../../components/Page';
-import { Header } from '../../components/Header';
 import { Tree } from './components/Tree';
 import { GlobalContext } from '../../state/context';
 import { TTagForm, Form } from './components/Form';

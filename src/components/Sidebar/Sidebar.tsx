@@ -1,5 +1,5 @@
 import './style.scss';
-import { forwardRef, ReactElement, RefObject, useCallback, useContext, useState } from 'react';
+import { forwardRef, ReactElement, useCallback, useContext, useState } from 'react';
 import { Button } from 'antd';
 import routes, { Route } from '../../router';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -12,7 +12,7 @@ export type Props = {
     className?: string
 }
 
-const list: Route[] = ['main', 'calendar', 'ideas', 'notes', 'tags'];
+const list: Route[] = ['main', 'calendar', 'ideas', 'notes', 'tags', 'trades'];
 
 const Sidebar = forwardRef(({ className: classNameArg }: Props, ref: any): ReactElement => {
     const navigate = useNavigate();

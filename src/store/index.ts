@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 
 import common from './common';
+import trades from './trades';
 // ...
 
 export const store = configureStore({
   reducer: {
-    common
+    common,
+    trades
   },
 })
 
