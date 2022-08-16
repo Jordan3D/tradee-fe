@@ -46,7 +46,7 @@ const tagRender = (props: CustomTagProps) => {
 const Form = ({ values, onClose, onSelectNote }: Props) => {
     const { id } = values;
     const [form] = useForm();
-    const tagList = useSelector(selectTagList); 
+    const tagList = useSelector(selectTagList);
     const noteMap = useSelector(selectNoteMap);
     const { noteCreateHandler, noteUpdateHandler, noteDeleteHandler } = useContext(NotesContext);
     const [eState, setEState] = useState<EditorState>();
@@ -55,24 +55,27 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
 
     const tagOptions = useMemo(() => tagList.map(tag => ({ label: tag.title, value: tag.id }) as CustomTagProps), [tagList]);
 
-    const onFinish = async (value: INoteCreate | INoteUpdate & Readonly<{tags: string[]}>) => {
-        console.log(value);
+    const onFinish = async (value: INoteCreate | INoteUpdate & Readonly<{ tags: string[], content: EditorState }>) => {         
+        const content = draftToHtmlPuri(
+            convertToRaw((eState as EditorState)?.getCurrentContent())
+        );
+
         if (id) {
             let tagsAdded = [];
             let tagsDeleted = [];
-            if(value.tags){
+            if (value.tags) {
                 tagsAdded = value.tags.filter(tagId => editNote?.tags?.indexOf(tagId) === - 1) || [];
                 tagsDeleted = editNote?.tags?.filter(tagId => value.tags?.indexOf(tagId) === - 1) || [];
 
                 (value as INoteUpdate).tagsAdded = tagsAdded;
                 (value as INoteUpdate).tagsDeleted = tagsDeleted;
             }
-            noteUpdateHandler(id, value as INoteUpdate);
+            noteUpdateHandler(id, {...value, content} as INoteUpdate);
             return;
         }
-        const newNote = (await noteCreateHandler(value as INoteCreate)) as INote;
+        const newNote = (await noteCreateHandler({...value, content} as INoteCreate)) as INote;
 
-        if(newNote && newNote.id){
+        if (newNote && newNote.id) {
             onSelectNote(newNote.id);
         }
     };
@@ -83,18 +86,12 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
 
     const onEditorStateChange = (editorState: EditorState) => {
         setEState(editorState);
-        form.setFieldsValue({
-            content: draftToHtmlPuri(
-                convertToRaw(editorState.getCurrentContent())
-            )
-        })
     };
 
-    const onDelete = async() => {
+    const onDelete = async () => {
         if (id) {
             const res = await noteDeleteHandler(id);
-            console.log(res);
-            if(res){
+            if (res) {
                 onClose();
             }
         }
@@ -105,7 +102,7 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
     }
 
     const onSearch = (v: string) => {
-        console.log(v);
+        console.log(v);         
     }
 
     useEffect(() => {

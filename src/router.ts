@@ -1,4 +1,4 @@
-export type Route = 'ideas' | 'notes' | 'main' | 'profile' | 'start' | 'login' | 'signup' | 'tags' | 'calendar' | 'trades'
+export type Route = 'ideas' | 'notes' | 'main' | 'profile' | 'start' | 'login' | 'signup' | 'tags' | 'calendar' | 'trades' | 'trade'
 
 const routes: Record<Route,string> = {
     ideas: '/ideas',
@@ -10,7 +10,8 @@ const routes: Record<Route,string> = {
     login: '/start/login',
     signup: '/start/signup',
     tags: '/tags',
-    trades: '/trades'
+    trades: '/trades',
+    trade: '/trade'
 };
 
 export default routes;

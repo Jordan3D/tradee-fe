@@ -2,9 +2,8 @@ export interface ITrade {
     id: string;
     pairId: string;
     action: string;
-    dateOpen: Date;
+    tradeTime: Date;
     open: number;
-    dateClose?: Date;
     close?: number;
     fee?: number;
     leverage: number;

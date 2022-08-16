@@ -9,6 +9,10 @@
             margin: 2rem;
         }
 
+        table {
+            font-size: 0.8rem;
+        }
+
         .list {
                 height: 50vw;
                 overflow-y: scroll;
@@ -21,6 +25,7 @@
     height: 80vh;
     width: 100%;
     overflow-y: scroll;
+    margin-bottom: 1rem;
 }
 
 .trades-item {

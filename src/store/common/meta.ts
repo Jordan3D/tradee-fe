@@ -8,12 +8,18 @@ import { invokeFeedback } from '../../utils/feedbacks/feedbacks';
 import routes from '../../router';
 
 interface IMetaState {
-    user: IUser | undefined;
+    user: {
+        status: 'idle' | 'pending' | 'succeeded' | 'failed',
+        data: IUser | undefined
+    };
     redirect: string | undefined;
 }
 
 const initialState: IMetaState = {
-    user: undefined,
+    user: {
+        status: 'idle',
+        data: undefined
+    },
     redirect: undefined
 }
 
@@ -46,12 +52,20 @@ export const metaSlice = createSlice({
     initialState,
     reducers: {
         setUser: (state, action: PayloadAction<IUser | undefined>) => {
-            state.user = action.payload;
+            state.user.data = action.payload;
         },
         setRedirect: (state, action: PayloadAction<string | undefined>) => {
             state.redirect = action.payload;
         },
     },
+    extraReducers: (builder) => {
+        builder.addCase(fetchUser.pending, (state, action) => {
+            state.user.status = 'pending';
+        });
+        builder.addCase(fetchUser.fulfilled, (state, action) => {
+            state.user.status = 'succeeded';
+        })
+    }
 });
 
 
@@ -59,7 +73,8 @@ export const { setUser, setRedirect } = metaSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectMeta = (state: RootState) => state.common.meta;
-export const selectUser = (state: RootState) => selectMeta(state).user
-export const selectRedirect = (state: RootState) => selectMeta(state).redirect
+export const selectUser = (state: RootState) => selectMeta(state).user.data;
+export const selectUserStatus = (state: RootState) => selectMeta(state).user.status;
+export const selectRedirect = (state: RootState) => selectMeta(state).redirect;
 
 export default metaSlice.reducer

@@ -7,14 +7,11 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { selectPairsMap } from '../../../../store/common/pairs';
 import { selectTradesStore } from '../../../../store/trades';
 import './style.scss';
+import { selectTagMap } from '../../../../store/common/tags';
+import { ITrade } from '../../../../interface/Trade';
 
-interface DataType {
+interface DataType extends ITrade {
     key: string;
-    action: string;
-    pairId: string;
-    leverage: number;
-    pnl: number;
-    tags: string[];
 }
 
 type TableComponentProps = {
@@ -32,7 +29,7 @@ const PaginationComponent = ({ total, pageSize, current, onChange }: PaginationP
     return (
         <Pagination
             total={total}
-            showTotal={(t, r) => `${r[0]}-${r[1]} of ${t} items`}
+            showTotal={(t, r) => `${t} items`}
             pageSize={pageSize}
             defaultCurrent={current}
             onChange={onChange}
@@ -42,66 +39,84 @@ const PaginationComponent = ({ total, pageSize, current, onChange }: PaginationP
 
 const TableComponent = ({ className = '' }: TableComponentProps): ReactElement => {
     const { data: trades, page, total, pageSize } = useSelector(selectTradesStore);
-    const {pathname, search} = useLocation();
+    const {pathname} = useLocation();
     const navigate = useNavigate();
     const pairs = useSelector(selectPairsMap);
+    const tagMap = useSelector(selectTagMap);
 
     const columns: ColumnsType<DataType> = [
         {
             title: 'Action',
             dataIndex: 'action',
             key: 'action',
+            width: 140,
             render: text => text,
         },
         {
             title: 'Pair',
             dataIndex: 'pairId',
             key: 'pairId',
+            width: '15%',   
             render: text => pairs[text]?.title || 'unknown',
         },
         {
             title: 'Leverage',
             dataIndex: 'leverage',
             key: 'leverage',
+            width: 100,
             render: text => text,
         },
         {
-            title: 'Date Open',
-            dataIndex: 'dateOpen',
-            key: 'dateOpen',
+            title: 'Trade time',
+            dataIndex: 'tradeTime',
+            key: 'tradeTime',
+            width: '25%',
             render: text => text,
         },
         {
-            title: 'Date Close',
-            dataIndex: 'dateClose',
-            key: 'dateClose',
+            title: 'Position open',
+            dataIndex: 'open',
+            key: 'open',
+            width: 140,
+            render: text => text,
+        },
+        {
+            title: 'Position close',
+            dataIndex: 'close',
+            key: 'close',
+            width: 140,
             render: text => text,
         },
         {
             title: 'Pnl',
             dataIndex: 'pnl',
             key: 'pnl',
+            width: '15%',
             render: text => text,
         },
         {
             title: 'Tags',
             key: 'tags',
             dataIndex: 'tags',
+            width: '35%',
             render: (_, { tags }) => (
                 <>
                     {tags.map(tag => {
-                        let color = tag.length > 5 ? 'geekblue' : 'green';
-                        if (tag === 'loser') {
-                            color = 'volcano';
-                        }
                         return (
-                            <Tag color={color} key={tag}>
-                                {tag.toUpperCase()}
+                            <Tag color={'yellow'} key={tag}>
+                                {tagMap[tag].title}
                             </Tag>
                         );
                     })}
                 </>
             ),
+        },
+        {
+            title: 'Notes',
+            key: 'notes',
+            dataIndex: 'notes',
+            width: '15%',
+            render: notes => notes.length || '',
         }
     ];
 
@@ -115,9 +130,26 @@ const TableComponent = ({ className = '' }: TableComponentProps): ReactElement =
         navigate(`${pathname}?${qs.stringify({limit: pageSize, offset: pageSize*(page-1)})}`)
     }
 
+    const onRowChose = (trade: DataType) => () => {
+        // navigate();
+    }
+
+    const onTableRow = (record: DataType, rowIndex: number | undefined) => {
+        return {
+          onDoubleClick: onRowChose(record)
+        };
+      }
+
     return <div className={`${className + ' '}trades-table__root`}>
         <div className='table_content'>
-            <Table columns={columns} dataSource={data} pagination={false} onChange={onChangeHandler} sticky/>
+            <Table 
+            columns={columns} 
+            dataSource={data} 
+            pagination={false} 
+            onChange={onChangeHandler} 
+            onRow={onTableRow}
+            sticky
+            />
         </div>
         <PaginationComponent total={total} current={page} pageSize={pageSize} onChange={onPaginationChange}/>
     </div>

@@ -12,3 +12,9 @@ export const tradesGetApi = async (args: TTradesGetProps): Promise<TTradesGetRes
         `/trade/list?${argsKeys.length ? argsKeys.map((key: keyof TTradesGetProps) => `${key}=${args[key]}`).join('&'): ''}`
         , {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`}});
 };
+
+
+export const tradeGetApi = async (id: string): Promise<ITrade> => {
+    const token = localStorage.getItem('access_token');
+    return await fetchy<ITrade>(`/trade/${id}`, {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`}});
+};

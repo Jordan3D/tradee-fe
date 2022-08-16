@@ -1,5 +1,6 @@
 .sidebar {
     &__root {
+        flex-shrink: 0;
         top: 0;
         left: 0;
         width: 8rem;
