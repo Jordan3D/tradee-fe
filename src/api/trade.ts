@@ -1,4 +1,4 @@
-import { ITrade } from "../interface/Trade";
+import { ITrade, ITradeUpdate } from "../interface/Trade";
 import fetchy from "./_main";
 
 
@@ -17,4 +17,14 @@ export const tradesGetApi = async (args: TTradesGetProps): Promise<TTradesGetRes
 export const tradeGetApi = async (id: string): Promise<ITrade> => {
     const token = localStorage.getItem('access_token');
     return await fetchy<ITrade>(`/trade/${id}`, {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`}});
+};
+
+export type TradeUpdateApiResult = ITrade;
+export const tradeUpdateApi = async (id: string, data: ITradeUpdate): Promise<TradeUpdateApiResult> => {
+    const token = localStorage.getItem('access_token');
+    return fetchy<TradeUpdateApiResult>('/trade/' + id, {
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        method: 'POST',
+        body: JSON.stringify(data)
+    });
 };

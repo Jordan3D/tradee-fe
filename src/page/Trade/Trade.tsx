@@ -1,39 +1,35 @@
 import './style.scss';
 import { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Button, Table, TablePaginationConfig } from 'antd';
+import { Button, Table, Select, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { Page } from '../../components/Page';
-import qs from 'qs';
 import { ITrade } from '../../interface/Trade';
 import { tradeGetApi } from '../../api/trade';
 import { useSelector } from 'react-redux';
-import { selectTagMap } from '../../store/common/tags';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store';
 import { fetchPairsData, selectPairsMap } from '../../store/common/pairs';
 import { GlobalContext } from '../../state/context';
 import { NotesContext } from '../../state/notePageContext';
+import {Notes} from './components/Notes';
+import {Tags} from './components/Tags';
 
 interface DataType extends ITrade {
     key: string;
 }
 
+
 const Trade = (): ReactElement => {
     const dispatch = useDispatch<AppDispatch>();
-    const location = useLocation();
     const { tagsListHandler } = useContext(GlobalContext);
     const { noteListHandler } = useContext(NotesContext);
 
-    const { search } = location;
-    const { id }: { id?: string } = useMemo(() => qs.parse(search.substring(1)), [search]);
+    const { id } = useParams();
     const pairs = useSelector(selectPairsMap);
-    const tagMap = useSelector(selectTagMap);
-
 
     const [trade, setTrade] = useState<ITrade | undefined>(undefined);
     const data: DataType[] = useMemo(() => trade ? [{ key: trade.id, ...trade }] : [], [trade]);
-
 
     const columns: ColumnsType<DataType> = [
         {
@@ -87,26 +83,18 @@ const Trade = (): ReactElement => {
         },
     ];
 
-    const onRowChose = (trade: DataType) => () => {
-        // navigate();
-    }
-
-    const onTableRow = useCallback((record: DataType, rowIndex: number | undefined) => {
-        return {
-            onDoubleClick: onRowChose(record)
-        };
-    }, [])
+    const updateTrade = useCallback (async() => {
+        if(id) {
+            setTrade(await tradeGetApi(id));
+        }
+    }, [id, setTrade]);
 
     useEffect(() => {
         if (id) {
-            (async () => {
-                setTrade(await tradeGetApi(id));
-                dispatch(fetchPairsData());
-                tagsListHandler();
-                noteListHandler({});
-            })()
+            updateTrade();
+            dispatch(fetchPairsData());
         }
-    }, [id, dispatch, tagsListHandler, noteListHandler]);
+    }, [id, dispatch, tagsListHandler, noteListHandler, updateTrade]);
 
     return trade ? <div className='trade-page__root'>
         <div className='trade__values'>
@@ -114,21 +102,16 @@ const Trade = (): ReactElement => {
                 columns={columns}
                 dataSource={data}
                 pagination={false}
-                onRow={onTableRow}
                 sticky
             />
         </div>
         <div className='trade__custom-info'>
-            <div className='trade__notes'>
-                NOTES
-            </div>
-            <div className='trade__tags'>
-                Tags
-            </div>
+            <Notes tradeId={id as string} notes={trade.notes} updateTrade={updateTrade}/>
+            <Tags tradeId={id as string} tags={trade.tags} updateTrade={updateTrade}/>
         </div>
     </div> : <></>
 };
 
-const TradePage = (): ReactElement => <Page><Trade /></Page>
+const TradePage = (): ReactElement => <Page isSecure><Trade /></Page>
 
 export default TradePage;

@@ -32,7 +32,7 @@ const Start = (): ReactElement => {
         }
     }, [user, navigate]);
 
-    return status === 'succeeded'  ? <div className="start_page__root">
+    return status !== 'pending' &&  status !== 'idle' ? <div className="start_page__root">
         {
             currentLocation === 'login' && <Login />
         }

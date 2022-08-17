@@ -1,0 +1,46 @@
+.trade-notes{
+    border: 0.3rem solid  pink;
+    min-height: 20rem;  
+    
+    .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+    }
+
+    .values {
+        display: flex;
+    }
+
+    .note-item {
+        margin: 0.3rem;
+        display: flex;
+        padding: 0.8rem 4rem 0.8rem 0.8rem;
+        border: 0.2rem solid rgb(245, 51, 183);
+        background: rgb(246, 218, 242);
+        position: relative;
+
+        &__delete {
+            position: absolute;
+            top: 0.4rem;
+            right: 0;
+            width: 2rem;
+            padding: 0;
+            background: transparent;
+            border-color: transparent;
+            font-size: 1rem;
+        }
+    }
+
+    .add {
+        width: 20rem !important;
+        color: black;
+    }
+
+    .title {
+        font-weight: 500;
+        color: white;
+        padding: 0;
+    }
+}

@@ -9,6 +9,7 @@ import { selectTradesStore } from '../../../../store/trades';
 import './style.scss';
 import { selectTagMap } from '../../../../store/common/tags';
 import { ITrade } from '../../../../interface/Trade';
+import routes from '../../../../router';
 
 interface DataType extends ITrade {
     key: string;
@@ -131,7 +132,7 @@ const TableComponent = ({ className = '' }: TableComponentProps): ReactElement =
     }
 
     const onRowChose = (trade: DataType) => () => {
-        // navigate();
+        navigate(routes.trade(trade.id));
     }
 
     const onTableRow = (record: DataType, rowIndex: number | undefined) => {

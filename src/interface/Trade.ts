@@ -14,6 +14,7 @@ export interface ITrade {
     createdAt: Date;
     updatedAt: Date;
     tags: string[];
+    notes: string[];
 }
 
 export interface IPair {
@@ -21,4 +22,11 @@ export interface IPair {
     createdAt: Date;
     updatedAt: Date;
     title: string;
+}
+
+export interface ITradeUpdate {
+    tagsAdded?: ReadonlyArray<string>;
+    tagsDeleted?: ReadonlyArray<string>;
+    notesAdded?: ReadonlyArray<string>;
+    notesDeleted?: ReadonlyArray<string>;
 }

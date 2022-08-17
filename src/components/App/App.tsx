@@ -21,6 +21,7 @@ import { CalendarPage } from '../../page/Calendar';
 import { store } from '../../store';
 import CommonLogicComponent from '../../store/common/LogicComponent';
 import { TradesPage } from '../../page/Trades';
+import { TradePage } from '../../page/Trade';
 
 function App() {
 
@@ -29,28 +30,31 @@ function App() {
       <HelmetProvider>
         <ReduxProvider store={store}>
           <ContextProvider>
-            <ContextLoaderProvider>
-              <ErrorBoundary>
-                <>
-                  <Loader />
-                  <ToastContainer />
-                  <CommonLogicComponent/>
-                  <Routes>
-                    <Route path={routes.start} element={<StartPage />} />
-                    <Route path={routes.signup} element={<StartPage />} />
-                    <Route path={routes.login} element={<StartPage />} />
-                    <Route path={routes.ideas} element={<IdeasPage />} />
-                    <Route path={routes.calendar} element={<CalendarPage />} />
-                    <Route path={routes.tags} element={<TagsPage />} />
-                    <Route path={routes.trades} element={<TradesPage />} />
-                    <Route path={routes.main} element={<MainPage />} />
-                    <Route path={routes.notes} element={
-                      <NotesPageProvider><NotesPage /></NotesPageProvider>}
-                    />
-                  </Routes>
-                </>
-              </ErrorBoundary>
-            </ContextLoaderProvider>
+            <NotesPageProvider>
+              <ContextLoaderProvider>
+                <ErrorBoundary>
+                  <>
+                    <Loader />
+                    <ToastContainer />
+                    <CommonLogicComponent />
+                    <Routes>
+                      <Route path={routes.start} element={<StartPage />} />
+                      <Route path={routes.signup} element={<StartPage />} />
+                      <Route path={routes.login} element={<StartPage />} />
+                      <Route path={routes.ideas} element={<IdeasPage />} />
+                      <Route path={routes.calendar} element={<CalendarPage />} />
+                      <Route path={routes.tags} element={<TagsPage />} />
+                      <Route path={routes.trades} element={<TradesPage />} />
+                      <Route path={routes.trade()} element={<TradePage />} />
+                      <Route path={routes.main} element={<MainPage />} />
+                      <Route path={routes.notes} element={
+                        <NotesPage />}
+                      />
+                    </Routes>
+                  </>
+                </ErrorBoundary>
+              </ContextLoaderProvider>
+            </NotesPageProvider>
           </ContextProvider>
         </ReduxProvider>
       </HelmetProvider>

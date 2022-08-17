@@ -62,6 +62,9 @@ export const metaSlice = createSlice({
         builder.addCase(fetchUser.pending, (state, action) => {
             state.user.status = 'pending';
         });
+        builder.addCase(fetchUser.rejected, (state, action) => {
+            state.user.status = 'failed';
+        });
         builder.addCase(fetchUser.fulfilled, (state, action) => {
             state.user.status = 'succeeded';
         })

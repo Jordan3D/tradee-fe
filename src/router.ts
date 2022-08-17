@@ -1,6 +1,6 @@
 export type Route = 'ideas' | 'notes' | 'main' | 'profile' | 'start' | 'login' | 'signup' | 'tags' | 'calendar' | 'trades' | 'trade'
 
-const routes: Record<Route,string> = {
+const routes: Record<Route,any> = {
     ideas: '/ideas',
     notes: '/notes',
     main: '/main',
@@ -11,7 +11,7 @@ const routes: Record<Route,string> = {
     signup: '/start/signup',
     tags: '/tags',
     trades: '/trades',
-    trade: '/trade'
+    trade: (id?: string) => `/trade/${id ? id : ':id'}`
 };
 
 export default routes;
