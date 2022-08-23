@@ -10,10 +10,16 @@ export type SignupForm = {
     username: string;
 }
 
+
+export type TUserConfig = { 
+    utc: number
+  }
+
 export interface IUser {
     id: string;
     username: string;
     email: string;
     createdAt: Date;
     updatedAt: Date;
+    config: TUserConfig
 }

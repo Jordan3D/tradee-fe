@@ -1,4 +1,3 @@
-import './style.scss';
 import { ReactElement, useContext, useEffect, useMemo, useState } from 'react';
 import { Page } from '../../components/Page';
 import { Table } from './component/Table';
@@ -11,11 +10,41 @@ import { fetchPairsData } from '../../store/common/pairs';
 import { TTradesGetProps } from '../../api/trade';
 import { GlobalContext } from '../../state/context';
 import { NotesContext } from '../../state/notePageContext';
+import styled from 'styled-components';
 
 const defaultParams = {
     limit: 25,
-    offset: 0
+    offset: 0,
+    orderBy: ['tradeTime'],
 };
+
+const Container = styled.div`
+  position: relative;
+        display: flex;
+        height: 100%;
+        margin: 0 auto;
+
+        @media screen and (max-width: 1200px){
+            flex-direction: column;
+        }
+    
+        .trades_page {
+
+&__list {
+    display: flex;
+    flex-shrink: 0;
+    width: 18rem;
+    border: 1px solid #00000099;
+    background: white;
+}
+
+&__item {
+    display: flex;
+    border: 1px solid #00000099;
+    background: white;
+}
+}
+`;
 
 const Trades = (): ReactElement => {
     const dispatch = useDispatch<AppDispatch>();
@@ -26,20 +55,22 @@ const Trades = (): ReactElement => {
     const { search, pathname } = location;
     const params : TTradesGetProps = useMemo(() => qs.parse(search.substring(1)), [search]);
     const [ready, setReady] = useState(false);
-    useEffect(() => {
-        const summParams = {
-            ...defaultParams,
-            ...params
-        };
-        navigate(`${pathname}?${qs.stringify(summParams)}`)
-        setReady(true);
-    }, [pathname, navigate, params, setReady, dispatch])
+    const summParams = useMemo(() => ({
+        ...defaultParams,
+        ...params
+    }), [params]);
 
     useEffect(() => {
+        navigate(`${pathname}?${qs.stringify(summParams)}`)
+        setReady(true);
+    }, [pathname, navigate, summParams, setReady, dispatch])
+
+    useEffect(() => {
+      
         if(ready){
-            dispatch(fetchTradeData(params));
+            dispatch(fetchTradeData(summParams));
         }
-    }, [dispatch, params, ready])
+    }, [dispatch, summParams, ready])
 
     useEffect(() => {
         dispatch(fetchPairsData());
@@ -47,9 +78,9 @@ const Trades = (): ReactElement => {
         noteListHandler({});
     }, [dispatch, noteListHandler, tagsListHandler])
 
-    return <div className="notes_page__root">
+    return <Container>
        { !ready ? null :<Table/>}
-    </div>
+    </Container>
 };
 
 const TradesPage = ():ReactElement => <Page isSecure><Trades/></Page>

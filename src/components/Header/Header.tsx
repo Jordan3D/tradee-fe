@@ -1,15 +1,47 @@
-import './style.scss';
-import { forwardRef, ReactElement, RefObject, useCallback, useContext } from 'react';
+
+import { forwardRef, ReactElement, useCallback, useContext } from 'react';
 import { Button } from 'antd';
 import routes, { Route } from '../../router';
 import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../../state/context';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../store/common/meta';
+import styled from 'styled-components';
 
 export type Props = {
     children: ReactElement
 }
+
+const Container = styled.header`
+.header {
+    &__root {
+        position: fixed;
+        width: 100%;
+        height: 5rem;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        padding: 4px 6px;
+
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    &__content {
+        height: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &__routes {
+        display: flex;
+    }
+
+    &__route {
+        text-transform: capitalize;
+    }
+}
+`;
 
 const Header = forwardRef(({ children }: Props, ref: any): ReactElement => {
     const navigate = useNavigate();
@@ -42,7 +74,7 @@ const Header = forwardRef(({ children }: Props, ref: any): ReactElement => {
         )
     }, [onRoute]);
 
-    return <header className="header__root" ref={ref}>
+    return <Container className="header__root" ref={ref}>
         <div className="header__content">
             {
                 isAuth ? <div className="header__routes">
@@ -64,7 +96,7 @@ const Header = forwardRef(({ children }: Props, ref: any): ReactElement => {
                 }
             </div>
         </div>
-    </header>
+    </Container>
 });
 
 export default Header;

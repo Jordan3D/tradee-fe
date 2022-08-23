@@ -1,8 +1,18 @@
-import './style.scss';
 import { Button, Form, Input } from 'antd';
 import { ReactElement, useContext } from 'react';
+import styled from 'styled-components';
 import { GlobalContext } from '../../../../state/context';
 
+const Container = styled.div`
+  width: 40%;
+  margin: 0 auto;
+  
+  .signup{
+    &__form {
+        width: 100%
+    }
+}
+`;
 
 const Signup = (): ReactElement => {
     const {signupHandler} = useContext(GlobalContext)
@@ -11,7 +21,7 @@ const Signup = (): ReactElement => {
         console.log('Failed:', errorInfo);
       };
 
-    return <div className="signup__root">
+    return <Container>
         <Form
             name="signupForm"
             className='signup__form'
@@ -65,7 +75,7 @@ const Signup = (): ReactElement => {
                 </Button>
             </Form.Item>
         </Form>
-    </div>
+    </Container>
 };
 
 export default Signup;

@@ -1,9 +1,22 @@
-import './style.scss';
 import { ReactElement, useContext } from 'react';
 import { Button, Checkbox, Form, Input } from 'antd';
 import { LoginForm } from '../../../../interface/User';
 import { GlobalContext } from '../../../../state/context';
+import styled from 'styled-components';
 
+const Container = styled.div`
+ width: 40%;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        margin: 0 auto;
+
+ .login {
+    &__form {
+        width: 100%
+    }
+}
+`;
 
 const Login = (): ReactElement => {
     const {loginHandler} = useContext(GlobalContext)
@@ -19,7 +32,7 @@ const Login = (): ReactElement => {
         console.log('Failed:', errorInfo);
       };
 
-    return <div className="login__root">
+    return <Container>
         <Form
             name="loginForm"
             className='login__form'
@@ -70,7 +83,7 @@ const Login = (): ReactElement => {
                 </Button>
             </Form.Item>
         </Form>
-    </div>
+    </Container>
 };
 
 export default Login;

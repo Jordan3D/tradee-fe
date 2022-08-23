@@ -1,4 +1,3 @@
-import './style.scss';
 import { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Button, Table, Select, Tag } from 'antd';
 import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
@@ -11,6 +10,7 @@ import { GlobalContext } from '../../../../state/context';
 import { selectTagList } from '../../../../store/common/tags';
 import { tradeUpdateApi } from '../../../../api/trade';
 import { CloseOutlined } from '@ant-design/icons';
+import styled from 'styled-components';
 ;
 
 const tagRender = (props: CustomTagProps) => {
@@ -47,6 +47,53 @@ const TagItem = ({ item, onDelete }: { item: ITag, onDelete: (id: string) => Pro
     </div>
 }
 
+const Container = styled.div`
+   border: 0.3rem solid wheat;
+    min-height: 10rem;
+    margin-top: 0.5rem;
+
+    .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+    }
+
+    .values {
+        display: flex;
+    }
+
+    .tag-item {
+        margin: 0.3rem;
+        display: flex;
+        padding: 0.3rem 3.3rem 0.3rem 0.3rem;
+        border: 0.2rem solid rgb(233, 222, 14);
+        background: rgb(253, 255, 216);
+        position: relative;
+
+        &__delete {
+            position: absolute;
+            top: 0.15rem;
+            right: 0;
+            width: 2rem;
+            padding: 0;
+            background: transparent;
+            border-color: transparent;
+            font-size: 1rem;
+        }
+    }
+
+    .add {
+        width: 20rem !important;
+        color: black !important;
+    }
+
+    .title {
+        font-weight: 500;
+        padding: 0;
+        color: white;
+    }
+`;
 
 const Tags = ({ tradeId, tags, updateTrade }: { tradeId: string, tags: string[], updateTrade: () => Promise<void> }): ReactElement => {
     const dispatch = useDispatch<AppDispatch>();
@@ -76,7 +123,7 @@ const Tags = ({ tradeId, tags, updateTrade }: { tradeId: string, tags: string[],
         tagsListHandler();
     }, [tagsListHandler]);
 
-    return <div className='trade-tags'>
+    return <Container>
         <div className='top'>
             <h3 className='title'>Tags</h3>
             <div>
@@ -95,7 +142,7 @@ const Tags = ({ tradeId, tags, updateTrade }: { tradeId: string, tags: string[],
         <div className='values'>
             {tags.map(tId => <TagItem item={tagMap[tId]} onDelete={onDelete} />)}
         </div>
-    </div>
+    </Container>
 };
 
 export default Tags;

@@ -1,15 +1,17 @@
 import { Pagination, Table, TablePaginationConfig, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { ReactElement } from 'react';
+import { ReactElement, useMemo } from 'react';
 import qs from 'qs';
+import {format} from 'date-fns-tz';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { selectPairsMap } from '../../../../store/common/pairs';
 import { selectTradesStore } from '../../../../store/trades';
-import './style.scss';
 import { selectTagMap } from '../../../../store/common/tags';
 import { ITrade } from '../../../../interface/Trade';
 import routes from '../../../../router';
+import styled from 'styled-components';
+import { selectUser } from '../../../../store/common/meta';
 
 interface DataType extends ITrade {
     key: string;
@@ -38,14 +40,66 @@ const PaginationComponent = ({ total, pageSize, current, onChange }: PaginationP
     )
 }
 
+const Container = styled.div`
+       display: flex;
+        padding: 1rem;
+        flex-direction: column;
+        width: 100%;
+
+    .add_button {
+        margin: 2rem;
+    }
+
+    table {
+         font-size: 0.8rem;
+    }
+
+    .list {
+            height: 50vw;
+            overflow-y: scroll;
+            padding: 1rem;
+    }
+
+.table_content {
+    height: 80vh;
+    width: 100%;
+    overflow-y: scroll;
+    margin-bottom: 1rem;
+}
+
+.trades-item {
+    &__root {
+        display: flex;
+        height: 6.5rem;
+        border: 1px solid #d3d031;
+        background-color: #ffffd0;
+        margin-bottom: 1rem;
+        box-shadow: 0.4rem 0.4rem 5px 0px rgba(0, 0, 0, 0.332); 
+        transition: 0.35s ease all;
+        cursor: pointer;
+
+        &:hover {
+            border-color: #e7e421;
+            background-color: #e5e5ab;
+            box-shadow: 0.1rem 0.1rem 5px 0px rgba(0, 0, 0, 0.151); 
+        }
+        
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+`;
+
 const TableComponent = ({ className = '' }: TableComponentProps): ReactElement => {
     const { data: trades, page, total, pageSize } = useSelector(selectTradesStore);
+    const user = useSelector(selectUser);
     const {pathname} = useLocation();
     const navigate = useNavigate();
     const pairs = useSelector(selectPairsMap);
     const tagMap = useSelector(selectTagMap);
 
-    const columns: ColumnsType<DataType> = [
+    const columns: ColumnsType<DataType> = useMemo(() => [
         {
             title: 'Action',
             dataIndex: 'action',
@@ -72,7 +126,7 @@ const TableComponent = ({ className = '' }: TableComponentProps): ReactElement =
             dataIndex: 'tradeTime',
             key: 'tradeTime',
             width: '25%',
-            render: text => text,
+            render: (value: string) => format(new Date(value), 'dd/MM/yyyy HH:mm:ss', {timeZone: `GMT${user?.config.utc}`}),
         },
         {
             title: 'Position open',
@@ -119,7 +173,7 @@ const TableComponent = ({ className = '' }: TableComponentProps): ReactElement =
             width: '15%',
             render: notes => notes.length || '',
         }
-    ];
+    ], [user, pairs, tagMap]);
 
     const data: DataType[] = trades.map(trade => ({ key: trade.id, ...trade }));
 
@@ -141,7 +195,7 @@ const TableComponent = ({ className = '' }: TableComponentProps): ReactElement =
         };
       }
 
-    return <div className={`${className + ' '}trades-table__root`}>
+    return <Container className={`${className + ' '}`}>
         <div className='table_content'>
             <Table 
             columns={columns} 
@@ -153,7 +207,7 @@ const TableComponent = ({ className = '' }: TableComponentProps): ReactElement =
             />
         </div>
         <PaginationComponent total={total} current={page} pageSize={pageSize} onChange={onPaginationChange}/>
-    </div>
+    </Container>
 };
 
 export default TableComponent;

@@ -22,7 +22,7 @@ const initialState: ITradesState = {
     pageSize: 0
 }
 
-export const fetchTradeData = createAsyncThunk('trades/fetchData', async (args:{offset ?:number, limit?:number}, { rejectWithValue, dispatch, getState }) => {
+export const fetchTradeData = createAsyncThunk('trades/fetchData', async (args:{offset ?:number, limit?:number, orderBy: string | string[]}, { rejectWithValue, dispatch, getState }) => {
     await processFetch({
         onRequest: () => tradesGetApi(args),
         onData: (result) => {

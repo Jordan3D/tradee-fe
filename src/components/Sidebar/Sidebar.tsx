@@ -1,12 +1,12 @@
-import './style.scss';
-import { forwardRef, ReactElement, useCallback, useContext, useState } from 'react';
-import { Button } from 'antd';
+import { ReactElement, useCallback, useContext } from 'react';
+import { Button, Popover } from 'antd';
 import routes, { Route } from '../../router';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { LeftOutlined } from '@ant-design/icons';
+import { MenuOutlined, UserOutlined } from '@ant-design/icons';
 import { GlobalContext } from '../../state/context';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../store/common/meta';
+import {Container, List, ItemButton} from './styles'
 
 export type Props = {
     className?: string
@@ -14,36 +14,45 @@ export type Props = {
 
 const list: Route[] = ['main', 'calendar', 'ideas', 'notes', 'tags', 'trades'];
 
-const Sidebar = forwardRef(({ className: classNameArg }: Props, ref: any): ReactElement => {
+const Sidebar = ({ className = '' }: Props): ReactElement => {
     const navigate = useNavigate();
     const { pathname } = useLocation();
     const user = useSelector(selectUser);
     const { logoutHandler } = useContext(GlobalContext);
 
-    const [isHidden, setIsHidden] = useState(false);
-
-    const className = `${classNameArg ?? ''} sidebar__root ${isHidden ? 'hidden' : ''}`;
-    const iconClass = `sidebar__icon`
     const itemClass = useCallback((path: string) => `sidebar__item ${path === pathname ? 'chosen' : ''}`, [pathname]);
 
-    const toggleHide = () => setIsHidden(!isHidden);
     const onClickHandler = useCallback((path: Route) => () => {
-        navigate(routes[path])
-    }, [navigate])
+        navigate(routes[path]);
+    }, [navigate]);
 
-    return <div className={className}>
-        <LeftOutlined className={iconClass} onClick={toggleHide} />
-        {
-            user && <nav className='sidebar__nav'>
-            <Button className='sidebar__logout' onClick={logoutHandler}>Logout</Button>
-            <ul className='sidebar__list'>
-                {
-                    list.map(item => <Button className={itemClass(item)} onClick={onClickHandler(item)}>{item}</Button>)
-                }
-            </ul>
-        </nav>
-        }
-    </div>
-});
+    const profilePopoverContent = useCallback(() => <List>
+        <div className='userCircle'/>
+        <List>
+            {
+                 user ?<>
+                <ItemButton onClick={logoutHandler}>Logout</ItemButton>
+                </> : <>
+                <ItemButton onClick={onClickHandler('login')}>Login</ItemButton>
+                <ItemButton onClick={onClickHandler('signup')}>Signup</ItemButton>
+                </>
+            }
+        </List>
+    </List>, [onClickHandler, user, logoutHandler])
+
+    const menuPopoverContent = useCallback(() => <List> {
+            list.map(item => <ItemButton className={itemClass(item)} onClick={onClickHandler(item)}>{item}</ItemButton>)
+        }</List>
+        , [itemClass, onClickHandler])
+
+    return <Container className={className}>
+        <Popover content={profilePopoverContent} trigger="click">
+            <Button type="primary" className="circle-btn"><UserOutlined /></Button>
+        </Popover>
+        {user ? <Popover content={menuPopoverContent} trigger="click">
+            <Button type="primary" className="circle-btn"><MenuOutlined /></Button>
+        </Popover> : <></>} 
+    </Container>
+};
 
 export default Sidebar;

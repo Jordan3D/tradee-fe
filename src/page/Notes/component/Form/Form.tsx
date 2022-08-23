@@ -1,4 +1,3 @@
-import './style.scss';
 import { Button, Form as AntdForm, Input, Popconfirm, Select, Tag } from 'antd';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
@@ -11,6 +10,7 @@ import { INote, INoteCreate, INoteUpdate } from '../../../../interface/Note';
 import { useSelector } from 'react-redux';
 import { selectTagList } from '../../../../store/common/tags';
 import { selectNoteMap } from '../../../../store/common/notes';
+import styled from 'styled-components';
 
 const Item = AntdForm.Item;
 const useForm = AntdForm.useForm;
@@ -42,6 +42,23 @@ const tagRender = (props: CustomTagProps) => {
     );
 };
 
+const Container = styled.div`
+  padding: 1.2em;
+  .note_form {
+
+    &__buttons {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1em;
+    }
+    &__item {
+        padding: 0.6rem;
+        /* background: #f6f6f6c9; */
+        border: 1px dashed #dfdcdc
+    }
+   }
+`;
 
 const Form = ({ values, onClose, onSelectNote }: Props) => {
     const { id } = values;
@@ -120,7 +137,7 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
         });
     }, [form, editNote])
 
-    return <div className="note_form__root">
+    return <Container>
         <AntdForm
             form={form}
             name="loginForm"
@@ -197,7 +214,7 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
                 </div>
             </Item>
         </AntdForm>
-    </div>
+    </Container>
 };
 
 export default Form;

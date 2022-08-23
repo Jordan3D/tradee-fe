@@ -1,4 +1,3 @@
-import './style.scss';
 import { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Button, Table, Select, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
@@ -14,11 +13,37 @@ import { GlobalContext } from '../../state/context';
 import { NotesContext } from '../../state/notePageContext';
 import {Notes} from './components/Notes';
 import {Tags} from './components/Tags';
+import styled from 'styled-components';
 
 interface DataType extends ITrade {
     key: string;
 }
 
+const Container = styled.div`
+ position: relative;
+ .trade{
+    &__custom-info{
+        display: flex;
+        flex-direction: column;
+        margin-top: 1rem;
+
+        .title {
+            font-weight: 500;
+            padding: 1rem;
+            color: white;
+        }
+    }
+    &__notes {
+        border: 0.3rem solid  pink;
+        height: 20rem;    
+    }
+    &__tags {
+        border: 0.3rem solid wheat;
+        height: 10rem;  
+        margin-top: 0.5rem;  
+    }
+}
+`;
 
 const Trade = (): ReactElement => {
     const dispatch = useDispatch<AppDispatch>();
@@ -96,7 +121,7 @@ const Trade = (): ReactElement => {
         }
     }, [id, dispatch, tagsListHandler, noteListHandler, updateTrade]);
 
-    return trade ? <div className='trade-page__root'>
+    return trade ? <Container>
         <div className='trade__values'>
             <Table
                 columns={columns}
@@ -109,7 +134,7 @@ const Trade = (): ReactElement => {
             <Notes tradeId={id as string} notes={trade.notes} updateTrade={updateTrade}/>
             <Tags tradeId={id as string} tags={trade.tags} updateTrade={updateTrade}/>
         </div>
-    </div> : <></>
+    </Container> : <></>
 };
 
 const TradePage = (): ReactElement => <Page isSecure><Trade /></Page>

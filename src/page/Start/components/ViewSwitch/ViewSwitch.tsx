@@ -1,9 +1,24 @@
-import './style.scss';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ReactElement, useCallback } from 'react';
 import { Button } from 'antd';
 import routes, { Route } from '../../../../router';
+import styled from 'styled-components';
 
+const Container = styled.div`
+    position: relative;
+
+    .view_switch {
+        &__button {
+        padding: 0 40px;
+        margin: 0 10px;
+        border: 1px solid transparent;
+
+        &.active {
+            border-color: white;
+        }
+    }
+    }
+`;
 
 const ViewSwitch = ():ReactElement => {
     const navigate = useNavigate();
@@ -19,7 +34,7 @@ const ViewSwitch = ():ReactElement => {
 
     const isActive = useCallback((view: Route) => location.pathname === routes[view] ? 'active' : '',[location])
 
-    return <div className="view_switch__root">
+    return <Container>
         <Button 
           type='primary' 
           size='large' 
@@ -36,7 +51,7 @@ const ViewSwitch = ():ReactElement => {
         >
             Signup
         </Button>
-    </div>
+    </Container>
 };
 
 export default ViewSwitch;

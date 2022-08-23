@@ -1,17 +1,18 @@
 import { ReactElement } from 'react';
-import { Header } from '../../components/Header';
+import styled from 'styled-components';
 import { Page } from '../../components/Page';
-import './style.scss';
 
-const MainPage = (): ReactElement => {
-    
-    return <Page>
-        <>
-            <div className="main_page__root">
-             
-            </div>
-        </>
-    </Page>
+const Container = styled.div`
+  display: flex;
+`;
+
+const Main = (): ReactElement => {
+
+    return  <Container className="main_page__root">
+
+    </Container>
 }
+
+const MainPage = ():ReactElement => <Page isSecure><Main/></Page>
 
 export default MainPage;

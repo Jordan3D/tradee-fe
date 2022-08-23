@@ -13,6 +13,7 @@ interface IMetaState {
         data: IUser | undefined
     };
     redirect: string | undefined;
+    theme: 'dark' | 'light';
 }
 
 const initialState: IMetaState = {
@@ -20,7 +21,8 @@ const initialState: IMetaState = {
         status: 'idle',
         data: undefined
     },
-    redirect: undefined
+    redirect: undefined,
+    theme: 'light'
 }
 
 
@@ -44,7 +46,10 @@ export const fetchUser = createAsyncThunk('meta/fetchUser', async (_, {rejectWit
 
 export const logout = createAsyncThunk('meta/logout', async (_, {rejectWithValue, dispatch, getState}) => {
     dispatch(setUser(undefined));
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     dispatch(setRedirect(routes.login));
+    
 });
 
 export const metaSlice = createSlice({
@@ -56,6 +61,9 @@ export const metaSlice = createSlice({
         },
         setRedirect: (state, action: PayloadAction<string | undefined>) => {
             state.redirect = action.payload;
+        },
+        setTheme: (state, action: PayloadAction<'dark' | 'light'>) => {
+            state.theme = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -79,5 +87,6 @@ export const selectMeta = (state: RootState) => state.common.meta;
 export const selectUser = (state: RootState) => selectMeta(state).user.data;
 export const selectUserStatus = (state: RootState) => selectMeta(state).user.status;
 export const selectRedirect = (state: RootState) => selectMeta(state).redirect;
+export const selectTheme = (state: RootState) => selectMeta(state).theme;
 
 export default metaSlice.reducer

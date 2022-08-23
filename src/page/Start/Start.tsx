@@ -1,17 +1,17 @@
-import './style.scss';
 import { ReactElement, useContext, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Page } from '../../components/Page';
-import { Header } from '../../components/Header';
-import { ViewSwitch } from './components/ViewSwitch';
 import routes, { Route } from '../../router';
 import { Login } from './components/Login';
 import { Signup } from './components/Signup';
 import { selectUser, selectUserStatus } from '../../store/common/meta';
 import { useSelector } from 'react-redux';
 import { GlobalContext } from '../../state/context';
+import styled from 'styled-components';
 
-
+const Container = styled.div`
+    position: relative;
+`;
 
 const Start = (): ReactElement => {
     const location = useLocation();
@@ -32,14 +32,14 @@ const Start = (): ReactElement => {
         }
     }, [user, navigate]);
 
-    return status !== 'pending' &&  status !== 'idle' ? <div className="start_page__root">
+    return status !== 'pending' &&  status !== 'idle' ? <Container>
         {
             currentLocation === 'login' && <Login />
         }
         {
             currentLocation === 'signup' && <Signup />
         }
-    </div> : <></>
+    </Container> : <></>
 };
 
 const StartPage = (): ReactElement => <Page><Start /></Page>
