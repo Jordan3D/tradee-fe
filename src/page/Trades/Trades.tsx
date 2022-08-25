@@ -15,8 +15,9 @@ import styled from 'styled-components';
 const defaultParams = {
     limit: 25,
     offset: 0,
-    orderBy: ['tradeTime'],
+    orderBy: ['openTradeTime'],
 };
+
 
 const Container = styled.div`
   position: relative;
@@ -50,7 +51,7 @@ const Trades = (): ReactElement => {
     const dispatch = useDispatch<AppDispatch>();
     const location = useLocation();
     const navigate = useNavigate();
-    const { tagsListHandler } = useContext(GlobalContext);
+    const { tagsListHandler, getTrades } = useContext(GlobalContext);
     const { noteListHandler } = useContext(NotesContext);
     const { search, pathname } = location;
     const params : TTradesGetProps = useMemo(() => qs.parse(search.substring(1)), [search]);
@@ -68,9 +69,9 @@ const Trades = (): ReactElement => {
     useEffect(() => {
       
         if(ready){
-            dispatch(fetchTradeData(summParams));
+            getTrades(params);
         }
-    }, [dispatch, summParams, ready])
+    }, [dispatch, params, ready, getTrades])
 
     useEffect(() => {
         dispatch(fetchPairsData());

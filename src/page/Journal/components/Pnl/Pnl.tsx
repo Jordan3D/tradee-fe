@@ -2,16 +2,19 @@ import { Pagination, Table, TablePaginationConfig, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { ReactElement, useEffect, useMemo, useState } from 'react';
 import qs from 'qs';
-import { format } from 'date-fns-tz';
+import {format} from 'date-fns-tz';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { selectPairsMap } from '../../../../store/common/pairs';
-import { selectTradesStore } from '../../../../store/trades';
 import { selectTagMap } from '../../../../store/common/tags';
 import { ITrade } from '../../../../interface/Trade';
 import routes from '../../../../router';
 import styled from 'styled-components';
 import { selectUser } from '../../../../store/common/meta';
+import { tradesIdsPostApi } from '../../../../api/trade';
+import { AppDispatch } from '../../../../store';
+import { useDispatch } from 'react-redux';
+import { selectJIPnls, setJournalItemPnls } from '../../../../store/journalItem';
 
 interface DataType extends ITrade {
     key: string;
@@ -19,27 +22,7 @@ interface DataType extends ITrade {
 
 type TableComponentProps = {
     className?: string;
-    selected?: string[];
-    onSelected?(rows: string[]): void;
-}
-
-type PaginationProps = {
-    total: number,
-    pageSize: number,
-    current: number
-    onChange: (page: number, pageSize: number) => void
-};
-
-const PaginationComponent = ({ total, pageSize, current, onChange }: PaginationProps): ReactElement => {
-    return (
-        <Pagination
-            total={total}
-            showTotal={(t, r) => `${t} items`}
-            pageSize={pageSize}
-            defaultCurrent={current}
-            onChange={onChange}
-        />
-    )
+    tradeIds: string[];
 }
 
 const Container = styled.div`
@@ -63,14 +46,9 @@ const Container = styled.div`
     }
 
 .table_content {
-    height: 80vh;
     width: 100%;
     overflow-y: scroll;
     margin-bottom: 1rem;
-
-    &.tiny {
-        height: auto;
-    }
 }
 
 .trades-item {
@@ -97,15 +75,13 @@ const Container = styled.div`
 }
 `;
 
-const TableComponent = ({ className = '', selected = [], onSelected }: TableComponentProps): ReactElement => {
-    const { data: trades, page, total, pageSize } = useSelector(selectTradesStore);
+const Pnl = ({ className = '', tradeIds }: TableComponentProps): ReactElement => {
+    const dispatch = useDispatch<AppDispatch>();
     const user = useSelector(selectUser);
-    const { pathname } = useLocation();
     const navigate = useNavigate();
     const pairs = useSelector(selectPairsMap);
     const tagMap = useSelector(selectTagMap);
-
-    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>(selected);
+    const trades = useSelector(selectJIPnls);
 
     const columns: ColumnsType<DataType> = useMemo(() => [
         {
@@ -119,7 +95,7 @@ const TableComponent = ({ className = '', selected = [], onSelected }: TableComp
             title: 'Pair',
             dataIndex: 'pairId',
             key: 'pairId',
-            width: '15%',
+            width: '15%',   
             render: text => pairs[text]?.title || 'unknown',
         },
         {
@@ -134,14 +110,14 @@ const TableComponent = ({ className = '', selected = [], onSelected }: TableComp
             dataIndex: 'openTradeTime',
             key: 'openTradeTime',
             width: '25%',
-            render: (value: string) => format(new Date(value), 'dd/MM/yyyy HH:mm:ss', { timeZone: `GMT${user?.config.utc}` }),
+            render: (value: string) => format(new Date(value), 'dd/MM/yyyy HH:mm:ss', {timeZone: `GMT${user?.config.utc}`}),
         },
         {
             title: 'Close trade time',
             dataIndex: 'closeTradeTime',
             key: 'closeTradeTime',
             width: '25%',
-            render: (value: string) => format(new Date(value), 'dd/MM/yyyy HH:mm:ss', { timeZone: `GMT${user?.config.utc}` }),
+            render: (value: string) => format(new Date(value), 'dd/MM/yyyy HH:mm:ss', {timeZone: `GMT${user?.config.utc}`}),
         },
         {
             title: 'Position open',
@@ -192,49 +168,31 @@ const TableComponent = ({ className = '', selected = [], onSelected }: TableComp
 
     const data: DataType[] = trades.map(trade => ({ key: trade.id, ...trade }));
 
-    const onChangeHandler = (pagination: TablePaginationConfig) => {
-        console.log(pagination)
-    }
-
-    const onPaginationChange = (page: number, pageSize: number) => {
-        navigate(`${pathname}?${qs.stringify({ limit: pageSize, offset: pageSize * (page - 1) })}`)
-    }
-
     const onRowChose = (trade: DataType) => () => {
         navigate(routes.trade(trade.id));
     }
 
     const onTableRow = (record: DataType, rowIndex: number | undefined) => {
         return {
-            onDoubleClick: onSelected ? undefined : onRowChose(record)
+          onDoubleClick: onRowChose(record)
         };
-    }
+      }
 
-    const rowSelection = onSelected ? {
-        selectedRowKeys,
-        onChange: setSelectedRowKeys
-    } : undefined;
-
-    useEffect(() => {
-        if(onSelected && selectedRowKeys.length){
-           onSelected(selectedRowKeys as string[]);
-        }
-    }, [selectedRowKeys, onSelected])
+      useEffect(() => {
+        tradesIdsPostApi(tradeIds).then(result => dispatch(setJournalItemPnls(result)))
+      },[tradeIds, dispatch]);
 
     return <Container className={`${className + ' '}`}>
-        <div className={`table_content${onSelected ? ' tiny' : ' '}`}>
-            <Table
-                columns={columns}
-                dataSource={data}
-                pagination={false}
-                onChange={onChangeHandler}
-                onRow={onTableRow}
-                rowSelection={rowSelection}
-                sticky
+        <div className='table_content'>
+            <Table 
+            columns={columns} 
+            dataSource={data} 
+            pagination={false} 
+            onRow={onTableRow}
+            sticky
             />
         </div>
-        <PaginationComponent total={total} current={page} pageSize={pageSize} onChange={onPaginationChange} />
     </Container>
 };
 
-export default TableComponent;
+export default Pnl;

@@ -8,7 +8,7 @@ const toastConfigs = (type: FeedbackType, overrides?: ToastOptions): ToastOption
     const map = {
         error: {
             position: "top-left",
-            autoClose: 6000,
+            autoClose: 3000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -20,7 +20,7 @@ const toastConfigs = (type: FeedbackType, overrides?: ToastOptions): ToastOption
         },
         success: {
             position: "top-left",
-            autoClose: 6000,
+            autoClose: 3000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -32,7 +32,7 @@ const toastConfigs = (type: FeedbackType, overrides?: ToastOptions): ToastOption
         },
         warning: {
             position: "top-left",
-            autoClose: 30000,
+            autoClose: 5000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,

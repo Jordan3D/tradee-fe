@@ -22,6 +22,9 @@ import useError from '../utils/useError';
 import { fetchUser, logout } from '../store/common/meta';
 import { AppDispatch } from '../store';
 import { fetchTagData } from '../store/common/tags';
+import { fetchBrokerList } from '../store/common/brokers';
+import { brokerSyncApi } from '../api/broker';
+import { clearTradeData, fetchTradeData } from '../store/trades';
 
 export type Props = Readonly<{
   children: ReactElement | ReactFragment
@@ -39,6 +42,9 @@ export type TContext = Readonly<{
   tagUpdateHandler: (id: string, data: UpdateTag) => void;
   tagDeleteHandler: (id: string) => void;
   selfCheck: () => Promise<unknown>
+  getBrokers: () => Promise<unknown>
+  getTrades: (params: any) => void
+  clearTrades: () => void
 }>;
 
 export const GlobalContext = createContext<TContext>({
@@ -52,8 +58,17 @@ export const GlobalContext = createContext<TContext>({
   tagCreateHandler: () => Promise.resolve(),
   tagUpdateHandler: () => Promise.resolve(),
   tagDeleteHandler: () => Promise.resolve(),
-  selfCheck: () => Promise.resolve()
+  selfCheck: () => Promise.resolve(),
+  getBrokers:() => Promise.resolve(),
+  getTrades: () => {},
+  clearTrades: () => {}
 });
+
+const defaultGetTradesParams = {
+  limit: 25,
+  offset: 0,
+  orderBy: ['openTradeTime'],
+};
 
 export const Provider = ({
   children,
@@ -156,8 +171,24 @@ export const Provider = ({
     return true;
   }
 
+  const getBrokers = useCallback(async () => {
+    dispatch(fetchBrokerList());
+  }, [dispatch]);
+
   const selfCheck = useCallback(async () => {
     dispatch(fetchUser());
+  }, [dispatch]);
+
+  const getTrades = useCallback((params: any) => {
+    const summParams = {
+      ...defaultGetTradesParams,
+      ...params
+  };
+    dispatch(fetchTradeData(summParams));
+  }, [dispatch]);
+
+  const clearTrades = useCallback(() => {
+    dispatch(clearTradeData());
   }, [dispatch])
 
   const logoutHandler = () => {
@@ -177,7 +208,10 @@ export const Provider = ({
         tagCreateHandler,
         tagUpdateHandler,
         tagDeleteHandler,
-        selfCheck
+        selfCheck,
+        getBrokers,
+        getTrades,
+        clearTrades
       }}
     >
       {children}

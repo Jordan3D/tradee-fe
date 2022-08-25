@@ -32,6 +32,7 @@ export type Shadows = {
   slider: (c1?: string, c2?: string)=> string;
   inset: (c1?: string, c2?: string)=> string;
   tooltip: (c1?: string, c2?: string)=> string;
+  button: (c1?: string, c2?: string) => string;
 };
 
 export type Gradients = {

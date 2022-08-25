@@ -1,17 +1,19 @@
 .feedback {
     color: white !important;
+    text-shadow:  3px 6px 8px rgb(71, 71, 71);
+    
     .Toastify__close-button {
         color: white !important;
         opacity: 0.5;
     }
 
     &--error{
-        background-color: rgba(236, 110, 110, 0.718) !important;
+        background-color: rgba(236, 110, 110, 0.8) !important;
     }
     &--success{
-        background-color: rgba(156, 228, 48, 0.621) !important;
+        background-color: rgba(156, 228, 48, 0.8) !important;
     }
     &--warning{
-        background-color: rgba(241, 241, 103, 0.519) !important;
+        background-color: rgba(241, 241, 103, 0.8) !important;
     }
 }

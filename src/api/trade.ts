@@ -9,7 +9,7 @@ export const tradesGetApi = async (args: TTradesGetProps): Promise<TTradesGetRes
     const token = localStorage.getItem('access_token');
     const argsKeys = Object.keys(args) as ReadonlyArray<keyof TTradesGetProps>;
     return await fetchy<TTradesGetResult>(
-        `/trade/list?${argsKeys.length ? argsKeys.map((key: keyof TTradesGetProps) => `${key}=${args[key]}`).join('&'): ''}`
+        `/trade/list${argsKeys.length ? '?' + argsKeys.map((key: keyof TTradesGetProps) => `${key}=${args[key]}`).join('&'): ''}`
         , {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`}});
 };
 
@@ -17,6 +17,15 @@ export const tradesGetApi = async (args: TTradesGetProps): Promise<TTradesGetRes
 export const tradeGetApi = async (id: string): Promise<ITrade> => {
     const token = localStorage.getItem('access_token');
     return await fetchy<ITrade>(`/trade/${id}`, {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`}});
+};
+
+export const tradesIdsPostApi = async (ids: string[]): Promise<ITrade[]> => {
+    const token = localStorage.getItem('access_token');
+    return await fetchy<ITrade[]>(`/trade/get-ids`, {
+        headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`},
+        method: 'POST',
+        body: JSON.stringify(ids)
+    });
 };
 
 export type TradeUpdateApiResult = ITrade;

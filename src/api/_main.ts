@@ -2,7 +2,17 @@ import { invokeFeedback } from "../utils/feedbacks/feedbacks";
 
 const baseURL = process.env.REACT_APP_API_URL;
 
-export async function processFetch<T>({ onRequest, onData, onError, tries = 2, delay = 500, afterAllTries }: Readonly<{ onRequest: () => Promise<T>, onData: (data: T) => void, onError: (r: Response) => Promise<void>, tries?: number, delay?: number, afterAllTries: () => void }>): Promise<void> {
+export async function processFetch<T>(
+  { onRequest, onData, onError, tries = 2, delay = 500, afterAllTries, feedbacks = false }:
+    Readonly<{
+      onRequest: () => Promise<T>,
+      onData: (data: T) => void,
+      onError: (r: Response) => Promise<void>,
+      tries?: number,
+      delay?: number,
+      afterAllTries: () => void,
+      feedbacks?: boolean
+    }>): Promise<void> {
 
   function wait() {
     return new Promise((resolve) => setTimeout(resolve, delay));
@@ -13,28 +23,33 @@ export async function processFetch<T>({ onRequest, onData, onError, tries = 2, d
       try {
         const data = await onRequest();
         if (data) {
-          console.log(2);
           onData(data);
           return Promise.resolve();
         } else {
+          if(feedbacks)
           invokeFeedback({ msg: 'Server gave no data', type: 'warning' });
         }
       } catch (e) {
         tries -= 1;
         const response = e as Response;
+
+        if(feedbacks)
         invokeFeedback({ msg: response.statusText, type: 'error' });
+
         await onError(response);
       } finally {
         await wait();
         if (tries === 0) {
-          console.log('all');
           afterAllTries();
         }
       }
     }
   } catch (error) {
     const response = error as Response;
+
+    if(feedbacks)
     invokeFeedback({ msg: response.statusText, type: 'error' });
+
     afterAllTries();
   }
 

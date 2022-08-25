@@ -30,7 +30,7 @@ export const fetchUser = createAsyncThunk('meta/fetchUser', async (_, {rejectWit
     await processFetch({
         onRequest: () => selfGetApi(),
         onData: (data) => {
-          invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
+          // invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
           dispatch(setUser(data))
         },
         onError: async (response: Response) => {

@@ -22,7 +22,7 @@ const initialState: ITradesState = {
     pageSize: 0
 }
 
-export const fetchTradeData = createAsyncThunk('trades/fetchData', async (args:{offset ?:number, limit?:number, orderBy: string | string[]}, { rejectWithValue, dispatch, getState }) => {
+export const fetchTradeData = createAsyncThunk('trades/fetchData', async (args:{offset ?:number, limit?:number, orderBy?: string | string[]}, { rejectWithValue, dispatch, getState }) => {
     await processFetch({
         onRequest: () => tradesGetApi(args),
         onData: (result) => {
@@ -50,12 +50,18 @@ export const tradeSlice = createSlice({
             state.page = page;
             state.total = total;
             state.pageSize = pageSize
+        },
+        clearTradeData: (state) => {
+            state.data = initialState.data;
+            state.page = initialState.page;
+            state.pageSize = initialState.pageSize;
+            state.total = initialState.total;
         }
     },
 });
 
 
-export const { setTradeData } = tradeSlice.actions
+export const { setTradeData, clearTradeData } = tradeSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectTradesStore = (state: RootState) => state.trades;

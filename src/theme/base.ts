@@ -31,6 +31,7 @@ export const shadows: Shadows = {
   slider: (color1 = '#A9CFFF') => `0px 0px 0px 6.66px ${color1}`,
   inset: (color1 = 'rgba(74, 74, 104, 0.1)') => `inset 0px 2px 2px -1px ${color1}`,
   tooltip: (color1 = 'rgba(0, 0, 0, 0.2)', color2 = 'rgba(14, 14, 44, 0.1)') => `0px 0px 2px ${color1}, 0px 4px 12px -8px ${color2}`,
+  button: (color1 = '#8ebef878') => `6px 3px 9px 2px ${color1}`
 };
 
 const spacing: Spacing = [0, 4, 8, 16, 24, 32, 48, 64];

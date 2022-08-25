@@ -14,6 +14,8 @@ import { NotesContext } from '../../state/notePageContext';
 import {Notes} from './components/Notes';
 import {Tags} from './components/Tags';
 import styled from 'styled-components';
+import { selectUser } from '../../store/common/meta';
+import { format } from 'date-fns-tz';
 
 interface DataType extends ITrade {
     key: string;
@@ -52,6 +54,7 @@ const Trade = (): ReactElement => {
 
     const { id } = useParams();
     const pairs = useSelector(selectPairsMap);
+    const user = useSelector(selectUser);
 
     const [trade, setTrade] = useState<ITrade | undefined>(undefined);
     const data: DataType[] = useMemo(() => trade ? [{ key: trade.id, ...trade }] : [], [trade]);
@@ -62,7 +65,7 @@ const Trade = (): ReactElement => {
             dataIndex: 'action',
             key: 'action',
             width: 140,
-            render: text => text,
+            render: text => text ? text.toLowerCase() === 'buy' ? 'Closed short' : 'Closed long' : '',
         },
         {
             title: 'Pair',
@@ -79,23 +82,30 @@ const Trade = (): ReactElement => {
             render: text => text,
         },
         {
-            title: 'Trade time',
-            dataIndex: 'tradeTime',
-            key: 'tradeTime',
+            title: 'Open trade time',
+            dataIndex: 'openTradeTime',
+            key: 'openTradeTime',
             width: '25%',
-            render: text => text,
+            render: (value: string) => value ? format(new Date(value), 'dd/MM/yyyy HH:mm:ss', {timeZone: `GMT${user?.config.utc}`}) : '',
+        },
+        {
+            title: 'Close trade time',
+            dataIndex: 'closeTradeTime',
+            key: 'closeTradeTime',
+            width: '25%',
+            render: (value: string) => value ? format(new Date(value), 'dd/MM/yyyy HH:mm:ss', {timeZone: `GMT${user?.config.utc}`}) : '',
         },
         {
             title: 'Position open',
-            dataIndex: 'open',
-            key: 'open',
+            dataIndex: 'openPrice',
+            key: 'openPrice',
             width: 110,
             render: text => text,
         },
         {
             title: 'Position close',
-            dataIndex: 'close',
-            key: 'close',
+            dataIndex: 'closePrice',
+            key: 'closePrice',
             width: 110,
             render: text => text,
         },
