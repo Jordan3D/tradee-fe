@@ -12,7 +12,7 @@ export type Props = {
     className?: string
 }
 
-const list: Route[] = ['main', 'journal', 'ideas', 'notes', 'tags', 'trades'];
+const list: Route[] = ['main', 'journal', 'ideas', 'notes', 'tags', 'trades', 'transactions'];
 
 const Sidebar = ({ className = '' }: Props): ReactElement => {
     const navigate = useNavigate();

@@ -3,13 +3,15 @@ import { configureStore } from '@reduxjs/toolkit'
 import common from './common';
 import trades from './trades';
 import journalItem from './journalItem';
+import transactions from './transactions';
 // ...
 
 export const store = configureStore({
   reducer: {
     common,
     trades,
-    journalItem
+    journalItem,
+    transactions
   },
 })
 

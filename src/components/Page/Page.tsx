@@ -14,14 +14,20 @@ export type Props = {
 const Container = styled.div`
  position: relative;
  height: 100%;
+ padding-left: 8rem;
  display: flex;
     .page {
-    &__content {
-        padding: 1rem;
-        flex-grow: 1;
-        background-color: ${props => props.theme.page.bgColor};
+      &__content {
+         padding: 1rem;
+         flex-grow: 1;
+         background-color: ${props => props.theme.page.bgColor};
+      }
     }
-}
+    .page__sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
 `
 
 const Page = memo(({ children, isSecure = false }: Props): ReactElement => {
@@ -58,7 +64,7 @@ const Page = memo(({ children, isSecure = false }: Props): ReactElement => {
     }, [])
 
     return ready ? <Container style={{ paddingTop }}>
-        <Sidebar />
+        <Sidebar className='page__sidebar'/>
         <div className='page__content'>
             {contentReady && children}
         </div>

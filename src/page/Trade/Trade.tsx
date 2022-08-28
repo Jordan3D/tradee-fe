@@ -11,7 +11,7 @@ import { AppDispatch } from '../../store';
 import { fetchPairsData, selectPairsMap } from '../../store/common/pairs';
 import { GlobalContext } from '../../state/context';
 import { NotesContext } from '../../state/notePageContext';
-import {Notes} from './components/Notes';
+import {Notes} from '../../components/Notes';
 import {Tags} from './components/Tags';
 import styled from 'styled-components';
 import { selectUser } from '../../store/common/meta';

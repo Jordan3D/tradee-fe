@@ -5,14 +5,13 @@ import { format } from 'date-fns-tz';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { selectPairsMap } from '../../../../store/common/pairs';
-import { selectTagMap } from '../../../../store/common/tags';
-import { ITrade } from '../../../../interface/Trade';
+import { ITransaction } from '../../../../interface/Transaction';
 import routes from '../../../../router';
 import styled from 'styled-components';
 import { selectUser } from '../../../../store/common/meta';
-import { selectJIPnls } from '../../../../store/journalItem';
+import { selectJITrasactions } from '../../../../store/journalItem';
 
-interface DataType extends ITrade {
+interface DataType extends ITransaction {
     key: string;
 }
 
@@ -65,20 +64,19 @@ const Container = styled.div`
 }
 `;
 
-const Pnl = memo((): ReactElement => {
+const Transactions = memo((): ReactElement => {
     const user = useSelector(selectUser);
     const navigate = useNavigate();
     const pairs = useSelector(selectPairsMap);
-    const tagMap = useSelector(selectTagMap);
-    const trades = useSelector(selectJIPnls);
+    const transactions = useSelector(selectJITrasactions);
 
     const columns: ColumnsType<DataType> = useMemo(() => [
         {
             title: 'Action',
-            dataIndex: 'action',
-            key: 'action',
+            dataIndex: 'side',
+            key: 'side',
             width: 120,
-            render: text => text.toLowerCase() === 'buy' ? 'Closed short' : 'Closed long',
+            render: text => text,
         },
         {
             title: 'Pair',
@@ -88,74 +86,71 @@ const Pnl = memo((): ReactElement => {
             render: text => pairs[text]?.title || 'unknown',
         },
         {
-            title: 'Leverage',
-            dataIndex: 'leverage',
-            key: 'leverage',
-            width: 100,
-            render: text => text,
-        },
-        {
-            title: 'Open trade time',
-            dataIndex: 'openTradeTime',
-            key: 'openTradeTime',
+            title: 'Trade time',
+            dataIndex: 'trade_time',
+            key: 'trade_time',
             width: '25%',
             render: (value: string) => format(new Date(value), 'dd/MM/yyyy HH:mm:ss', { timeZone: `GMT${user?.config.utc}` }),
         },
         {
-            title: 'Close trade time',
-            dataIndex: 'closeTradeTime',
-            key: 'closeTradeTime',
-            width: '25%',
-            render: (value: string) => format(new Date(value), 'dd/MM/yyyy HH:mm:ss', { timeZone: `GMT${user?.config.utc}` }),
-        },
-        {
-            title: 'Position open',
-            dataIndex: 'openPrice',
-            key: 'openPrice',
+            title: 'Order type',
+            dataIndex: 'order_type',
+            key: 'order_type',
             width: 110,
             render: text => text,
         },
         {
-            title: 'Position close',
-            dataIndex: 'closePrice',
-            key: 'closePrice',
+            title: 'Price',
+            dataIndex: 'price',
+            key: 'price',
             width: 110,
             render: text => text,
         },
         {
-            title: 'Pnl',
-            dataIndex: 'pnl',
-            key: 'pnl',
-            width: '15%',
+            title: 'Exec price',
+            dataIndex: 'exec_price',
+            key: 'exec_price',
+            width: 110,
             render: text => text,
         },
         {
-            title: 'Tags',
-            key: 'tags',
-            dataIndex: 'tags',
-            width: '35%',
-            render: (_, { tags }) => (
-                <>
-                    {tags.map(tag => {
-                        return (
-                            <Tag color={'yellow'} key={tag}>
-                                {tagMap[tag].title}
-                            </Tag>
-                        );
-                    })}
-                </>
-            ),
+            title: 'Order quantity',
+            dataIndex: 'order_qty',
+            key: 'order_qty',
+            width: 110,
+            render: text => text,
         },
         {
-            title: 'Notes',
-            key: 'notes',
-            dataIndex: 'notes',
-            width: '15%',
-            render: notes => notes.length || '',
-        }
-    ], [user, pairs, tagMap]);
+            title: 'Exec quantity',
+            dataIndex: 'exec_qty',
+            key: 'exec_qty',
+            width: 110,
+            render: text => text,
+        },
+        {
+            title: 'Exec value',
+            dataIndex: 'exec_value',
+            key: 'exec_price',
+            width: 110,
+            render: text => text,
+        },
+        {
+            title: 'Closed size',
+            dataIndex: 'closed_size',
+            key: 'closed_size',
+            width: 110,
+            render: text => text,
+        },
+        {
+            title: 'Leaves quantity',
+            dataIndex: 'leaves_qty',
+            key: 'leaves_qty',
+            width: 110,
+            render: text => text,
+        },
+    ], [user, pairs]);
 
-    const data: DataType[] = trades.map(trade => ({ key: trade.id, ...trade }));
+    const data: DataType[] = transactions.map(t => ({ key: t.id, ...t }));
 
     const onRowChose = (trade: DataType) => () => {
         navigate(routes.trade(trade.id));
@@ -180,4 +175,4 @@ const Pnl = memo((): ReactElement => {
     </Container>
 });
 
-export default Pnl;
+export default Transactions;

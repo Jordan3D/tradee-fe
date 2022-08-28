@@ -1,33 +1,33 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
-import { RootState, store } from '.'
+import type { RootState } from '.'
 import { processFetch } from '../api/_main';
 import { setRedirect } from './common/meta';
 import routes from '../router';
 import { refreshTokenApi } from '../api/user';
-import { ITrade } from '../interface/Trade';
-import { tradesGetApi, TTradesGetResult } from '../api/trade';
+import { ITransaction } from '../interface/Transaction';
+import { transactionsGetApi, TTransactionsGetResult } from '../api/transaction';
 
-interface ITradesState {
-    data: ITrade[],
+interface ITransactionState {
+    data: ITransaction[],
     total: number,
     page: number,
     pageSize: number
 }
 
-const initialState: ITradesState = {
+const initialState: ITransactionState = {
     data: [],
     total: 0,
     page: 0,
     pageSize: 0
 }
 
-export const fetchTradeData = createAsyncThunk('trades/fetchData', async (args:{offset ?:number, limit?:number, orderBy?: string | string[]}, { rejectWithValue, dispatch, getState }) => {
+export const fetchTransactionData = createAsyncThunk('transactions/fetchData', async (args:{offset ?:number, limit?:number, orderBy?: string | string[]}, { rejectWithValue, dispatch, getState }) => {
     await processFetch({
-        onRequest: () => tradesGetApi(args),
+        onRequest: () => transactionsGetApi(args),
         onData: (result) => {
-            const {data, total, limit, offset} = result as TTradesGetResult;
-            dispatch(setTradeData({data, total, page: (offset / limit) + 1, pageSize: Number(limit)}))
+            const {data, total, limit, offset} = result as TTransactionsGetResult;
+            dispatch(setTransactionData({data, total, page: (offset / limit), pageSize: Number(limit)}))
         },
         onError: async (response: Response) => {
             if(response.status === 401){
@@ -40,18 +40,18 @@ export const fetchTradeData = createAsyncThunk('trades/fetchData', async (args:{
     });
 });
 
-export const tradeSlice = createSlice({
-    name: 'trades',
+export const transactionSlice = createSlice({
+    name: 'transactions',
     initialState,
     reducers: {
-        setTradeData: (state, action: PayloadAction<Partial<ITradesState>>) => {
+        setTransactionData: (state, action: PayloadAction<ITransactionState>) => {
             const {data, page, total, pageSize} = action.payload;
-            state.data = data ?? state.data;
-            state.page = page ?? state.page;
-            state.total = total ?? state.total;
-            state.pageSize = pageSize ?? state.pageSize;
+            state.data = data;
+            state.page = page;
+            state.total = total;
+            state.pageSize = pageSize
         },
-        clearTradeData: (state) => {
+        clearTransactionData: (state) => {
             state.data = initialState.data;
             state.page = initialState.page;
             state.pageSize = initialState.pageSize;
@@ -61,9 +61,9 @@ export const tradeSlice = createSlice({
 });
 
 
-export const { setTradeData, clearTradeData } = tradeSlice.actions
+export const { setTransactionData, clearTransactionData } = transactionSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
-export const selectTradesStore = (state: RootState) => state.trades;
+export const selectTransactionsStore = (state: RootState) => state.transactions;
 
-export default tradeSlice.reducer
+export default transactionSlice.reducer

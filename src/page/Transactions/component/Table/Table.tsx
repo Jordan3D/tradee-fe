@@ -1,4 +1,4 @@
-import { Pagination, Table, TablePaginationConfig, Tag } from 'antd';
+import { Pagination, Table, TablePaginationConfig } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { ReactElement, useEffect, useMemo, useState } from 'react';
 import qs from 'qs';
@@ -6,16 +6,12 @@ import { format } from 'date-fns-tz';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { selectPairsMap } from '../../../../store/common/pairs';
-import { selectTradesStore, setTradeData } from '../../../../store/trades';
-import { selectTagMap } from '../../../../store/common/tags';
-import { ITrade } from '../../../../interface/Trade';
-import routes from '../../../../router';
 import styled from 'styled-components';
 import { selectUser } from '../../../../store/common/meta';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../../../store';
+import { ITransaction } from '../../../../interface/Transaction';
+import { selectTransactionsStore } from '../../../../store/transactions';
 
-interface DataType extends ITrade {
+interface DataType extends ITransaction {
     key: string;
 }
 
@@ -101,99 +97,95 @@ const Container = styled.div`
 `;
 
 const TableComponent = ({ className = '', selected = {}, onSelected, onGetData }: TableComponentProps): ReactElement => {
-    const { data: trades, page, total, pageSize } = useSelector(selectTradesStore);
+    const { data: transactions, page, total, pageSize } = useSelector(selectTransactionsStore);
     const user = useSelector(selectUser);
     const { pathname } = useLocation();
     const navigate = useNavigate();
     const pairs = useSelector(selectPairsMap);
-    const tagMap = useSelector(selectTagMap);
 
     const [selectedRowKeys, setSelectedRowKeys] = useState<Record<string, string[]>>(selected);
 
     const columns: ColumnsType<DataType> = useMemo(() => [
         {
             title: 'Action',
-            dataIndex: 'action',
-            key: 'action',
+            dataIndex: 'side',
+            key: 'side',
             width: 120,
-            render: text => text.toLowerCase() === 'buy' ? 'Closed short' : 'Closed long',
+            render: text => text,
         },
         {
             title: 'Pair',
             dataIndex: 'pairId',
             key: 'pairId',
-            width: '15%',
+            width: 180,
             render: text => pairs[text]?.title || 'unknown',
         },
         {
-            title: 'Leverage',
-            dataIndex: 'leverage',
-            key: 'leverage',
-            width: 100,
-            render: text => text,
-        },
-        {
-            title: 'Open trade time',
-            dataIndex: 'openTradeTime',
-            key: 'openTradeTime',
-            width: '25%',
+            title: 'Trade time',
+            dataIndex: 'trade_time',
+            key: 'trade_time',
+            width: 160,
             render: (value: string) => format(new Date(value), 'dd/MM/yyyy HH:mm:ss', { timeZone: `GMT${user?.config.utc}` }),
         },
         {
-            title: 'Close trade time',
-            dataIndex: 'closeTradeTime',
-            key: 'closeTradeTime',
-            width: '25%',
-            render: (value: string) => format(new Date(value), 'dd/MM/yyyy HH:mm:ss', { timeZone: `GMT${user?.config.utc}` }),
-        },
-        {
-            title: 'Position open',
-            dataIndex: 'openPrice',
-            key: 'openPrice',
+            title: 'Order type',
+            dataIndex: 'order_type',
+            key: 'order_type',
             width: 110,
             render: text => text,
         },
         {
-            title: 'Position close',
-            dataIndex: 'closePrice',
-            key: 'closePrice',
+            title: 'Price',
+            dataIndex: 'price',
+            key: 'price',
             width: 110,
             render: text => text,
         },
         {
-            title: 'Pnl',
-            dataIndex: 'pnl',
-            key: 'pnl',
-            width: '15%',
+            title: 'Exec price',
+            dataIndex: 'exec_price',
+            key: 'exec_price',
+            width: 110,
             render: text => text,
         },
         {
-            title: 'Tags',
-            key: 'tags',
-            dataIndex: 'tags',
-            width: '35%',
-            render: (_, { tags }) => (
-                <>
-                    {tags.map(tag => {
-                        return (
-                            <Tag color={'yellow'} key={tag}>
-                                {tagMap[tag].title}
-                            </Tag>
-                        );
-                    })}
-                </>
-            ),
+            title: 'Order quantity',
+            dataIndex: 'order_qty',
+            key: 'order_qty',
+            width: 110,
+            render: text => text,
         },
         {
-            title: 'Notes',
-            key: 'notes',
-            dataIndex: 'notes',
-            width: '15%',
-            render: notes => notes.length || '',
-        }
-    ], [user, pairs, tagMap]);
+            title: 'Exec quantity',
+            dataIndex: 'exec_qty',
+            key: 'exec_qty',
+            width: 110,
+            render: text => text,
+        },
+        {
+            title: 'Exec value',
+            dataIndex: 'exec_value',
+            key: 'exec_price',
+            width: 110,
+            render: text => text,
+        },
+        {
+            title: 'Closed size',
+            dataIndex: 'closed_size',
+            key: 'closed_size',
+            width: 110,
+            render: text => text,
+        },
+        {
+            title: 'Leaves quantity',
+            dataIndex: 'leaves_qty',
+            key: 'leaves_qty',
+            width: 110,
+            render: text => text,
+        },
+    ], [user, pairs]);
 
-    const data: DataType[] = trades.map(trade => ({ key: trade.id, ...trade }));
+    const data: DataType[] = transactions.map(t => ({ key: t.id, ...t }));
 
     const onChangeHandler = (pagination: TablePaginationConfig) => {
         console.log(pagination)
@@ -208,19 +200,9 @@ const TableComponent = ({ className = '', selected = {}, onSelected, onGetData }
         }
     }
 
-    const onRowChose = (trade: DataType) => () => {
-        navigate(routes.trade(trade.id));
-    }
-
     const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
         setSelectedRowKeys({...selectedRowKeys, [page]: newSelectedRowKeys});
       };
-
-    const onTableRow = (record: DataType, rowIndex: number | undefined) => {
-        return {
-            onDoubleClick: onSelected ? undefined : onRowChose(record)
-        };
-    }
 
     const rowSelection = onSelected ? {
         selectedRowKeys: selectedRowKeys[page],
@@ -240,7 +222,6 @@ const TableComponent = ({ className = '', selected = {}, onSelected, onGetData }
                 dataSource={data}
                 pagination={false}
                 onChange={onChangeHandler}
-                onRow={onTableRow}
                 rowSelection={rowSelection}
                 sticky
             />

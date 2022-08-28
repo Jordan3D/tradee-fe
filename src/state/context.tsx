@@ -23,8 +23,8 @@ import { fetchUser, logout } from '../store/common/meta';
 import { AppDispatch } from '../store';
 import { fetchTagData } from '../store/common/tags';
 import { fetchBrokerList } from '../store/common/brokers';
-import { brokerSyncApi } from '../api/broker';
 import { clearTradeData, fetchTradeData } from '../store/trades';
+import { clearTransactionData, fetchTransactionData } from '../store/transactions';
 
 export type Props = Readonly<{
   children: ReactElement | ReactFragment
@@ -44,7 +44,9 @@ export type TContext = Readonly<{
   selfCheck: () => Promise<unknown>
   getBrokers: () => Promise<unknown>
   getTrades: (params: any) => void
-  clearTrades: () => void
+  getTransactions: (params: any) => void
+  clearTrades: () => void,
+  clearTransactions: () => void
 }>;
 
 export const GlobalContext = createContext<TContext>({
@@ -61,13 +63,21 @@ export const GlobalContext = createContext<TContext>({
   selfCheck: () => Promise.resolve(),
   getBrokers:() => Promise.resolve(),
   getTrades: () => {},
-  clearTrades: () => {}
+  getTransactions: () => {},
+  clearTrades: () => {},
+  clearTransactions: () => {}
 });
 
 const defaultGetTradesParams = {
   limit: 25,
   offset: 0,
   orderBy: ['openTradeTime'],
+};
+
+const defaultGetTransactionsParams = {
+  limit: 25,
+  offset: 0,
+  orderBy: ['trade_time'],
 };
 
 export const Provider = ({
@@ -189,7 +199,19 @@ export const Provider = ({
 
   const clearTrades = useCallback(() => {
     dispatch(clearTradeData());
-  }, [dispatch])
+  }, [dispatch]);
+
+  const getTransactions = useCallback((params: any) => {
+    const summParams = {
+      ...defaultGetTransactionsParams,
+      ...params
+  };
+    dispatch(fetchTransactionData(summParams));
+  }, [dispatch]);
+
+  const clearTransactions = useCallback(() => {
+    dispatch(clearTransactionData());
+  }, [dispatch]);
 
   const logoutHandler = () => {
     dispatch(logout())
@@ -211,7 +233,9 @@ export const Provider = ({
         selfCheck,
         getBrokers,
         getTrades,
-        clearTrades
+        clearTrades,
+        getTransactions,
+        clearTransactions
       }}
     >
       {children}

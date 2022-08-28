@@ -1,7 +1,9 @@
 import { ReactElement } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import MainButton from '../../components/Buttons';
 import { Page } from '../../components/Page';
+import routes from '../../router';
 
 const Container = styled.div`
   display: flex;
@@ -44,11 +46,16 @@ const MainContentBottom = styled(Wall)`
   `
 
 const Main = (): ReactElement => {
+  const navigate = useNavigate();
+
+  const onAddItem = () => {
+    navigate(routes.journalItem({}));
+  };
 
   return <Container className="main_page__root">
     <MainContent>
       <div className='buttons'>
-        <MainButton className='journal'>
+        <MainButton className='journal' onClick={onAddItem}>
           Add journal item
         </MainButton>
         <MainButton className='note'>
