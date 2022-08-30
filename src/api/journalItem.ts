@@ -1,14 +1,22 @@
-import { IJournalItem } from "../interface/Journal";
-import { ICreateJI, IUpdateJI } from "../interface/Journal";
+import { IJournalItem, IJournalItemFull, ICreateJI, IUpdateJI } from "../interface/Journal";
 import fetchy from "./_main";
 
-export type JIListGetApiResult = IJournalItem[];
+export type JIListGetApiResult = IJournalItemFull[];
 export const jIListGetApi = async (
     { startDate, endDate }: Readonly<{ startDate?: number, endDate?: number }>
 ): Promise<JIListGetApiResult> => {
     const token = localStorage.getItem('access_token');
     return fetchy<JIListGetApiResult>(
         `/journal-item/list?startDate=${startDate ?? ''}&endDate=${endDate ?? ''}`,
+        { headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` } }
+    )
+};
+
+export type JIGetApiResult = IJournalItem;
+export const jIGetApi = async (id: string): Promise<JIGetApiResult> => {
+    const token = localStorage.getItem('access_token');
+    return fetchy<JIGetApiResult>(
+        `/journal-item/${id}`,
         { headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` } }
     )
 };

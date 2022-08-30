@@ -9,19 +9,20 @@ import {
 import { invokeFeedback } from '../utils/feedbacks/feedbacks';
 import useError from '../utils/useError';
 import { processFetch } from '../api/_main';
-import { ICreateJI, IJournalItem, IUpdateJI } from '../interface/Journal';
-import { jICreateApi, jIDeleteApi, jIListGetApi, jIUpdateApi } from '../api/journalItem';
+import { ICreateJI, IJournalItem, IJournalItemFull, IUpdateJI } from '../interface/Journal';
+import { jICreateApi, jIDeleteApi, jIGetApi, jIListGetApi, jIUpdateApi } from '../api/journalItem';
 
 export type Props = Readonly<{
   children: ReactElement | ReactFragment
 }>;
 
 export type TContext = Readonly<{
-  data: IJournalItem[];
+  data: IJournalItemFull[];
   journalDataHandler: (argData: Readonly<{ startDate?: number, endDate?: number }>) => void;
   jICreateHandler: (data: ICreateJI) => void;
   jIUpdateHandler: (id: string, data: IUpdateJI) => void;
   jIDeleteHandler: (id: string) => void;
+  journalItemGet: (id: string) => Promise<IJournalItem | undefined>
 }>;
 
 export const JournalContext = createContext<TContext>({
@@ -30,19 +31,31 @@ export const JournalContext = createContext<TContext>({
   jICreateHandler: () => Promise.resolve(),
   jIUpdateHandler: () => Promise.resolve(),
   jIDeleteHandler: () => Promise.resolve(),
+  journalItemGet: () => Promise.resolve(undefined)
 });
 export const Provider = ({
   children,
 }: Props): ReactElement => {
-  const [data, setData] = useState<IJournalItem[]>([]);
+  const [data, setData] = useState<IJournalItemFull[]>([]);
   const processError = useError();
 
   const journalDataHandler = useCallback( async (argData: Readonly<{ startDate?: number, endDate?: number }>) => {
-    await processFetch<IJournalItem[]>({
+    await processFetch<IJournalItemFull[]>({
       onRequest: () => jIListGetApi(argData),
       onData: (data) => setData(data),
       ...processError
     });
+  }, [processError]);
+
+  const journalItemGet = useCallback( async (id: string) => {
+    let res;
+    console.log(id);
+    await processFetch<IJournalItem>({
+      onRequest: () => jIGetApi(id),
+      onData: (data) => res = data,
+      ...processError
+    });
+    return res;
   }, [processError]);
 
   const jICreateHandler = async (argData: ICreateJI) => {
@@ -85,7 +98,8 @@ export const Provider = ({
         journalDataHandler,
         jICreateHandler,
         jIUpdateHandler,
-        jIDeleteHandler
+        jIDeleteHandler,
+        journalItemGet
       }}
     >
       {children}

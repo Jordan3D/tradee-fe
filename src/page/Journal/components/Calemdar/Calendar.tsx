@@ -39,22 +39,22 @@ interface Props<T> {
     data: Record<number, T[]>
     onAdd(date?: string): (e: React.MouseEvent) => void;
     onSetInterval(startDate: number, endDate: number, mode: 'month' | 'year'): void
-    onClickCell(n: number): void
+    onDoubleClickCell(n: number): void
 }
 
-const CustomCalendar = ({data, onAdd, onSetInterval, onClickCell}:Props<IBase>): ReactElement => {
+const CustomCalendar = ({data, onAdd, onSetInterval, onDoubleClickCell}:Props<IBase>): ReactElement => {
 
     const monthCellRender = (value: Moment) => {
         return '';
     };
 
-    const onClickCellHandler = (n: number) => (e: React.MouseEvent) => {
-        onClickCell(n);
+    const onDoubleClickHandler = (n: number) => (e: React.MouseEvent) => {
+        onDoubleClickCell(n);
     }
 
     const dateCellRender = (value: Moment) => {
         const dateN = value.date();
-        return <DateCell onClick={onClickCellHandler(dateN)}>
+        return <DateCell onDoubleClick={onDoubleClickHandler(dateN)}>
             <ItemCounter>
                 {data[dateN]?.length}
             </ItemCounter>

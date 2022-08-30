@@ -1,4 +1,4 @@
-export type Route = 'ideas' | 'notes' | 'main' | 'profile' | 'start' | 'login' | 'signup' | 'tags' | 'journal' | 'trades' | 'trade' | 'journalItem' | 'transactions'
+export type Route = 'ideas' | 'notes' | 'main' | 'profile' | 'start' | 'login' | 'signup' | 'tags' | 'journal' | 'trades' | 'trade' | 'journalItem' | 'journalItemNew' | 'transactions'
 
 const routes: Record<Route,any> = {
     ideas: '/ideas',
@@ -6,7 +6,8 @@ const routes: Record<Route,any> = {
     main: '/main',
     profile: '/profile',
     journal: '/journal',
-    journalItem: ({id, date}: {id?: string, date?: string}) => `/journal/item/${id ? id : 'new'}${date ? `?date=${date}` : ''}`,
+    journalItemNew: (date?: string) => `/journal/item/new${date ? `?date=${date}` : ''}`,
+    journalItem: (id: string) => `/journal/item/${id ? id : ':id'}`,
     start: '/start',
     login: '/start/login',
     signup: '/start/signup',

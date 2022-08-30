@@ -1,4 +1,8 @@
 import { IBase } from "./Base";
+import { INote } from "./Note";
+import { ITag } from "./Tag";
+import { ITrade } from "./Trade";
+import { ITransaction } from "./Transaction";
 
 export interface IJournalItem extends IBase{
     title: string;
@@ -20,4 +24,13 @@ export interface IUpdateJI {
     deletedTags: string[];
     addedNotes: string[];
     deletedNotes: string[];
+}
+
+export interface IJournalItemFull extends IBase{
+    title: string;
+    content: string;
+    pnls: ITrade[];
+    transactions: ITransaction[];
+    tags: ITag[];
+    notes: INote[];
 }

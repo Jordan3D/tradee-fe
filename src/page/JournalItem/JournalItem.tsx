@@ -57,7 +57,7 @@ const JournalItem = (): ReactElement => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const { tagsListHandler, getTrades, clearTrades, getTransactions, clearTransactions } = useContext(GlobalContext);
-    const { data, jICreateHandler, jIUpdateHandler } = useContext(JournalContext);
+    const { jICreateHandler, jIUpdateHandler, journalItemGet } = useContext(JournalContext);
     const { noteListHandler } = useContext(NotesContext);
     const { id } = useParams();
     const { search } = useLocation();
@@ -68,14 +68,16 @@ const JournalItem = (): ReactElement => {
     const [isTransactionsModalVisible, setIsTransactionsModalVisible] = useState(false);
     const params: TJouranlParams = useMemo(() => qs.parse(search.substring(1)), [search]);
 
-    const editData = id ? data.find(ji => ji.id === id) : undefined;
-
     const [form] = useForm();
 
     const itemDate = useSelector(selectJIDate);
 
-    const [pnls, setPnls] = useState<Record<string, string[]>>({});
-    const [transactions, setTransactions] = useState<Record<string, string[]>>({});
+    const [item, setItem] = useState<Partial<IJournalItem> | undefined>({
+        pnls: [],
+        transactions: [],
+        tags: [],
+        notes: []
+    });
 
     const tagOptions = useMemo(() => tagList.map(tag => ({ label: tag.title, value: tag.id }) as CustomTagProps), [tagList]);
     const noteOptions = useMemo(() => noteList.map(note => ({ label: noteMap[note].title, value: noteMap[note].id }) as CustomTagProps), [noteList, noteMap]);
@@ -101,34 +103,34 @@ const JournalItem = (): ReactElement => {
         setIsTransactionsModalVisible(false)
     };
 
-    const onPnlSelected = (selected: Record<string, string[]>) => {
-        setPnls(selected);
+    const onPnlSelected = (selected: string[]) => {
+        setItem({...item, pnls: item?.pnls?.concat(selected)});
     }
 
-    const onTransactionSelected = (selected: Record<string, string[]>) => {
-        setTransactions(selected);
+    const onTransactionSelected = (selected: string[]) => {
+        setItem({...item, transactions: item?.transactions?.concat(selected)});
     }
 
     const onClose = () => {
         navigate(-1);
     };
 
-    const onFinish = (values: ICreateJI | IUpdateJI) => {
+    const onFinish = (values: ICreateJI & IUpdateJI) => {
         const flatData = {
-            pnls: Object.entries(pnls).map(([_, value]: [string, string[]]) => value).flat(),
-            transactions: Object.entries(pnls).map(([_, value]: [string, string[]]) => value).flat(),
+            pnls: item?.pnls as string[],
+            transactions: item?.transactions as string[],
         };
         if (id) {
             const additional = {
-                addedTags: [],
-                deletedTags: [],
-                addedNotes: [],
-                deletedNotes: []
+                tagsAdded: values?.tags.filter(id => item?.tags?.indexOf(id) === - 1) || [],
+                tagsDeleted: item?.tags?.filter(id => values?.tags?.indexOf(id) === - 1) || [],
+                notesAdded: values?.notes.filter(id => item?.notes?.indexOf(id) === - 1) || [],
+                notesDeleted: item?.notes?.filter(id => values?.notes?.indexOf(id) === - 1) || []
             };
 
             jIUpdateHandler(id, { ...values, ...additional, ...flatData });
         } else {
-            jICreateHandler({...values, ...flatData} as ICreateJI);
+            jICreateHandler({ ...values, ...flatData } as ICreateJI);
         }
         navigate(-1);
     };
@@ -157,24 +159,33 @@ const JournalItem = (): ReactElement => {
 
     useEffect(() => {
         if (!isPnlModalVisible) {
-            tradesIdsPostApi(Object.entries(pnls).map(([_, value]: [string, string[]]) => value).flat()).then(result => dispatch(setJIPnls(result)))
+            tradesIdsPostApi(item?.pnls as string[]).then(result => dispatch(setJIPnls(result)))
         }
-    }, [isPnlModalVisible, pnls, dispatch]);
+    }, [isPnlModalVisible, item?.pnls, dispatch]);
 
     useEffect(() => {
         if (!isTransactionsModalVisible) {
-            transactionsIdsPostApi(Object.entries(transactions).map(([_, value]: [string, string[]]) => value).flat()).then(result => dispatch(setJIsetTransactions(result)))
+            transactionsIdsPostApi(item?.transactions as string[]).then(result => dispatch(setJIsetTransactions(result)))
         }
-    }, [isTransactionsModalVisible, transactions, dispatch]);
+    }, [isTransactionsModalVisible, item?.transactions, dispatch]);
 
     useEffect(() => {
-        form.setFieldsValue({
-            title: editData?.title,
-            content: editData?.content,
-            pnls: editData?.pnls,
-            transactions: editData?.transactions
-        })
-    }, [form, editData])
+        if (id) {
+            (async () => {
+                const data = await journalItemGet(id);
+                setItem(data);
+                if (data)
+                    form.setFieldsValue({
+                        title: data.title,
+                        content: data.content,
+                        pnls: data.pnls,
+                        transactions: data.transactions,
+                        tags: data.tags,
+                        notes: data.notes
+                    })
+            })()
+        }
+    }, [journalItemGet, form, id])
 
     return <Container>
         <Title>New Item ({format(new Date(itemDate), 'MMMM dd yyyy')})</Title>
@@ -199,7 +210,7 @@ const JournalItem = (): ReactElement => {
                 </Header>
                 <Pnl />
                 <Modal width={1500} destroyOnClose visible={isPnlModalVisible} onOk={handleOk} onCancel={handleCancel}>
-                    <TablePnl onSelected={onPnlSelected} selected={pnls} onGetData={getTrades} />
+                    <TablePnl onSelected={onPnlSelected} selected={item?.pnls} onGetData={getTrades} />
                 </Modal>
             </FormItem>
             <FormItem>
@@ -209,7 +220,7 @@ const JournalItem = (): ReactElement => {
                 </Header>
                 <Transactions />
                 {isTransactionsModalVisible && <Modal width={1500} visible={isTransactionsModalVisible} onOk={handleOk} onCancel={handleCancel}>
-                    <TableTransactions onSelected={onTransactionSelected} selected={transactions} onGetData={getTransactions} />
+                    <TableTransactions onSelected={onTransactionSelected} selected={item?.transactions} onGetData={getTransactions} />
                 </Modal>}
             </FormItem>
             <FormItem

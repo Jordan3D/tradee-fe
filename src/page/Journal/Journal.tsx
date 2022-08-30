@@ -1,11 +1,10 @@
-import { Modal } from 'antd';
-import qs from 'qs';
+import { Button, Modal } from 'antd';
 import React, { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import MainButton from '../../components/Buttons';
 import { Page } from '../../components/Page';
-import { IJournalItem } from '../../interface/Journal';
+import { IJournalItem, IJournalItemFull } from '../../interface/Journal';
 import routes from '../../router';
 import { JournalContext } from '../../state/journalContext';
 import { fromListToDatesMap } from '../../utils/common';
@@ -25,12 +24,28 @@ const Header = styled.div`
 const Calendar = styled(CustomCalendar)`
     `;
 
+const Grid = styled.div`
+  display  : grid;
+  grid-template-columns: auto auto auto;
+`;
+
+const GridItem = styled(Button)`
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width: 14rem;
+   height: 8rem;
+   border: 1px solid gray;
+   font-size: 1.2rem;
+   font-weight: 600;
+`;
+
 const Journal = (): ReactElement => {
     const navigate = useNavigate();
     const { data, journalDataHandler } = useContext(JournalContext);
     const [dates, setDates] = useState<Readonly<{ startDate: number, endDate: number }> | undefined>(undefined);
     const [mode, setMode] = useState<'month' | 'year'>('month');
-    const [chosen, setChosen] = useState<IJournalItem[] | undefined>(undefined);
+    const [chosen, setChosen] = useState<IJournalItemFull[] | undefined>(undefined);
 
     const calendarData = useMemo(() => fromListToDatesMap(data, mode), [data, mode]);
 
@@ -41,12 +56,14 @@ const Journal = (): ReactElement => {
 
     const onAddNew = useCallback((date?: string) => (e: React.MouseEvent) => {
         e.stopPropagation();
-        navigate(routes.journalItem({ date }))
+        navigate(routes.journalItemNew(date))
     }, [navigate]);
 
     const onClickCell = useCallback((n: number) => {
         setChosen(calendarData[n]);
-    }, [calendarData])
+    }, [calendarData]);
+
+    const onItemClick = useCallback((id: string) => () => navigate(routes.journalItem(id)), [navigate]);
 
     useEffect(() => {
         if (dates?.startDate && dates?.endDate) {
@@ -62,10 +79,16 @@ const Journal = (): ReactElement => {
             data={calendarData}
             onAdd={onAddNew}
             onSetInterval={onSetInterval}
-            onClickCell={onClickCell}
+            onDoubleClickCell={onClickCell}
         />
-        <Modal width={1500} visible={!!chosen} onCancel={() => setChosen(undefined)} footer={null}>
-
+        <Modal width={1000} visible={!!chosen} onCancel={() => setChosen(undefined)} footer={null}>
+            <Grid>
+                {chosen?.map(item => <GridItem onClick={onItemClick(item.id)}>
+                    {
+                        (item.pnls.reduce((p, c) => p + c.pnl, 0)).toFixed(2)
+                    }
+                </GridItem>)}
+            </Grid>
         </Modal>
     </Container>
 }

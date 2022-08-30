@@ -12,8 +12,6 @@ import { ITrade } from '../../../../interface/Trade';
 import routes from '../../../../router';
 import styled from 'styled-components';
 import { selectUser } from '../../../../store/common/meta';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../../../store';
 
 interface DataType extends ITrade {
     key: string;
@@ -21,7 +19,7 @@ interface DataType extends ITrade {
 
 type TableComponentProps = {
     className?: string;
-    selected?: Record<string, string[]>;
+    selected?: string[];
     onSelected?(rows: TableComponentProps['selected']): void;
     onGetData?(params: any): void;
 }
@@ -56,7 +54,7 @@ const Container = styled.div`
     }
 
     table {
-         font-size: 0.8rem;
+         font-size: 0.7rem;
     }
 
     .list {
@@ -73,6 +71,11 @@ const Container = styled.div`
 
     &.tiny {
         height: auto;
+    }
+
+    .disabled-row {
+        background-color: #dcdcdc;
+  pointer-events: none;
     }
 }
 
@@ -100,7 +103,7 @@ const Container = styled.div`
 }
 `;
 
-const TableComponent = ({ className = '', selected = {}, onSelected, onGetData }: TableComponentProps): ReactElement => {
+const TableComponent = ({ className = '', selected = [], onSelected, onGetData }: TableComponentProps): ReactElement => {
     const { data: trades, page, total, pageSize } = useSelector(selectTradesStore);
     const user = useSelector(selectUser);
     const { pathname } = useLocation();
@@ -108,7 +111,7 @@ const TableComponent = ({ className = '', selected = {}, onSelected, onGetData }
     const pairs = useSelector(selectPairsMap);
     const tagMap = useSelector(selectTagMap);
 
-    const [selectedRowKeys, setSelectedRowKeys] = useState<Record<string, string[]>>(selected);
+    const [selectedRowKeys, setSelectedRowKeys] = useState<Record<string, string[]>>({});
 
     const columns: ColumnsType<DataType> = useMemo(() => [
         {
@@ -201,7 +204,7 @@ const TableComponent = ({ className = '', selected = {}, onSelected, onGetData }
 
     const onPaginationChange = (page: number, pageSize: number) => {
         const params = { limit: pageSize, offset: pageSize * (page - 1) };
-        if(onGetData){
+        if (onGetData) {
             onGetData(params);
         } else {
             navigate(`${pathname}?${qs.stringify(params)}`)
@@ -212,9 +215,9 @@ const TableComponent = ({ className = '', selected = {}, onSelected, onGetData }
         navigate(routes.trade(trade.id));
     }
 
-    const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-        setSelectedRowKeys({...selectedRowKeys, [page]: newSelectedRowKeys});
-      };
+    const onSelectChange = (_: any, newSelecedRows: ITrade[]) => {
+        setSelectedRowKeys({ ...selectedRowKeys, [page]: newSelecedRows });
+    };
 
     const onTableRow = (record: DataType, rowIndex: number | undefined) => {
         return {
@@ -227,9 +230,15 @@ const TableComponent = ({ className = '', selected = {}, onSelected, onGetData }
         onChange: onSelectChange
     } : undefined;
 
+    const rowClassName = (record: DataType) => {
+        return selected.includes(record.id) ? `disabled-row` : ''
+    }
+
     useEffect(() => {
-        if(onSelected){
-           onSelected(selectedRowKeys);
+        return () => {
+            if (onSelected) {
+                onSelected(Object.entries(selectedRowKeys).map(([page, arr]) => arr).flat());
+            }
         }
     }, [selectedRowKeys, onSelected])
 
@@ -242,10 +251,11 @@ const TableComponent = ({ className = '', selected = {}, onSelected, onGetData }
                 onChange={onChangeHandler}
                 onRow={onTableRow}
                 rowSelection={rowSelection}
+                rowClassName={rowClassName}
                 sticky
             />
         </div>
-        {total ?  <PaginationComponent total={total} current={page} pageSize={pageSize} onChange={onPaginationChange} /> : <></>}
+        {total ? <PaginationComponent total={total} current={page} pageSize={pageSize} onChange={onPaginationChange} /> : <></>}
     </Container>
 };
 

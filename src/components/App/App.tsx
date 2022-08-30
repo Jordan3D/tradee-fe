@@ -68,7 +68,8 @@ function App() {
                           <Route path={routes.login} element={<StartPage />} />
                           <Route path={routes.ideas} element={<IdeasPage />} />
                           <Route path={routes.journal} element={<JouranlPage />} />
-                          <Route path={routes.journalItem({})} element={<JournalItemPage />} />
+                          <Route path={routes.journalItemNew()} element={<JournalItemPage />} />
+                          <Route path={routes.journalItem()} element={<JournalItemPage />} />
                           <Route path={routes.tags} element={<TagsPage />} />
                           <Route path={routes.trades} element={<TradesPage />} />
                           <Route path={routes.trade()} element={<TradePage />} />

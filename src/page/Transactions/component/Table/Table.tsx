@@ -17,7 +17,7 @@ interface DataType extends ITransaction {
 
 type TableComponentProps = {
     className?: string;
-    selected?: Record<string, string[]>;
+    selected?: string[];
     onSelected?(rows: TableComponentProps['selected']): void;
     onGetData?(params: any): void;
 }
@@ -52,7 +52,7 @@ const Container = styled.div`
     }
 
     table {
-         font-size: 0.8rem;
+         font-size: 0.7rem;
     }
 
     .list {
@@ -69,6 +69,10 @@ const Container = styled.div`
 
     &.tiny {
         height: auto;
+    }
+    .disabled-row {
+        background-color: #dcdcdc;
+  pointer-events: none;
     }
 }
 
@@ -96,14 +100,14 @@ const Container = styled.div`
 }
 `;
 
-const TableComponent = ({ className = '', selected = {}, onSelected, onGetData }: TableComponentProps): ReactElement => {
+const TableComponent = ({ className = '', selected = [], onSelected, onGetData }: TableComponentProps): ReactElement => {
     const { data: transactions, page, total, pageSize } = useSelector(selectTransactionsStore);
     const user = useSelector(selectUser);
     const { pathname } = useLocation();
     const navigate = useNavigate();
     const pairs = useSelector(selectPairsMap);
 
-    const [selectedRowKeys, setSelectedRowKeys] = useState<Record<string, string[]>>(selected);
+    const [selectedRowKeys, setSelectedRowKeys] = useState<Record<string, string[]>>({});
 
     const columns: ColumnsType<DataType> = useMemo(() => [
         {
@@ -209,9 +213,15 @@ const TableComponent = ({ className = '', selected = {}, onSelected, onGetData }
         onChange: onSelectChange
     } : undefined;
 
+    const rowClassName = (record: DataType) => {
+        return selected.includes(record.id) ? `disabled-row` : ''
+    }
+
     useEffect(() => {
-        if(onSelected){
-           onSelected(selectedRowKeys);
+        return () => {
+            if (onSelected) {
+                onSelected(Object.entries(selectedRowKeys).map(([page, arr]) => arr).flat());
+            }
         }
     }, [selectedRowKeys, onSelected])
 
@@ -223,6 +233,7 @@ const TableComponent = ({ className = '', selected = {}, onSelected, onGetData }
                 pagination={false}
                 onChange={onChangeHandler}
                 rowSelection={rowSelection}
+                rowClassName={rowClassName}
                 sticky
             />
         </div>
