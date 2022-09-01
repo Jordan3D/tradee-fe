@@ -206,7 +206,7 @@ const JournalItem = (): ReactElement => {
             <FormItem>
                 <Header>
                     <Title>Pnl</Title>
-                    <Button onClick={showModal('pnl')}>Add</Button>
+                    <Button className='add-btn' onClick={showModal('pnl')}>Add</Button>
                 </Header>
                 <Pnl />
                 <Modal width={1500} destroyOnClose visible={isPnlModalVisible} onOk={handleOk} onCancel={handleCancel}>
@@ -216,12 +216,12 @@ const JournalItem = (): ReactElement => {
             <FormItem>
                 <Header>
                     <Title>Transactions</Title>
-                    <Button onClick={showModal('transactions')}>Add</Button>
+                    <Button className='add-btn' onClick={showModal('transactions')}>Add</Button>
                 </Header>
                 <Transactions />
-                {isTransactionsModalVisible && <Modal width={1500} visible={isTransactionsModalVisible} onOk={handleOk} onCancel={handleCancel}>
+                <Modal width={1500} destroyOnClose visible={isTransactionsModalVisible} onOk={handleOk} onCancel={handleCancel}>
                     <TableTransactions onSelected={onTransactionSelected} selected={item?.transactions} onGetData={getTransactions} />
-                </Modal>}
+                </Modal>
             </FormItem>
             <FormItem
                 label="Tags"
@@ -242,6 +242,7 @@ const JournalItem = (): ReactElement => {
                 className='note_form__item'
             >
                 <Select
+                allowClear
                     mode="multiple"
                     tagRender={tagRender}
                     filterOption={onFilter}

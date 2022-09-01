@@ -5,6 +5,7 @@ import { List } from './component/List';
 import { Form, TNoteForm } from './component/Form';
 import { GlobalContext } from '../../state/context';
 import styled from 'styled-components';
+import { useParams } from 'react-router-dom';
 
 const Container = styled.div`
     position: relative;
@@ -16,12 +17,11 @@ const Container = styled.div`
         flex-direction: column;
     } 
         
-    .notes {
+    .notes_page {
      &__list {
         display: flex;
         flex-shrink: 0;
         width: 18rem;
-        border: 1px solid #00000099;
         background: white;
     }
 
@@ -34,13 +34,13 @@ const Container = styled.div`
 `;
 
 const Notes = (): ReactElement => {
-
+    const { id } = useParams();
     const { tagsListHandler } = useContext(GlobalContext);
     const { noteListHandler } = useContext(NotesContext);
-    const [formValues, setFormValues] = useState<TNoteForm | undefined>(undefined);
+    const [formValues, setFormValues] = useState<TNoteForm>({id});
 
     const onCloseForm = () => {
-        setFormValues(undefined);
+        setFormValues({});
     };
 
     const onSelectNote = (id: string) => {
@@ -54,10 +54,10 @@ const Notes = (): ReactElement => {
 
     return <Container>
         <div className="notes_page__list">
-            <List selectedItem={formValues?.id} onSelectItem={onSelectNote} />
+            <List selectedItem={formValues?.id} onSelectItem={onSelectNote}/>
         </div>
         <div className="notes_page__item">
-            {formValues && <Form values={formValues} onClose={onCloseForm} onSelectNote={onSelectNote} />}
+            {formValues.id && <Form values={formValues} onClose={onCloseForm} onSelectNote={onSelectNote} />}
         </div>
     </Container>
 };

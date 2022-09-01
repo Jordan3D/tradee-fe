@@ -126,6 +126,7 @@ const Notes = ({ tradeId, notes, updateTrade }: { tradeId: string, notes: string
             <div>
                 {!!value.length && <Button onClick={onAdd}>Add</Button>}
                 <Select
+                allowClear
                     mode="multiple"
                     className='add'
                     value={value}

@@ -95,7 +95,6 @@ const Tree = ({ className, onSetForm }: Props): ReactElement => {
   const onDrop: TreeProps['onDrop'] = info => {
     const splitedKey = (info.dragNode.key as string).split('');
     if(splitedKey.pop() === '0'){
-      console.log(1);
       return;
     }
 
@@ -165,7 +164,7 @@ const Tree = ({ className, onSetForm }: Props): ReactElement => {
   const onExpand = (keys: DataNode["key"][]) => setExpandedKeys(keys as string[]);
 
   const onAddClick = () => {
-    onSetForm({})();
+    onSetForm({id: 'new'})();
   }
 
   useEffect(() => {

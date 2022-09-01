@@ -18,7 +18,9 @@ reportWebVitals();
 
 
 // TODO
-// - refresh token
-// - tags page expand keys
-// - notes page
-// - rate comments
+// - check new broker on test net 4
+// - error handling refactor 3
+// - ideas fe 1
+// - ideas be 1
+// - notes fe refactoring 2
+// - small fe fixes on trades and transactions (table view) 4

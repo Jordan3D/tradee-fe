@@ -191,6 +191,7 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
                 className='note_form__item'
             >
                 <Select
+                allowClear
                     mode="multiple"
                     tagRender={tagRender}
                     onSearch={onSearch}

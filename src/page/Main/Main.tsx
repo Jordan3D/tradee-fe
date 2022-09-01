@@ -49,7 +49,15 @@ const Main = (): ReactElement => {
   const navigate = useNavigate();
 
   const onAddItem = () => {
-    navigate(routes.journalItem({}));
+    navigate(routes.journalItem('new'));
+  };
+
+  const onAddNote = () => {
+    navigate(routes.notesItem('new'));
+  };
+
+  const onAddTag = () => {
+    navigate(routes.tagsItem('new'));
   };
 
   return <Container className="main_page__root">
@@ -58,10 +66,10 @@ const Main = (): ReactElement => {
         <MainButton className='journal' onClick={onAddItem}>
           Add journal item
         </MainButton>
-        <MainButton className='note'>
+        <MainButton className='note' onClick={onAddNote}>
           Add note
         </MainButton>
-        <MainButton className='tag'>
+        <MainButton className='tag' onClick={onAddTag}>
           Add tag
         </MainButton>
       </div>

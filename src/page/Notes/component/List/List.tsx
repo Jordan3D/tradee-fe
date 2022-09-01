@@ -1,9 +1,11 @@
 import { Button, Input } from 'antd';
-import { ChangeEvent, memo, ReactElement, useCallback, useState } from 'react';
+import { ChangeEvent, memo, ReactElement, useCallback, useContext, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { NoData } from '../../../../components/NoData';
 import { INote } from '../../../../interface/Note';
-import { selectNoteIds, selectNoteMap } from '../../../../store/common/notes';
+import { NotesContext } from '../../../../state/notePageContext';
+import { selectNoteIds, selectNoteMap, selectNoteStatus } from '../../../../store/common/notes';
 
 const {Search} = Input;
 
@@ -75,21 +77,33 @@ display: flex;
 
 const List = ({className = '', selectedItem, onSelectItem}: ListProps): ReactElement => {
     const noteIds = useSelector(selectNoteIds);
-    const [searchValue, setSearchValue] = useState('');
+    const savedValue = useRef<{value: string}>({value: ''});
+    const [isLoading, setIsloading] = useState(false);
+    const status = useSelector(selectNoteStatus);
+    const { noteListHandler } = useContext(NotesContext);
 
     const onAddNoteHandler = () => {
-        onSelectItem('');
+        onSelectItem('new');
     };
+
+    const onSearch = useCallback((text: string) => noteListHandler({text}), [noteListHandler]);
 
     const onChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value?.toLowerCase();
-        setSearchValue(value);
-    }, []);
+        savedValue.current.value = value;
+        setTimeout(async() => {
+            if(value === savedValue.current.value){
+                setIsloading(true);
+                onSearch(value);
+            }
+        }, 1000)
+    }, [onSearch]);
 
     return <Container className={`${className + ' '}`}>
-        <Search value={searchValue} placeholder="Search note" onChange={onChange} />
+        <Search allowClear placeholder="Search note"  onChange={onChange} loading={status === 'pending'}/>
         <Button className='add_button' onClick={onAddNoteHandler}>Add note</Button>
         <div className='list'>
+            {!noteIds.length && <NoData text='No notes'/>}
             {noteIds.map(id => <Item key={id} id={id} isSelected={id === selectedItem} onSelectItem={onSelectItem}/>)}
         </div>
     </Container>

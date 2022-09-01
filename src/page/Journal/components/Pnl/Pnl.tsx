@@ -27,7 +27,7 @@ const Container = styled.div`
     }
 
     table {
-         font-size: 0.8rem;
+         font-size: 0.7rem;
     }
 
     .list {

@@ -4,6 +4,7 @@ import { Tree } from './components/Tree';
 import { GlobalContext } from '../../state/context';
 import { TTagForm, Form } from './components/Form';
 import styled from 'styled-components';
+import { useParams } from 'react-router-dom';
 
 const Container = styled.div`
     position: relative;
@@ -50,17 +51,16 @@ const Container = styled.div`
 `;
 
 const Tags = (): ReactElement => {
-
+    const { id } = useParams();
     const { tagsListHandler } = useContext(GlobalContext);
-    const [formValues, setFormValues] = useState<TTagForm | undefined>(undefined);
+    const [formValues, setFormValues] = useState<TTagForm>({id});
 
     const onSetForm = (value: Readonly<{ id?: string, parentId?: string }>) => () => {
-        console.log(value);
         setFormValues(value)
     }
 
     const onCloseForm = () => {
-        setFormValues(undefined);
+        setFormValues({});
     };
 
     useEffect(() => {
@@ -73,7 +73,7 @@ const Tags = (): ReactElement => {
             onSetForm={onSetForm}
         />
         <div className="tags_page__tag-info">
-            {formValues && <Form values={formValues} onClose={onCloseForm} />}
+            {formValues.id && <Form values={formValues} onClose={onCloseForm} />}
         </div>
     </Container>
 };

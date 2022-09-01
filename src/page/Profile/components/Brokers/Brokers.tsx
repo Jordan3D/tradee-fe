@@ -1,16 +1,19 @@
-import { Space, Table, Button } from 'antd';
+import { Space, Table, Button, Modal, Form as AntdForm, Input, Popover } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { ReactElement, useCallback, useContext, useMemo } from 'react';
+import { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
-import { SyncOutlined } from '@ant-design/icons';
+import { DeleteOutlined, MoreOutlined, SyncOutlined } from '@ant-design/icons';
 import { selectBrokerList } from '../../../../store/common/brokers';
-import { IBroker } from '../../../../interface/Broker';
+import { IBroker, ICreateBroker } from '../../../../interface/Broker';
 import { brokerSyncApi, brokerSyncClearApi } from '../../../../api/broker';
 import { GlobalContext } from '../../../../state/context';
 import { format } from 'date-fns-tz';
 import { selectUser } from '../../../../store/common/meta';
 import { invokeFeedback } from '../../../../utils/feedbacks/feedbacks';
+import { Container, Title, Sync, Header, Delete, WarningText, FormFooter } from './style';
+
+const useForm = AntdForm.useForm;
+const FormItem = AntdForm.Item;
 
 interface DataType extends IBroker {
     key: string;
@@ -20,84 +23,27 @@ type TableComponentProps = {
     className?: string;
 }
 
-const Container = styled.div`
-       display: flex;
-        padding: 1rem;
-        flex-direction: column;
-        width: 100%;
-
-    .add_button {
-        margin: 2rem;
-    }
-
-    table {
-         font-size: 0.8rem;
-    }
-
-    .list {
-            height: 50vw;
-            overflow-y: scroll;
-            padding: 1rem;
-    }
-
-.table_content {
-    height: 80vh;
-    width: 100%;
-    overflow-y: scroll;
-    margin-bottom: 1rem;
-}
-
-.trades-item {
-    &__root {
-        display: flex;
-        height: 6.5rem;
-        border: 1px solid #d3d031;
-        background-color: #ffffd0;
-        margin-bottom: 1rem;
-        box-shadow: 0.4rem 0.4rem 5px 0px rgba(0, 0, 0, 0.332); 
-        transition: 0.35s ease all;
-        cursor: pointer;
-
-        &:hover {
-            border-color: #e7e421;
-            background-color: #e5e5ab;
-            box-shadow: 0.1rem 0.1rem 5px 0px rgba(0, 0, 0, 0.151); 
-        }
-        
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-}
-`;
-
-const Title = styled.h3`
-    
-`;
-
-const Sync = styled(Button)`
-  padding: 0.8rem 1.6rem;
-    width: auto;
-    height: auto;
-    display: flex;
-    align-items: center;
-
-    .button-text {
-      font-size: 1rem;
-      margin-right: 2rem;
-    }
-
-    .button-icon {
-      font-size: 1.2rem;
-      position: relative;
-      top: 0.2rem;
-    }
-`
-
 const Brokers = ({ className = '' }: TableComponentProps): ReactElement => {
     const brokers = useSelector(selectBrokerList);
-    const {getBrokers} = useContext(GlobalContext);
+    const { getBrokers, createBroker, removeBroker } = useContext(GlobalContext);
     const user = useSelector(selectUser);
+    const [form] = useForm();
+    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+    const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+    const [onDeleteBroker, setOnDeleteBroker] = useState<IBroker | undefined>(undefined);
+
+    const onAddClick = () => {
+        setIsAddModalVisible(true);
+    };
+
+    const onCloseAddModal = () => {
+        setIsAddModalVisible(false);
+    };
+
+    const onDelete = useCallback((broker: IBroker) => () => {
+        setIsDeleteModalVisible(true);
+        setOnDeleteBroker(broker);
+    }, [])
 
     const onClickSync = useCallback((id: string) => () => {
         brokerSyncApi(id).then(() => {
@@ -107,7 +53,7 @@ const Brokers = ({ className = '' }: TableComponentProps): ReactElement => {
 
     const onClickSyncClear = useCallback((id: string) => () => {
         brokerSyncClearApi(id).then((res) => {
-            if(res){
+            if (res) {
                 invokeFeedback({ msg: 'Data cleared', type: 'success' });
                 getBrokers();
             }
@@ -118,17 +64,24 @@ const Brokers = ({ className = '' }: TableComponentProps): ReactElement => {
 
     const columns: ColumnsType<DataType> = useMemo(() => [
         {
+            title: 'Id',
+            dataIndex: 'id',
+            key: 'id',
+            width: 250,
+            render: text => text,
+        },
+        {
             title: 'Title',
             dataIndex: 'title',
             key: 'title',
-            width: '20%',
+            width: 250,
             render: text => text,
         },
         {
             title: 'Syncing',
             dataIndex: 'isSyncing',
             key: 'isSyncing',
-            width: 200,
+            width: 150,
             render: text => text !== undefined ? String(text) : '',
         },
         {
@@ -137,12 +90,12 @@ const Brokers = ({ className = '' }: TableComponentProps): ReactElement => {
             key: 'lastSync',
             width: 300,
             render: value => {
-                if(!value){
+                if (!value) {
                     return '';
                 }
-                const {pnl, tradeTransactions} = JSON.parse(value);
+                const { pnl, tradeTransactions } = JSON.parse(value);
 
-                return `Pnl: ${pnl && Object.keys(pnl).length ? 'synced': 'none'}, Transactions: ${tradeTransactions && Object.keys(tradeTransactions).length ? 'synced': 'none'}`
+                return `Pnl: ${pnl && Object.keys(pnl).length ? 'synced' : 'none'}, Transactions: ${tradeTransactions && Object.keys(tradeTransactions).length ? 'synced' : 'none'}`
             }
         },
         {
@@ -150,14 +103,15 @@ const Brokers = ({ className = '' }: TableComponentProps): ReactElement => {
             dataIndex: 'updatedAt',
             key: 'updatedAt',
             width: 200,
-            render: (value: string) => value ? format(new Date(value), 'dd/MM/yyyy HH:mm:ss', {timeZone: `GMT${user?.config.utc}`}) : '',
+            render: (value: string) => value ? format(new Date(value), 'dd/MM/yyyy HH:mm:ss', { timeZone: `GMT${user?.config.utc}` }) : '',
         },
         {
             title: 'Action',
             dataIndex: 'action',
             key: 'action',
+            width: 250,
             render: (_, record) => (
-                <Space size="middle">
+                <Popover content={() => <Space size="middle">
                     <Sync onClick={onClickSync(record.id)}>
                         <div className='button-text'>
                             Sync data
@@ -170,22 +124,101 @@ const Brokers = ({ className = '' }: TableComponentProps): ReactElement => {
                         </div>
                         <SyncOutlined className='button-icon' />
                     </Sync>
-                </Space>
+                    <Delete onClick={onDelete(record)}>
+                        <DeleteOutlined />
+                    </Delete>
+                </Space>} trigger="click">
+                    <Button type="primary"><MoreOutlined /></Button>
+                </Popover>
             ),
         },
-    ], [onClickSync, onClickSyncClear]);
+    ], [onClickSync, onClickSyncClear, user?.config.utc, onDelete]);
 
     const data: DataType[] = brokers.map(broker => ({ key: broker.id, ...broker }));
 
+    const rowClassName = (record: DataType) => record.isRemoved ? 'disabled-row' : '';
+
+    const onModalOk = async () => {
+        if (onDeleteBroker) {
+            await removeBroker(onDeleteBroker.id);
+            setOnDeleteBroker(undefined);
+            setIsDeleteModalVisible(false);
+            await getBrokers();
+        }
+    }
+
+    const handleCancel = () => {
+        setIsDeleteModalVisible(false);
+        setOnDeleteBroker(undefined);
+    }
+
+    const onFinish = (values: ICreateBroker) => {
+        createBroker(values);
+        setIsAddModalVisible(false);
+    };
+
+    const onFinishFailed = (errorInfo: any) => {
+        console.log('Failed:', errorInfo);
+    };
+
+    useEffect(() => {
+        if (isAddModalVisible) {
+            form.setFieldsValue({
+                title: '',
+                broker_type: 'ByBitFutures',
+                api_key: '',
+                secret_key: ''
+            })
+        }
+    }, [form, isAddModalVisible]);
+
     return <Container className={`${className + ' '}`}>
-        <Title>Brokers</Title>
+        <Header>
+            <Title>Brokers</Title>
+            <Button className='add-btn' onClick={onAddClick}>Add</Button>
+        </Header>
         <div className='table_content'>
             <Table
                 columns={columns}
                 dataSource={data}
                 pagination={false}
+                rowClassName={rowClassName}
                 sticky
             />
+            <Modal destroyOnClose width={600} visible={isDeleteModalVisible} onOk={onModalOk} onCancel={handleCancel}>
+                <WarningText>
+                    <div>Are you sure?</div>
+                </WarningText>
+            </Modal>
+            <Modal destroyOnClose footer={null} width={1000} onCancel={onCloseAddModal} visible={isAddModalVisible}>
+                <AntdForm
+                    form={form}
+                    name="addBrokerForm"
+                    layout='vertical'
+                    onFinish={onFinish}
+                    onFinishFailed={onFinishFailed}
+                    autoComplete="off"
+                >
+                    <WarningText>Remember: you should set "Read only" flag for API key before adding</WarningText>
+                    <FormItem name="title" label="Title">
+                        <Input />
+                    </FormItem>
+                    <FormItem name="broker_type" label="Type">
+                        <Input disabled />
+                    </FormItem>
+                    <FormItem name="api_key" label="Api key">
+                        <Input />
+                    </FormItem>
+                    <FormItem name="secret_key" label="Secret key">
+                        <Input />
+                    </FormItem>
+                    <FormFooter>
+                        <Button type="primary" size='large' htmlType="submit">
+                            Create
+                        </Button>
+                    </FormFooter>
+                </AntdForm>
+            </Modal>
         </div>
     </Container>
 };

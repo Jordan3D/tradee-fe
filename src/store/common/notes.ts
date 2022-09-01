@@ -12,11 +12,13 @@ import { fromListToIdsAndMap } from '../../utils/common';
 interface INotesState {
     noteIds: string[],
     noteMap: Record<string, INoteFull>,
+    status: 'idle' | 'pending' | 'failed' | 'succeeded'
 }
 
 const initialState: INotesState = {
     noteIds: [],
     noteMap: {},
+    status: 'idle'
 }
 
 export const fetchData = createAsyncThunk('notes/fetchData', async (argData: Readonly<{ lastId?: string, limit?: number, text?: string }>, {rejectWithValue, dispatch, getState}) => {
@@ -54,6 +56,17 @@ export const notesSlice = createSlice({
             }
         }
     },
+    extraReducers: (builder) => {
+        builder.addCase(fetchData.pending, (state, action) => {
+            state.status = 'pending';
+        });
+        builder.addCase(fetchData.rejected, (state, action) => {
+            state.status = 'failed';
+        });
+        builder.addCase(fetchData.fulfilled, (state, action) => {
+            state.status = 'succeeded';
+        })
+    }
 });
 
 
@@ -63,5 +76,6 @@ export const { setData } = notesSlice.actions
 export const selectNotesStore = (state: RootState) => state.common.notes;
 export const selectNoteIds = (state: RootState) => selectNotesStore(state).noteIds;
 export const selectNoteMap = (state: RootState) => selectNotesStore(state).noteMap;
+export const selectNoteStatus = (state: RootState) => selectNotesStore(state).status;
 
 export default notesSlice.reducer

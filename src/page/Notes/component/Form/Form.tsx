@@ -77,7 +77,7 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
             convertToRaw((eState as EditorState)?.getCurrentContent())
         );
 
-        if (id) {
+        if (id && id !== 'new') {
             let tagsAdded = [];
             let tagsDeleted = [];
             if (value.tags) {
@@ -89,10 +89,8 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
             }
             noteUpdateHandler(id, {...value, content} as INoteUpdate);
             return;
-        }
-        const newNote = (await noteCreateHandler({...value, content} as INoteCreate)) as INote;
-
-        if (newNote && newNote.id) {
+        } else {
+            const newNote = (await noteCreateHandler({...value, content} as INoteCreate)) as INote;
             onSelectNote(newNote.id);
         }
     };
@@ -187,6 +185,7 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
                 className='note_form__item'
             >
                 <Select
+                allowClear
                     mode="multiple"
                     tagRender={tagRender}
                     onSearch={onSearch}

@@ -25,6 +25,8 @@ import { fetchTagData } from '../store/common/tags';
 import { fetchBrokerList } from '../store/common/brokers';
 import { clearTradeData, fetchTradeData } from '../store/trades';
 import { clearTransactionData, fetchTransactionData } from '../store/transactions';
+import { brokerCreateApi, brokerRemoveApi } from '../api/broker';
+import { ICreateBroker } from '../interface/Broker';
 
 export type Props = Readonly<{
   children: ReactElement | ReactFragment
@@ -43,6 +45,8 @@ export type TContext = Readonly<{
   tagDeleteHandler: (id: string) => void;
   selfCheck: () => Promise<unknown>
   getBrokers: () => Promise<unknown>
+  createBroker: (data: ICreateBroker) => Promise<unknown>
+  removeBroker: (id: string) => Promise<unknown>
   getTrades: (params: any) => void
   getTransactions: (params: any) => void
   clearTrades: () => void,
@@ -62,6 +66,8 @@ export const GlobalContext = createContext<TContext>({
   tagDeleteHandler: () => Promise.resolve(),
   selfCheck: () => Promise.resolve(),
   getBrokers:() => Promise.resolve(),
+  createBroker:() => Promise.resolve(),
+  removeBroker:() => Promise.resolve(),
   getTrades: () => {},
   getTransactions: () => {},
   clearTrades: () => {},
@@ -185,6 +191,19 @@ export const Provider = ({
     dispatch(fetchBrokerList());
   }, [dispatch]);
 
+  const createBroker = useCallback(async(data: ICreateBroker) => {
+    await processFetch({
+      onRequest: () => brokerCreateApi(data),
+      onData: () => {
+        invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
+        getBrokers();
+      },
+      ...processError
+    });
+  }, [getBrokers, processError]);
+
+  const removeBroker = useCallback((id: string) => brokerRemoveApi(id), []);
+
   const selfCheck = useCallback(async () => {
     dispatch(fetchUser());
   }, [dispatch]);
@@ -232,6 +251,8 @@ export const Provider = ({
         tagDeleteHandler,
         selfCheck,
         getBrokers,
+        createBroker,
+        removeBroker,
         getTrades,
         clearTrades,
         getTransactions,

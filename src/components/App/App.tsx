@@ -71,14 +71,14 @@ function App() {
                           <Route path={routes.journalItemNew()} element={<JournalItemPage />} />
                           <Route path={routes.journalItem()} element={<JournalItemPage />} />
                           <Route path={routes.tags} element={<TagsPage />} />
+                          <Route path={routes.tagsItem()} element={ <TagsPage />}/>
                           <Route path={routes.trades} element={<TradesPage />} />
                           <Route path={routes.trade()} element={<TradePage />} />
                           <Route path={routes.transactions} element={<TransactionsPage />} />
                           <Route path={routes.main} element={<MainPage />} />
                           <Route path={routes.profile} element={<ProfilePage />} />
-                          <Route path={routes.notes} element={
-                            <NotesPage />}
-                          />
+                          <Route path={routes.notes} element={ <NotesPage />}/>
+                          <Route path={routes.notesItem()} element={ <NotesPage />}/>
                           <Route path='*' element={<Error helmetTitle='Not found' backButtonHandler={backOnError} />} />
                         </Routes>
                       </>

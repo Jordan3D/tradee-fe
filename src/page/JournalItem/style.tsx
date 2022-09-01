@@ -32,6 +32,7 @@ export const FormItem = styled(Item)`
    width: 100%;
    padding: 1rem;
    // border-bottom: 1px solid black;
+   
 `;
 
 export const Header = styled.div`
@@ -39,6 +40,12 @@ export const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
+
+  .add-btn {
+    padding: 0.6rem 1.6rem;
+    font-size: 1rem;
+    height: auto;
+  }
 `;
 
 export const Buttons = styled.div`

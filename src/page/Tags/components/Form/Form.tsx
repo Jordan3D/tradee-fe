@@ -48,7 +48,7 @@ const Form = ({ values, onClose }: Props) => {
     const tagOptions = useMemo(() => tagList.map(tag => ({ label: tag.title, value: tag.id }) as CustomTagProps), [tagList]);
 
     const onFinish = (values: CreateTag | UpdateTag) => {
-        if (id) {
+        if (id && id !== 'new') {
             tagUpdateHandler(id, values as UpdateTag);
             return;
         }
@@ -101,6 +101,7 @@ const Form = ({ values, onClose }: Props) => {
             >
                 <Select
                     showArrow
+                    allowClear
                     tagRender={tagRender}
                     style={{ width: '100%' }}
                     options={tagOptions}
