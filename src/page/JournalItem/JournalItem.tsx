@@ -22,7 +22,8 @@ import { JournalContext } from '../../state/journalContext';
 import { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import { selectTagList } from '../../store/common/tags';
 import { selectNoteIds, selectNoteMap } from '../../store/common/notes';
-import { Container, Title, Header, Buttons } from './style';
+import { Container, Header, Buttons } from './style';
+import ItemTitle from '../../components/Form/ItemTitle';
 
 const useForm = AntdForm.useForm;
 const FormItem = AntdForm.Item;
@@ -80,7 +81,7 @@ const JournalItem = (): ReactElement => {
     });
 
     const tagOptions = useMemo(() => tagList.map(tag => ({ label: tag.title, value: tag.id }) as CustomTagProps), [tagList]);
-    const noteOptions = useMemo(() => noteList.map(note => ({ label: noteMap[note].title, value: noteMap[note].id }) as CustomTagProps), [noteList, noteMap]);
+    const noteOptions = useMemo(() => noteList.map(note => ({ label: noteMap[note]?.title, value: noteMap[note]?.id }) as CustomTagProps), [noteList, noteMap]);
 
     const onFilter = (inputValue: string, option?: CustomTagProps) => {
         return option?.label?.toString().indexOf(inputValue) !== -1;
@@ -104,11 +105,11 @@ const JournalItem = (): ReactElement => {
     };
 
     const onPnlSelected = (selected: string[]) => {
-        setItem({...item, pnls: item?.pnls?.concat(selected)});
+        setItem({ ...item, pnls: item?.pnls?.concat(selected) });
     }
 
     const onTransactionSelected = (selected: string[]) => {
-        setItem({...item, transactions: item?.transactions?.concat(selected)});
+        setItem({ ...item, transactions: item?.transactions?.concat(selected) });
     }
 
     const onClose = () => {
@@ -188,7 +189,7 @@ const JournalItem = (): ReactElement => {
     }, [journalItemGet, form, id])
 
     return <Container>
-        <Title>New Item ({format(new Date(itemDate), 'MMMM dd yyyy')})</Title>
+        <ItemTitle>New Item ({format(new Date(itemDate), 'MMMM dd yyyy')})</ItemTitle>
         <AntdForm
             form={form}
             name="journalItemForm"
@@ -205,8 +206,12 @@ const JournalItem = (): ReactElement => {
             </FormItem>
             <FormItem>
                 <Header>
-                    <Title>Pnl</Title>
-                    <Button className='add-btn' onClick={showModal('pnl')}>Add</Button>
+                    <div className='ant-form-item-label'>
+                        <label>
+                            Pnl
+                        </label>
+                    </div>
+                    <Button className='add-btn' size='large' onClick={showModal('pnl')}>Add</Button>
                 </Header>
                 <Pnl />
                 <Modal width={1500} destroyOnClose visible={isPnlModalVisible} onOk={handleOk} onCancel={handleCancel}>
@@ -215,8 +220,12 @@ const JournalItem = (): ReactElement => {
             </FormItem>
             <FormItem>
                 <Header>
-                    <Title>Transactions</Title>
-                    <Button className='add-btn' onClick={showModal('transactions')}>Add</Button>
+                    <div className='ant-form-item-label'>
+                        <label>
+                            Transactions
+                        </label>
+                    </div>
+                    <Button className='add-btn' size='large' onClick={showModal('transactions')}>Add</Button>
                 </Header>
                 <Transactions />
                 <Modal width={1500} destroyOnClose visible={isTransactionsModalVisible} onOk={handleOk} onCancel={handleCancel}>
@@ -242,7 +251,7 @@ const JournalItem = (): ReactElement => {
                 className='note_form__item'
             >
                 <Select
-                allowClear
+                    allowClear
                     mode="multiple"
                     tagRender={tagRender}
                     filterOption={onFilter}

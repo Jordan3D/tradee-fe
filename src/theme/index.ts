@@ -14,6 +14,8 @@ export interface TradeeTheme{
   sidebar: TSidebarStyle;
   page: TPageStyle;
   note: TNoteStyle;
+  padding: string;
+  fontSize: Record<string, string>
 }
 
 export { darkColors, lightColors } from "./colors";

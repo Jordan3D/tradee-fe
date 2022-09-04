@@ -31,6 +31,7 @@ import { Error } from '../../page/Error';
 import { ProfilePage } from '../../page/Profile';
 import JournalItemPage from '../../page/JournalItem/JournalItem';
 import { TransactionsPage } from '../../page/Transactions';
+import GlobalStyles from '../../theme/GlobalStyles';
 
 const themes: TThemes = {
   dark,
@@ -54,6 +55,7 @@ function App() {
         <ReduxProvider store={store}>
           <ContextProvider>
             <CustomThemeProvider>
+              <GlobalStyles/>
               <NotesPageProvider>
                 <JournalProvider>
                   <ContextLoaderProvider>

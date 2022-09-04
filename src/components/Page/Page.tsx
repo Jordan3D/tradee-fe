@@ -14,11 +14,11 @@ export type Props = {
 const Container = styled.div`
  position: relative;
  height: 100%;
- padding-left: 8rem;
+ padding-left: 12rem;
  display: flex;
     .page {
       &__content {
-         padding: 1rem;
+        padding: ${props => props.theme.padding};
          flex-grow: 1;
          background-color: ${props => props.theme.page.bgColor};
       }

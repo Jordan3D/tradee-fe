@@ -44,7 +44,16 @@ const tagRender = (props: CustomTagProps) => {
 
 const Container = styled.div`
   padding: 1.2em;
+  height: 100%;
   .note_form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+
+    .form-div {
+
+    }
 
     &__buttons {
         display: flex;
@@ -72,7 +81,7 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
 
     const tagOptions = useMemo(() => tagList.map(tag => ({ label: tag.title, value: tag.id }) as CustomTagProps), [tagList]);
 
-    const onFinish = async (value: INoteCreate | INoteUpdate & Readonly<{ tags: string[], content: EditorState }>) => {         
+    const onFinish = async (value: INoteCreate | INoteUpdate & Readonly<{ tags: string[], content: EditorState }>) => {
         const content = draftToHtmlPuri(
             convertToRaw((eState as EditorState)?.getCurrentContent())
         );
@@ -87,10 +96,10 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
                 (value as INoteUpdate).tagsAdded = tagsAdded;
                 (value as INoteUpdate).tagsDeleted = tagsDeleted;
             }
-            noteUpdateHandler(id, {...value, content} as INoteUpdate);
+            noteUpdateHandler(id, { ...value, content } as INoteUpdate);
             return;
         } else {
-            const newNote = (await noteCreateHandler({...value, content} as INoteCreate)) as INote;
+            const newNote = (await noteCreateHandler({ ...value, content } as INoteCreate)) as INote;
             onSelectNote(newNote.id);
         }
     };
@@ -106,6 +115,7 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
     const onDelete = async () => {
         if (id) {
             const res = await noteDeleteHandler(id);
+            console.log(res);
             if (res) {
                 onClose();
             }
@@ -117,7 +127,7 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
     }
 
     const onSearch = (v: string) => {
-        console.log(v);         
+        console.log(v);
     }
 
     useEffect(() => {
@@ -141,77 +151,81 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
             name="loginForm"
             layout='vertical'
             onFinish={onFinish}
+            className="note_form"
             onFinishFailed={onFinishFailed}
             autoComplete="off"
         >
-            <Item
-                label="ID"
-                className='note_form__item'
-            >
-                <Input value={id} disabled />
-            </Item>
+            <div className='form-div'>
+                <Item
+                    label="ID"
+                    className='note_form__item'
+                >
+                    <Input value={id} disabled />
+                </Item>
 
-            <Item
-                label="Title"
-                name="title"
-                className='note_form__item'
-                rules={[
-                    {
-                        required: true,
-                        message: '',
-                    },
-                ]}
-            >
-                <Input />
-            </Item>
+                <Item
+                    label="Title"
+                    name="title"
+                    className='note_form__item'
+                    rules={[
+                        {
+                            required: true,
+                            message: '',
+                        },
+                    ]}
+                >
+                    <Input />
+                </Item>
 
-            <Item
-                label="Content"
-                name="content"
-                className='note_form__item'
-            >
-                <Editor
-                    editorState={eState}
-                    toolbarClassName="toolbarClassName"
-                    wrapperClassName="wrapperClassName"
-                    editorClassName="editorClassName"
-                    onEditorStateChange={onEditorStateChange}
-                />
-            </Item>
+                <Item
+                    label="Content"
+                    name="content"
+                    className='note_form__item'
+                >
+                    <Editor
+                        editorState={eState}
+                        toolbarClassName="toolbarClassName"
+                        wrapperClassName="wrapperClassName"
+                        editorClassName="editorClassName"
+                        onEditorStateChange={onEditorStateChange}
+                    />
+                </Item>
 
-            <Item
-                label="Tags"
-                name="tags"
-                className='note_form__item'
-            >
-                <Select
-                allowClear
-                    mode="multiple"
-                    tagRender={tagRender}
-                    onSearch={onSearch}
-                    style={{ width: '100%' }}
-                    options={tagOptions}
-                />
-            </Item>
-
-            <Item>
-                <div className="form__buttons">
-                    <Button type="default" size='large' htmlType="button" onClick={onClose}>
-                        Close
-                    </Button>
-                    <Popconfirm
-                        title="Are you sure to delete this task?"
-                        onConfirm={onDelete}
-                        okText="Yes"
-                        cancelText="No"
-                    >
-                        <Button className="button" onClick={onDeleteClick}>Delete</Button>
-                    </Popconfirm>
-                    <Button type="primary" size='large' htmlType="submit">
-                        Submit
-                    </Button>
-                </div>
-            </Item>
+                <Item
+                    label="Tags"
+                    name="tags"
+                    className='note_form__item'
+                >
+                    <Select
+                        allowClear
+                        mode="multiple"
+                        tagRender={tagRender}
+                        onSearch={onSearch}
+                        style={{ width: '100%' }}
+                        options={tagOptions}
+                    />
+                </Item>
+            </div>
+            <div className='form-div'>
+                <Item>
+                    <div className="form__buttons">
+                        <Button type="default" size='large' htmlType="button" onClick={onClose}>
+                            Close
+                        </Button>
+                        <Popconfirm
+                            title="Are you sure to delete this task?"
+                            onConfirm={onDelete}
+                            okText="Yes"
+                            cancelText="No"
+                        >
+                            <Button className="button" size='large' onClick={onDeleteClick}>Delete</Button>
+                        </Popconfirm>
+                        <Button type="primary" size='large' htmlType="submit">
+                            Submit
+                        </Button>
+                    </div>
+                </Item>
+            </div>
         </AntdForm>
     </Container>
 };

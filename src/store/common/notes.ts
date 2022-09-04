@@ -11,17 +11,21 @@ import { fromListToIdsAndMap } from '../../utils/common';
 
 interface INotesState {
     noteIds: string[],
-    noteMap: Record<string, INoteFull>,
-    status: 'idle' | 'pending' | 'failed' | 'succeeded'
+    noteMap: Record<string, INoteFull | undefined>,
+    status: 'idle' | 'pending' | 'failed' | 'succeeded',
+    offset: number,
+    limit: number
 }
 
 const initialState: INotesState = {
     noteIds: [],
     noteMap: {},
-    status: 'idle'
+    status: 'idle',
+    offset: 0,
+    limit: 20
 }
 
-export const fetchData = createAsyncThunk('notes/fetchData', async (argData: Readonly<{ lastId?: string, limit?: number, text?: string }>, {rejectWithValue, dispatch, getState}) => {
+export const fetchData = createAsyncThunk('notes/fetchData', async (argData: Readonly<{ offset?: number, limit?: number, text?: string }>, {rejectWithValue, dispatch, getState}) => {
     await processFetch({
         onRequest: () => noteListGetApi(argData),
         onData: (data) => {

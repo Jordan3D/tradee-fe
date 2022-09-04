@@ -10,13 +10,6 @@ justify-content: space-evenly;
 flex-direction: column;
 `;
 
-export const Title = styled.div`
-  font-size: 1.4rem;
-  font-weight: 500;
-  height: 3rem;
-  color: black;
-`;
-
 export const Form = styled.div`
   display: flex;
   flex-direction: column;
@@ -26,15 +19,6 @@ export const Form = styled.div`
   border-radius: 0.5rem;
 `;
 
-export const FormItem = styled(Item)`
-   display: flex;
-   flex-direction: column;
-   width: 100%;
-   padding: 1rem;
-   // border-bottom: 1px solid black;
-   
-`;
-
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;
@@ -42,14 +26,14 @@ export const Header = styled.div`
   width: 100%;
 
   .add-btn {
-    padding: 0.6rem 1.6rem;
-    font-size: 1rem;
-    height: auto;
+    padding: 0.3rem ${props => props.theme.padding};
+    font-size: 1.4rem;
+    height: 4.2rem;
   }
 `;
 
 export const Buttons = styled.div`
  display: flex;
  justify-content: space-between;
- padding: 1rem 1rem 2rem;
+ padding: 1rem 0rem 2rem;
 `

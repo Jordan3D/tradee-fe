@@ -55,10 +55,15 @@ export default {
     width: '0.2rem',
     color: 'black'
   },
+  padding: '1.6rem',
   breakpoints,
   mediaQueries,
   spacing,
   shadows,
   radii,
   zIndices,
+  fontSize: {
+    itemTitle: '2rem',
+    formItemTitle: '1.6rem'
+  }
 };

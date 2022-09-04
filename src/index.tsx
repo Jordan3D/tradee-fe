@@ -22,5 +22,4 @@ reportWebVitals();
 // - error handling refactor 3
 // - ideas fe 1
 // - ideas be 1
-// - notes fe refactoring 2
 // - small fe fixes on trades and transactions (table view) 4

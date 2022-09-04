@@ -60,11 +60,6 @@ margin-bottom: 1rem;
 export const Header = styled.div`
  display: flex;
  justify-content: space-between;
- .add-btn {
-padding: 0.6rem 1.6rem;
-font-size: 1rem;
-height: auto;
-}
 `;
 
 export const Title = styled.h3`

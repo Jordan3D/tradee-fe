@@ -1,17 +1,22 @@
+import { Drawer } from 'antd';
 import { ReactElement, useContext, useEffect, useState } from 'react';
 import { Page } from '../../components/Page';
 import { NotesContext } from '../../state/notePageContext';
 import { List } from './component/List';
 import { Form, TNoteForm } from './component/Form';
-import { GlobalContext } from '../../state/context';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
+import ItemTitle from '../../components/Form/ItemTitle';
 
 const Container = styled.div`
     position: relative;
     display: flex;
     height: 100%;
     margin: 0 auto;
+
+    .title {
+        margin: 0;
+    }
 
     @media screen and (max-width: 1200px){
         flex-direction: column;
@@ -35,9 +40,7 @@ const Container = styled.div`
 
 const Notes = (): ReactElement => {
     const { id } = useParams();
-    const { tagsListHandler } = useContext(GlobalContext);
-    const { noteListHandler } = useContext(NotesContext);
-    const [formValues, setFormValues] = useState<TNoteForm>({id});
+    const [formValues, setFormValues] = useState<TNoteForm>({ id });
 
     const onCloseForm = () => {
         setFormValues({});
@@ -47,21 +50,14 @@ const Notes = (): ReactElement => {
         setFormValues({ id });
     };
 
-    useEffect(() => {
-        tagsListHandler();
-        noteListHandler({});
-    }, [noteListHandler, tagsListHandler])
-
     return <Container>
-        <div className="notes_page__list">
-            <List selectedItem={formValues?.id} onSelectItem={onSelectNote}/>
-        </div>
-        <div className="notes_page__item">
-            {formValues.id && <Form values={formValues} onClose={onCloseForm} onSelectNote={onSelectNote} />}
-        </div>
+        <List selectedItem={formValues?.id} onSelectItem={onSelectNote} />
+        <Drawer closable={false} width={1000} title={<ItemTitle className='title'>{formValues?.id === 'new' ? 'New note' : 'Edit note'}</ItemTitle>} placement="right" onClose={onCloseForm} visible={!!formValues?.id}>
+            <Form values={formValues} onClose={onCloseForm} onSelectNote={onSelectNote} />
+        </Drawer>
     </Container>
 };
 
-const NotesPage = ():ReactElement => <Page isSecure><Notes/></Page>
+const NotesPage = (): ReactElement => <Page isSecure><Notes /></Page>
 
 export default NotesPage;

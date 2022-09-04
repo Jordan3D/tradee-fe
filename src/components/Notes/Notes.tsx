@@ -29,13 +29,14 @@ const tagRender = (props: CustomTagProps) => {
     );
 };
 
-const NoteItem = ({ item, onDelete }: { item: INote, onDelete: (id: string) => Promise<void> }) => {
+const NoteItem = ({ item, onDelete }: { item: INote | undefined, onDelete: (id: string) => Promise<void> }) => {
     const onDeleteItem = async () => {
+        if(item)
         onDelete(item.id);
     }
 
     return <div className='note-item'>
-        <Tooltip title={<div dangerouslySetInnerHTML={{__html: item.content}}/>}>
+        <Tooltip title={<div dangerouslySetInnerHTML={{__html: item?.content || ''}}/>}>
             <div className='note-item__title'>
                 {item?.title}
             </div>
@@ -99,7 +100,7 @@ const Notes = ({ tradeId, notes, updateTrade }: { tradeId: string, notes: string
     const noteList = useSelector(selectNoteIds);
     const [value, setValue] = useState<ReadonlyArray<string>>([]);
 
-    const noteOptions = useMemo(() => noteList.filter(note => !notes.find(nId => note === nId)).map(id => ({ label: noteMap[id].title, value: id }) as CustomTagProps), [noteMap, noteList, notes]);
+    const noteOptions = useMemo(() => noteList.filter(note => !notes.find(nId => note === nId)).map(id => ({ label: noteMap[id]?.title, value: id }) as CustomTagProps), [noteMap, noteList, notes]);
 
     const onSelect = (v: ReadonlyArray<string>) => {
         setValue(value.concat(v))

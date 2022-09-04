@@ -1,112 +1,133 @@
 import { Button, Input } from 'antd';
-import { ChangeEvent, memo, ReactElement, useCallback, useContext, useRef, useState } from 'react';
+import { ChangeEvent, memo, ReactElement, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
-import { NoData } from '../../../../components/NoData';
+import { MasonryInfiniteGrid } from "@egjs/react-infinitegrid";
 import { INote } from '../../../../interface/Note';
 import { NotesContext } from '../../../../state/notePageContext';
 import { selectNoteIds, selectNoteMap, selectNoteStatus } from '../../../../store/common/notes';
+import { Container, ItemContainer, ItemTitle, ItemContent } from './style';
+import { GlobalContext } from '../../../../state/context';
 
-const {Search} = Input;
+const { Search } = Input;
 
 type ItemProps = {
-    id: string;
-    isSelected: boolean;
-    onSelectItem:(id: string) => void;
+    item: GridItem;
+    onSelectItem: (id: string) => void;
 }
 
-const ItemContainer = styled.div`
-
-    display: flex;
-        height: 6.5rem;
-        border: 1px solid #d3d031;
-        background-color: #ffffd0;
-        margin-bottom: 1rem;
-        box-shadow: 0.4rem 0.4rem 5px 0px rgba(0, 0, 0, 0.332); 
-        transition: 0.35s ease all;
-        cursor: pointer;
-
-        &:hover {
-            border-color: #e7e421;
-            background-color: #e5e5ab;
-            box-shadow: 0.1rem 0.1rem 5px 0px rgba(0, 0, 0, 0.151); 
-        }
-        
-        &:last-child {
-            margin-bottom: 0;
-        }
-`;
-
-const Item = memo(({id, isSelected, onSelectItem}:ItemProps): ReactElement => {
+const Item = memo(({ item, onSelectItem }: ItemProps): ReactElement => {
     const noteMap = useSelector(selectNoteMap);
-    const item = noteMap[id] as INote;
-    const className = `${isSelected ? ' --selected' : ''}`;
+    const itemData = noteMap[item.id] as INote;
+    // const className = `${isSelected ? ' --selected' : ''}`;
 
     const onClickHandler = () => {
-        onSelectItem(id);
+        onSelectItem(item.id);
     };
 
-    return <ItemContainer className={className} onClick={onClickHandler}>
-        {item.title}
+    return itemData && <ItemContainer className="item" onClick={onClickHandler}>
+        <ItemTitle>
+            {itemData.title}
+        </ItemTitle>
+        <ItemContent dangerouslySetInnerHTML={{__html: itemData.content}}/>
     </ItemContainer>
 })
+
+type GridItem = { id: string, groupKey: number };
 
 type ListProps = {
     className?: string;
     selectedItem?: string;
-    onSelectItem:(id: string) => void;
+    onSelectItem: (id: string) => void;
 }
 
-const Container = styled.div`
-
-display: flex;
-        padding: 1rem;
-        flex-direction: column;
-        width: 100%;
-
-        .add_button {
-            margin: 2rem;
-        }
-
-        .list {
-                height: 50vw;
-                overflow-y: scroll;
-                padding: 1rem;
-        }
-`;
-
-const List = ({className = '', selectedItem, onSelectItem}: ListProps): ReactElement => {
+const List = memo(({ className = '', selectedItem, onSelectItem }: ListProps): ReactElement => {
     const noteIds = useSelector(selectNoteIds);
-    const savedValue = useRef<{value: string}>({value: ''});
-    const [isLoading, setIsloading] = useState(false);
-    const status = useSelector(selectNoteStatus);
+    const { tagsListHandler } = useContext(GlobalContext);
     const { noteListHandler } = useContext(NotesContext);
+    const savedValue = useRef<{ value: string }>({ value: '' });
+    const [items, setItems] = useState<GridItem[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [offset, setOffset] = useState(0);
+    const status = useSelector(selectNoteStatus);
 
     const onAddNoteHandler = () => {
         onSelectItem('new');
     };
 
-    const onSearch = useCallback((text: string) => noteListHandler({text}), [noteListHandler]);
+    const getItems = (nextGroupKey: number, count: number) => {
+        const nextItems = [];
+
+        for (let i = 0; i < count; ++i) {
+            if (noteIds.length > nextGroupKey + i) {
+                nextItems.push({ groupKey: nextGroupKey + count, id: noteIds[nextGroupKey + i] });
+            } else {
+                console.log('Load more')
+                // show "Load more"
+            }
+        }
+
+        return nextItems;
+    }
+
+    const onSearch = useCallback((text: string) => noteListHandler({ text }), [noteListHandler]);
 
     const onChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value?.toLowerCase();
         savedValue.current.value = value;
-        setTimeout(async() => {
-            if(value === savedValue.current.value){
-                setIsloading(true);
+        setTimeout(async () => {
+            if (value === savedValue.current.value) {
+                setIsSearching(true);
                 onSearch(value);
             }
         }, 1000)
     }, [onSearch]);
 
+    useEffect(() => {
+        tagsListHandler();
+        noteListHandler({});
+    }, [noteListHandler, tagsListHandler])
+
+    useEffect(() => {
+        if (status === 'pending') {
+            setItems([]);
+        }
+        if (status === 'succeeded') {
+            setIsSearching(false);
+            console.log('go')
+        }
+    }, [isSearching, status]);
+
     return <Container className={`${className + ' '}`}>
-        <Search allowClear placeholder="Search note"  onChange={onChange} loading={status === 'pending'}/>
+        <Search className='seatch' allowClear placeholder="Search note" onChange={onChange} loading={status === 'pending'} />
         <Button className='add_button' onClick={onAddNoteHandler}>Add note</Button>
         <div className='list'>
-            {!noteIds.length && <NoData text='No notes'/>}
-            {noteIds.map(id => <Item key={id} id={id} isSelected={id === selectedItem} onSelectItem={onSelectItem}/>)}
+            {(!!noteIds.length && !isSearching) && <MasonryInfiniteGrid
+                className="container"
+                gap={20}
+                requestPrepend={(e: any) => {
+                    console.log('requestPrepend');
+                    // set page -1 and load
+                }}
+                onRequestAppend={(e) => {
+                    const nextGroupKey = (+e.groupKey! || -1) + 1;
+                    console.log(e);
+                    e.wait();
+
+                    if (!isSearching) {
+                        setTimeout(() => {
+                            e.ready();
+                            setItems([
+                                ...items,
+                                ...getItems(nextGroupKey, 15),
+                            ]);
+                        }, 1000);
+                    }
+                }}
+            >
+                {items.map((item: GridItem) => <Item item={item} data-grid-groupkey={item.groupKey} onSelectItem={onSelectItem} />)}
+            </MasonryInfiniteGrid>}
         </div>
     </Container>
-};
+});
 
 export default List;

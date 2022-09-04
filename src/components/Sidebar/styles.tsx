@@ -5,32 +5,32 @@ export const Container = styled.div`
  display: flex;
  flex-direction: column;
  justify-content: space-between;
- padding: 1rem;
+ padding: ${props => props.theme.padding};
  align-items: center;
  flex-shrink: 0;
 
  top: 0;
  left: 0;
- width: 8rem;
+ width: 12rem;
  height: 100vh;
  background: ${props => props.theme.sidebar.bgColor};
- border-right: 1px solid #0b0e1e;
+ // border-right: 1px solid #0b0e1e;
  border-color: ${props => props.theme.sidebar.borderColor};
  position: relative;
  transition: 0.5s all ease;
  z-index: 1;
 
 .circle-btn {
-    width: 4rem;
-    height: 4rem;
+    width: 6rem;
+    height: 6rem;
     border-radius: 50%;
     border-width: 0;
-    font-size: 1.4rem;
-    background-color: #0a0a02b5;
+    font-size: 2rem;
+    background-color: #6183aab5;
     box-shadow: ${props => props.theme.shadows.default('#0a0a02b5')};
 
     &:hover {
-        background-color: ${props => props.theme.sidebar.textColor};
+        background-color: #3f6086b5;
         color: ${props => props.theme.sidebar.mainColor};
         box-shadow: ${props => props.theme.shadows.tooltip('#0a0a02b5', props.theme.sidebar.mainColor)};
     }
@@ -74,7 +74,7 @@ export const ItemButton = styled(Button)`
  transition: 0.5s all ease;
  background: #ffffff2e;
  color: ${props => props.theme.sidebar.textColor};
- font-size: 0.9rem;
+ font-size: 1.3rem;
  font-weight: 700;
  border: none;
 

@@ -23,7 +23,7 @@ align-items: center;
 width: 30%;
 min-height: 30rem;
 height: 100%;
-font-size: 1.4rem;
+font-size: 1.6rem;
 font-weight: 700;
 color: lightgray;
 border: 1px dashed lightgray;
@@ -36,7 +36,7 @@ const MainContent = styled(Wall)`
   flex-grow: 1;
   flex-direction: column;
   align-items: flex-start;
-  padding: 1rem;
+  padding: ${props => props.theme.padding};
 `
 const MainContentBottom = styled(Wall)`
   width: 100%;

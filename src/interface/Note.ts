@@ -10,6 +10,7 @@ export interface INote extends IBase {
     content: string;
     authorId: string;
     settings: INoteSettings[];
+    group?: number;
 }
 
 export interface INoteFull extends INote {

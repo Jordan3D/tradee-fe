@@ -2,6 +2,7 @@ import {
   createContext,
   ReactElement,
   ReactFragment,
+  useCallback,
   useState,
 } from 'react';
 
@@ -11,15 +12,16 @@ import { noteCreateApi, noteDeleteApi, noteUpdateApi } from '../api/note';
 import useError from '../utils/useError';
 import { processFetch } from '../api/_main';
 import { useDispatch } from 'react-redux';
-import { fetchData } from '../store/common/notes';
+import { fetchData, selectNoteIds, selectNoteMap, setData as setNoteData } from '../store/common/notes';
 import { AppDispatch } from '../store';
+import { useSelector } from 'react-redux';
 
 export type Props = Readonly<{
   children: ReactElement | ReactFragment
 }>;
 
 export type TContext = Readonly<{
-  noteListHandler: (argData: Readonly<{ lastId?: string, limit?: number, text?: string }>) => void;
+  noteListHandler: (argData: Readonly<{ offset?: number, limit?: number, text?: string }>) => void;
   noteCreateHandler: (data: INoteCreate) => Promise<unknown>;
   noteUpdateHandler: (id: string, data: INoteUpdate) => Promise<unknown>;
   noteDeleteHandler: (id: string) => Promise<unknown>;
@@ -35,13 +37,13 @@ export const NotesContext = createContext<TContext>({
 export const Provider = ({
   children,
 }: Props): ReactElement => {
-  const [noteIds, setNoteIds] = useState<string[]>([]); // ids list
-  const [noteMap, setNoteMap] = useState<Record<string, INoteFull>>({})
+  const noteIds = useSelector(selectNoteIds);
+  const noteMap = useSelector(selectNoteMap);
   const processError = useError();
   const dispatch = useDispatch<AppDispatch>();
 
 
-  const noteListHandler = (argData: Readonly<{ lastId?: string, limit?: number, text?: string }>) => dispatch(fetchData(argData));
+  const noteListHandler = useCallback((argData: Readonly<{ offset?: number, limit?: number, text?: string }>) => dispatch(fetchData(argData)), [dispatch]);
 
   const noteCreateHandler = async (argData: INoteCreate) => {
     let res;
@@ -50,8 +52,7 @@ export const Provider = ({
       onData: (data) => {
         if (data.id) {
           res = data;
-          setNoteIds(noteIds.concat([data.id]));
-          setNoteMap({ ...noteMap, [data.id]: data });
+          dispatch(setNoteData({noteIds: noteIds.concat([data.id]), noteMap: { ...noteMap, [data.id]: data }}));
           invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
         }
       },
@@ -67,7 +68,7 @@ export const Provider = ({
       onData: (data) => {
         if (data) {
           res = data;
-          setNoteMap({ ...noteMap, [data.id]: data });
+          dispatch(setNoteData({noteMap: { ...noteMap, [data.id]: data }}));
           invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
         }
       },
@@ -77,18 +78,21 @@ export const Provider = ({
   };
 
   const noteDeleteHandler = async (id: string) => {
-    return processFetch({
+    let res;
+    await processFetch({
       onRequest: () => noteDeleteApi(id),
-      onData: (res) => {
-        if(res){
+      onData: (data) => {
+        if(data){
+          res = data;
           const index = noteIds.findIndex(nId => nId === id);
           const copiedIds = noteIds.slice();
           copiedIds.splice(index, 1);
-          setNoteIds(copiedIds);
+          dispatch(setNoteData({noteIds: copiedIds, noteMap: {...noteMap, [id] : undefined}}));
         }
       },
       ...processError
     });
+    return res;
   };
 
 
