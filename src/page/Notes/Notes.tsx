@@ -52,7 +52,7 @@ const Notes = (): ReactElement => {
 
     return <Container>
         <List selectedItem={formValues?.id} onSelectItem={onSelectNote} />
-        <Drawer closable={false} width={1000} title={<ItemTitle className='title'>{formValues?.id === 'new' ? 'New note' : 'Edit note'}</ItemTitle>} placement="right" onClose={onCloseForm} visible={!!formValues?.id}>
+        <Drawer destroyOnClose closable={false} width={1000} title={<ItemTitle className='title'>{formValues?.id === 'new' ? 'New note' : 'Edit note'}</ItemTitle>} placement="right" onClose={onCloseForm} visible={!!formValues?.id}>
             <Form values={formValues} onClose={onCloseForm} onSelectNote={onSelectNote} />
         </Drawer>
     </Container>

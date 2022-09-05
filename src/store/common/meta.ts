@@ -40,7 +40,10 @@ export const fetchUser = createAsyncThunk('meta/fetchUser', async (_, {rejectWit
                 localStorage.setItem('refresh_token', refresh_token);
             }
         },
-        afterAllTries: () => dispatch(setRedirect(routes.login))
+        afterAllTries: () => {
+            dispatch(setUser(undefined))
+            dispatch(setRedirect(routes.login))
+        }
       });
 });
 

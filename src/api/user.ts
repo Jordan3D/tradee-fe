@@ -8,7 +8,7 @@ export type LoginPostApiResult = Readonly<{
     expiresIn: number,
 }>;
 export const loginPost = async (lf:LoginForm): Promise<LoginPostApiResult> => 
-fetchy<LoginPostApiResult>('/auth/signin', {body: JSON.stringify(lf), method: 'POST'});
+fetchy<LoginPostApiResult>('/auth/signin', {headers: { "Content-Type": "application/json"}, body: JSON.stringify(lf), method: 'POST'});
 
 export type RefreshTokenApiResult = Readonly<{
     access_token: string,
@@ -16,14 +16,14 @@ export type RefreshTokenApiResult = Readonly<{
 }>;
 export const refreshTokenApi = async (): Promise<RefreshTokenApiResult> => {
     const refresh_token = localStorage.getItem('refresh_token');
-    return fetchy<RefreshTokenApiResult>('/auth/refresh', {body: JSON.stringify({refresh_token}), method: 'POST'});
+    return fetchy<RefreshTokenApiResult>('/auth/refresh', {headers: { "Content-Type": "application/json"}, body: JSON.stringify({refresh_token}), method: 'POST'});
 }
 
 export type SignupPostApiResult = Readonly<{
     user: IUser
 }>;
 export const signupPost = async (sf:SignupForm): Promise<SignupPostApiResult> => 
-fetchy<SignupPostApiResult>('/user/create', {body: JSON.stringify(sf), method: 'POST'});
+fetchy<SignupPostApiResult>('/user/create', {headers: { "Content-Type": "application/json"}, body: JSON.stringify(sf), method: 'POST'});
 
 
 export type SelfGetApiResult = IUser;

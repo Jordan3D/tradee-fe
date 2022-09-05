@@ -2,11 +2,13 @@ import { Button, Input } from 'antd';
 import { ChangeEvent, memo, ReactElement, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MasonryInfiniteGrid } from "@egjs/react-infinitegrid";
-import { INote } from '../../../../interface/Note';
 import { NotesContext } from '../../../../state/notePageContext';
-import { selectNoteIds, selectNoteMap, selectNoteStatus } from '../../../../store/common/notes';
+import { selectNoteMap, selectNoteStatus } from '../../../../store/common/notes';
 import { Container, ItemContainer, ItemTitle, ItemContent } from './style';
 import { GlobalContext } from '../../../../state/context';
+import { IdeasContext } from '../../../../state/ideaPageContext';
+import { selectIdeaIds, selectIdeaMap } from '../../../../store/common/ideas';
+import { IIdea } from '../../../../interface/Idea';
 
 const { Search } = Input;
 
@@ -16,8 +18,8 @@ type ItemProps = {
 }
 
 const Item = memo(({ item, onSelectItem }: ItemProps): ReactElement => {
-    const noteMap = useSelector(selectNoteMap);
-    const itemData = noteMap[item.id] as INote;
+    const map = useSelector(selectIdeaMap);
+    const itemData = map[item.id] as IIdea;
     // const className = `${isSelected ? ' --selected' : ''}`;
 
     const onClickHandler = () => {
@@ -41,13 +43,13 @@ type ListProps = {
 }
 
 const List = memo(({ className = '', selectedItem, onSelectItem }: ListProps): ReactElement => {
-    const noteIds = useSelector(selectNoteIds);
+    const ids = useSelector(selectIdeaIds);
     const { tagsListHandler } = useContext(GlobalContext);
     const { noteListHandler } = useContext(NotesContext);
+    const { listHandler } = useContext(IdeasContext);
     const savedValue = useRef<{ value: string }>({ value: '' });
     const [items, setItems] = useState<GridItem[]>([]);
     const [isSearching, setIsSearching] = useState(false);
-    const [offset, setOffset] = useState(0);
     const status = useSelector(selectNoteStatus);
 
     const onAddNoteHandler = () => {
@@ -58,8 +60,8 @@ const List = memo(({ className = '', selectedItem, onSelectItem }: ListProps): R
         const nextItems = [];
 
         for (let i = 0; i < count; ++i) {
-            if (noteIds.length > nextGroupKey + i) {
-                nextItems.push({ groupKey: nextGroupKey + count, id: noteIds[nextGroupKey + i] });
+            if (ids.length > nextGroupKey + i) {
+                nextItems.push({ groupKey: nextGroupKey + count, id: ids[nextGroupKey + i] });
             } else {
                 console.log('Load more')
                 // show "Load more"
@@ -85,7 +87,8 @@ const List = memo(({ className = '', selectedItem, onSelectItem }: ListProps): R
     useEffect(() => {
         tagsListHandler();
         noteListHandler({});
-    }, [noteListHandler, tagsListHandler])
+        listHandler({})
+    }, [noteListHandler, tagsListHandler, listHandler])
 
     useEffect(() => {
         if (status === 'pending') {
@@ -99,11 +102,11 @@ const List = memo(({ className = '', selectedItem, onSelectItem }: ListProps): R
 
     return <Container className={`${className + ' '}`}>
         <div className='top'>
-            <Search className='seatch' allowClear placeholder="Search note" onChange={onChange} loading={status === 'pending'} />
-            <Button className='add_button' onClick={onAddNoteHandler}>Add note</Button>
+            <Search className='seatch' allowClear placeholder="Search idea" onChange={onChange} loading={status === 'pending'} />
+            <Button className='add_button' onClick={onAddNoteHandler}>Add idea</Button>
         </div>
         <div className='list'>
-            {(!!noteIds.length && !isSearching) && <MasonryInfiniteGrid
+            {(!!ids.length && !isSearching) && <MasonryInfiniteGrid
                 className="container"
                 gap={34}
                 container

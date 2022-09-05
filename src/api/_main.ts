@@ -1,6 +1,6 @@
 import { invokeFeedback } from "../utils/feedbacks/feedbacks";
 
-const baseURL = process.env.REACT_APP_API_URL;
+export const baseURL = process.env.REACT_APP_API_URL;
 
 export async function processFetch<T>(
   { onRequest, onData, onError, tries = 2, delay = 500, afterAllTries, feedbacks = false }:
@@ -60,7 +60,6 @@ function fetchy<T>(url: string, argConfigs?: RequestInit): Promise<T> {
   const configs = {
     ...argConfigs,
     headers: {
-      'Content-Type': 'application/json',
       ...argConfigs?.headers,
     },
   };
