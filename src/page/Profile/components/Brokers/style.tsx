@@ -12,7 +12,7 @@ display: flex;
 }
 
 table {
-  font-size: 0.8rem;
+  font-size: 1.2rem;
 
   .disabled-row {
         background-color: #dcdcdc;
@@ -63,7 +63,7 @@ export const Header = styled.div`
 `;
 
 export const Title = styled.h3`
-
+font-size: 1.4rem;
 `;
 
 export const Sync = styled(Button)`

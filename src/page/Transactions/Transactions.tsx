@@ -50,8 +50,7 @@ const Transactions = (): ReactElement => {
     const dispatch = useDispatch<AppDispatch>();
     const location = useLocation();
     const navigate = useNavigate();
-    const { tagsListHandler, getTransactions } = useContext(GlobalContext);
-    const { noteListHandler } = useContext(NotesContext);
+    const { getTransactions } = useContext(GlobalContext);
     const { search, pathname } = location;
     const params : TTradesGetProps = useMemo(() => qs.parse(search.substring(1)), [search]);
     const [ready, setReady] = useState(false);
@@ -74,7 +73,7 @@ const Transactions = (): ReactElement => {
 
     useEffect(() => {
         dispatch(fetchPairsData());
-    }, [dispatch, noteListHandler, tagsListHandler])
+    }, [dispatch])
 
     return <Container>
        { !ready ? null :<Table/>}

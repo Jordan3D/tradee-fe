@@ -17,6 +17,15 @@ const MainButton = styled(Button)`
   text-shadow: none;
  }
 
+ &.idea {
+  border-color: #9cbce5;
+  color: #4143cd;
+
+  &:hover {
+    border-color: #4143cd;
+  }
+ }
+
  &.journal {
   border-color: lightgreen;
   color: #42a442;

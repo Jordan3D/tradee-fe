@@ -59,11 +59,10 @@ const Container = styled.div`
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 1em;
+        margin-top: 2rem;
     }
     &__item {
         padding: 0.6rem;
-        /* background: #f6f6f6c9; */
         border: 1px dashed #dfdcdc
     }
    }

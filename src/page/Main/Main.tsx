@@ -48,6 +48,10 @@ const MainContentBottom = styled(Wall)`
 const Main = (): ReactElement => {
   const navigate = useNavigate();
 
+  const onAddIdea = () => {
+    navigate(routes.ideasItem('new'));
+  }
+
   const onAddItem = () => {
     navigate(routes.journalItem('new'));
   };
@@ -63,6 +67,9 @@ const Main = (): ReactElement => {
   return <Container className="main_page__root">
     <MainContent>
       <div className='buttons'>
+        <MainButton className='idea' onClick={onAddIdea}>
+          Add idea
+        </MainButton>
         <MainButton className='journal' onClick={onAddItem}>
           Add journal item
         </MainButton>

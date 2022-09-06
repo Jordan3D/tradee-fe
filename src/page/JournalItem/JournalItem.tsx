@@ -21,7 +21,7 @@ import { ICreateJI, IJournalItem, IUpdateJI } from '../../interface/Journal';
 import { JournalContext } from '../../state/journalContext';
 import { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import { selectTagList } from '../../store/common/tags';
-import { selectNoteIds, selectNoteMap } from '../../store/common/notes';
+import { fetchNotesData, selectNoteIds, selectNoteMap } from '../../store/common/notes';
 import { Container, Header, Buttons } from './style';
 import ItemTitle from '../../components/Form/ItemTitle';
 
@@ -59,7 +59,6 @@ const JournalItem = (): ReactElement => {
     const navigate = useNavigate();
     const { tagsListHandler, getTrades, clearTrades, getTransactions, clearTransactions } = useContext(GlobalContext);
     const { jICreateHandler, jIUpdateHandler, journalItemGet } = useContext(JournalContext);
-    const { noteListHandler } = useContext(NotesContext);
     const { id } = useParams();
     const { search } = useLocation();
     const tagList = useSelector(selectTagList);
@@ -145,12 +144,12 @@ const JournalItem = (): ReactElement => {
         getTransactions({ limit: 10 });
         dispatch(fetchPairsData());
         tagsListHandler();
-        noteListHandler({});
+        dispatch(fetchNotesData({}));
         return () => {
             clearTrades();
             clearTransactions();
         };
-    }, [dispatch, noteListHandler, tagsListHandler, getTrades, clearTrades, getTransactions, clearTransactions])
+    }, [dispatch, tagsListHandler, getTrades, clearTrades, getTransactions, clearTransactions])
 
     useEffect(() => {
         if (params.date) {

@@ -49,8 +49,6 @@ const Container = styled.div`
 
 const Trade = (): ReactElement => {
     const dispatch = useDispatch<AppDispatch>();
-    const { tagsListHandler } = useContext(GlobalContext);
-    const { noteListHandler } = useContext(NotesContext);
 
     const { id } = useParams();
     const pairs = useSelector(selectPairsMap);
@@ -129,7 +127,7 @@ const Trade = (): ReactElement => {
             updateTrade();
             dispatch(fetchPairsData());
         }
-    }, [id, dispatch, tagsListHandler, noteListHandler, updateTrade]);
+    }, [id, dispatch, updateTrade]);
 
     return trade ? <Container>
         <div className='trade__values'>

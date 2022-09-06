@@ -1,5 +1,5 @@
-import { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Button, Table, Select, Tag } from 'antd';
+import { ReactElement, useContext, useEffect, useMemo, useState } from 'react';
+import { Button, Select, Tag } from 'antd';
 import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import { useSelector } from 'react-redux';
 import { selectTagMap } from '../../../../store/common/tags';
@@ -14,7 +14,7 @@ import styled from 'styled-components';
 ;
 
 const tagRender = (props: CustomTagProps) => {
-    const { label, value, closable, onClose } = props;
+    const { label, closable, onClose } = props;
     const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
         event.preventDefault();
         event.stopPropagation();

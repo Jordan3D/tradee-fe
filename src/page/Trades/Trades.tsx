@@ -4,13 +4,12 @@ import { Table } from './component/Table';
 import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import qs from 'qs';
-import { fetchTradeData } from '../../store/trades';
 import { AppDispatch } from '../../store';
 import { fetchPairsData } from '../../store/common/pairs';
 import { TTradesGetProps } from '../../api/trade';
 import { GlobalContext } from '../../state/context';
-import { NotesContext } from '../../state/notePageContext';
 import styled from 'styled-components';
+import { fetchNotesData } from '../../store/common/notes';
 
 const defaultParams = {
     limit: 25,
@@ -52,7 +51,6 @@ const Trades = (): ReactElement => {
     const location = useLocation();
     const navigate = useNavigate();
     const { tagsListHandler, getTrades } = useContext(GlobalContext);
-    const { noteListHandler } = useContext(NotesContext);
     const { search, pathname } = location;
     const params : TTradesGetProps = useMemo(() => qs.parse(search.substring(1)), [search]);
     const [ready, setReady] = useState(false);
@@ -76,8 +74,8 @@ const Trades = (): ReactElement => {
     useEffect(() => {
         dispatch(fetchPairsData());
         tagsListHandler();
-        noteListHandler({});
-    }, [dispatch, noteListHandler, tagsListHandler])
+        dispatch(fetchNotesData({}));
+    }, [dispatch, tagsListHandler])
 
     return <Container>
        { !ready ? null :<Table/>}

@@ -6,7 +6,7 @@ display: flex;
 justify-content: center;
     height: 30rem;
     border: 1px solid #d3d031;
-    background-color: #fddae9;
+    background-color: #9cbce5;
     margin-bottom: 1rem;
     box-shadow: 0.4rem 0.4rem 5px 0px rgba(0, 0, 0, 0.332); 
     transition: 0.35s ease all;
@@ -16,7 +16,7 @@ justify-content: center;
 
     &:hover {
         border-color: #e7e421;
-        background-color: #fddae9;
+        background-color: #9cbce5;
         box-shadow: 0.1rem 0.1rem 5px 0px rgba(0, 0, 0, 0.151); 
     }
     
@@ -74,11 +74,11 @@ export const Container = styled.div`
 
 export const ItemTitle = styled.div`
     text-align: center;
-    font-size: 1.4rem;
+    font-size: 1.8rem;
     font-weight: 500;
     margin-bottom: 1rem;
 `
 
 export const ItemContent = styled.div`
-    font-size: 1rem;
+    font-size: 1.4rem;
 `

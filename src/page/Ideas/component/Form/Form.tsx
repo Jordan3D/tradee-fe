@@ -9,8 +9,7 @@ import { useSelector } from 'react-redux';
 import { selectTagList } from '../../../../store/common/tags';
 import styled from 'styled-components';
 import { IdeasContext } from '../../../../state/ideaPageContext';
-import { ICreateIdea, IFile, IIdea, IUpdateIdea } from '../../../../interface/Idea';
-import { selectIdeaMap } from '../../../../store/common/ideas';
+import { ICreateIdea, IIdea, IUpdateIdea } from '../../../../interface/Idea';
 import { selectNoteIds, selectNoteMap } from '../../../../store/common/notes';
 import {ImageUploader} from '../../../../components/ImageUploader';
 
@@ -47,7 +46,7 @@ const tagRender = (props: CustomTagProps) => {
 const Container = styled.div`
   padding: 1.2em;
   height: 100%;
-  .note_form {
+  .idea_form {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -61,11 +60,10 @@ const Container = styled.div`
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 1em;
+        border-top: 2rem;
     }
     &__item {
         padding: 0.6rem;
-        /* background: #f6f6f6c9; */
         border: 1px dashed #dfdcdc
     }
    }
@@ -77,8 +75,7 @@ const Form = ({ values, onClose, onSelectItem }: Props) => {
     const tagList = useSelector(selectTagList);
     const noteList = useSelector(selectNoteIds);
     const noteMap = useSelector(selectNoteMap);
-    const map = useSelector(selectIdeaMap);
-    const { createHandler, updateHandler, deleteHandler } = useContext(IdeasContext);
+    const { map, createHandler, updateHandler, deleteHandler } = useContext(IdeasContext);
     const [eState, setEState] = useState<EditorState>();
     const [photos, setPhotos] = useState<UploadFile[]>([]);
 
@@ -87,6 +84,8 @@ const Form = ({ values, onClose, onSelectItem }: Props) => {
     const photosAsUploadFile = useMemo(() =>
      editItem?.photos ? editItem?.photos.map(photo => ({uid: photo.id, thumbUrl: photo.url, name: photo.key})) as UploadFile[] : []
      , [editItem?.photos]);
+
+     console.log(photosAsUploadFile);
 
     const tagOptions = useMemo(() => tagList.map(tag => ({ label: tag.title, value: tag.id }) as CustomTagProps), [tagList]);
     const noteOptions = useMemo(() => noteList.map(note => ({ label: noteMap[note]?.title, value: noteMap[note]?.id }) as CustomTagProps), [noteList, noteMap]);

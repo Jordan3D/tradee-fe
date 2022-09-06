@@ -48,6 +48,7 @@ const Container = styled.div`
         padding: 1rem;
         flex-direction: column;
         width: 100%;
+        justify-content: space-between;
 
     .add_button {
         margin: 2rem;

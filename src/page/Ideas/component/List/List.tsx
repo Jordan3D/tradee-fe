@@ -2,13 +2,13 @@ import { Button, Input } from 'antd';
 import { ChangeEvent, memo, ReactElement, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MasonryInfiniteGrid } from "@egjs/react-infinitegrid";
-import { NotesContext } from '../../../../state/notePageContext';
-import { selectNoteMap, selectNoteStatus } from '../../../../store/common/notes';
+import { fetchNotesData, selectNoteStatus } from '../../../../store/common/notes';
 import { Container, ItemContainer, ItemTitle, ItemContent } from './style';
 import { GlobalContext } from '../../../../state/context';
 import { IdeasContext } from '../../../../state/ideaPageContext';
-import { selectIdeaIds, selectIdeaMap } from '../../../../store/common/ideas';
 import { IIdea } from '../../../../interface/Idea';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../../../store';
 
 const { Search } = Input;
 
@@ -18,7 +18,7 @@ type ItemProps = {
 }
 
 const Item = memo(({ item, onSelectItem }: ItemProps): ReactElement => {
-    const map = useSelector(selectIdeaMap);
+    const { map } = useContext(IdeasContext);
     const itemData = map[item.id] as IIdea;
     // const className = `${isSelected ? ' --selected' : ''}`;
 
@@ -42,63 +42,53 @@ type ListProps = {
     onSelectItem: (id: string) => void;
 }
 
-const List = memo(({ className = '', selectedItem, onSelectItem }: ListProps): ReactElement => {
-    const ids = useSelector(selectIdeaIds);
+const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement => {
+    const dispatch = useDispatch<AppDispatch>();
     const { tagsListHandler } = useContext(GlobalContext);
-    const { noteListHandler } = useContext(NotesContext);
-    const { listHandler } = useContext(IdeasContext);
+    const { listHandler, ids, clearData } = useContext(IdeasContext);
     const savedValue = useRef<{ value: string }>({ value: '' });
+    const timeout = useRef<{ value: number }>({ value: 0 });
     const [items, setItems] = useState<GridItem[]>([]);
     const [isSearching, setIsSearching] = useState(false);
+    const [loadMore, setLoadMore] = useState(true);
     const status = useSelector(selectNoteStatus);
 
     const onAddNoteHandler = () => {
         onSelectItem('new');
     };
 
-    const getItems = (nextGroupKey: number, count: number) => {
-        const nextItems = [];
-
-        for (let i = 0; i < count; ++i) {
-            if (ids.length > nextGroupKey + i) {
-                nextItems.push({ groupKey: nextGroupKey + count, id: ids[nextGroupKey + i] });
-            } else {
-                console.log('Load more')
-                // show "Load more"
-            }
-        }
-
-        return nextItems;
-    }
-
-    const onSearch = useCallback((text: string) => noteListHandler({ text }), [noteListHandler]);
-
     const onChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value?.toLowerCase();
-        savedValue.current.value = value;
+        const text = e.target.value?.toLowerCase();
+        savedValue.current.value = text;
         setTimeout(async () => {
-            if (value === savedValue.current.value) {
+            if (text === savedValue.current.value) {
                 setIsSearching(true);
-                onSearch(value);
+                listHandler({ text, limit: 25 });
             }
         }, 1000)
-    }, [onSearch]);
+    }, []);
 
     useEffect(() => {
         tagsListHandler();
-        noteListHandler({});
-        listHandler({})
-    }, [noteListHandler, tagsListHandler, listHandler])
+        dispatch(fetchNotesData({}));
+    }, [])
 
     useEffect(() => {
-        if (status === 'pending') {
-            setItems([]);
-        }
-        if (status === 'succeeded') {
-            setIsSearching(false);
-            console.log('go')
-        }
-    }, [isSearching, status]);
+        listHandler({ limit: 25 });
+
+        return clearData
+    }, [])
+
+    useEffect(() => {
+        setItems(ids.map((id, count) => ({ groupKey: count, id })));
+        setTimeout(() => {
+            if(loadMore)
+            setLoadMore(false)
+
+            if(isSearching)
+            setIsSearching(false)
+        }, 1000);
+    }, [ids])
 
     return <Container className={`${className + ' '}`}>
         <div className='top'>
@@ -110,23 +100,16 @@ const List = memo(({ className = '', selectedItem, onSelectItem }: ListProps): R
                 className="container"
                 gap={34}
                 container
-                requestPrepend={(e: any) => {
-                    console.log('requestPrepend');
-                    // set page -1 and load
-                }}
-                onRequestAppend={(e) => {
-                    const nextGroupKey = (+e.groupKey! || -1) + 1;
-                    console.log(e);
-                    e.wait();
-
-                    if (!isSearching) {
-                        setTimeout(() => {
-                            e.ready();
-                            setItems([
-                                ...items,
-                                ...getItems(nextGroupKey, 15),
-                            ]);
-                        }, 1000);
+                onRequestAppend={() => {
+                    console.log(Date.now() - timeout.current.value);
+                    if(Date.now() - timeout.current.value < 1000){
+                        timeout.current.value = Date.now();
+                        return;
+                    }
+                    if (!isSearching && !loadMore) {
+                        setLoadMore(true);
+                        listHandler({ limit: 25, lastId: ids.length ? ids[ids.length - 1] : '' });
+                        timeout.current.value = Date.now();
                     }
                 }}
             >

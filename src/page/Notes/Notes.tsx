@@ -1,7 +1,6 @@
 import { Drawer } from 'antd';
-import { ReactElement, useContext, useEffect, useState } from 'react';
+import { ReactElement, useState } from 'react';
 import { Page } from '../../components/Page';
-import { NotesContext } from '../../state/notePageContext';
 import { List } from './component/List';
 import { Form, TNoteForm } from './component/Form';
 import styled from 'styled-components';

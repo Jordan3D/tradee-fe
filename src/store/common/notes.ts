@@ -25,7 +25,7 @@ const initialState: INotesState = {
     limit: 20
 }
 
-export const fetchData = createAsyncThunk('notes/fetchData', async (argData: Readonly<{ offset?: number, limit?: number, text?: string }>, {rejectWithValue, dispatch, getState}) => {
+export const fetchNotesData = createAsyncThunk('notes/fetchData', async (argData: Readonly<{ offset?: number, limit?: number, text?: string }>, {rejectWithValue, dispatch, getState}) => {
     await processFetch({
         onRequest: () => noteListGetApi(argData),
         onData: (data) => {
@@ -61,13 +61,13 @@ export const notesSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
-        builder.addCase(fetchData.pending, (state, action) => {
+        builder.addCase(fetchNotesData.pending, (state, action) => {
             state.status = 'pending';
         });
-        builder.addCase(fetchData.rejected, (state, action) => {
+        builder.addCase(fetchNotesData.rejected, (state, action) => {
             state.status = 'failed';
         });
-        builder.addCase(fetchData.fulfilled, (state, action) => {
+        builder.addCase(fetchNotesData.fulfilled, (state, action) => {
             state.status = 'succeeded';
         })
     }

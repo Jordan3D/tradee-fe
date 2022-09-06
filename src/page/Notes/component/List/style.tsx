@@ -74,11 +74,11 @@ export const Container = styled.div`
 
 export const ItemTitle = styled.div`
     text-align: center;
-    font-size: 1.4rem;
+    font-size: 1.8rem;
     font-weight: 500;
     margin-bottom: 1rem;
 `
 
 export const ItemContent = styled.div`
-    font-size: 1rem;
+    font-size: 1.4rem;
 `
