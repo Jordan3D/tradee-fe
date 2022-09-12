@@ -3,9 +3,11 @@ import styled from 'styled-components';
 import { Page } from '../../components/Page';
 import { GlobalContext } from '../../state/context';
 import { Brokers } from './components/Brokers';
+import { Pairs } from './components/Pairs';
 
 const Container = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: flex-end;
 `;
 
@@ -18,6 +20,7 @@ const Main = (): ReactElement => {
 
     return  <Container className="profile_page__root">
       <Brokers/>
+      <Pairs/>
     </Container>
 }
 

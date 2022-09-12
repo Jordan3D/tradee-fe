@@ -27,9 +27,7 @@ table {
 }
 
 .table_content {
-height: 80vh;
 width: 100%;
-overflow-y: scroll;
 margin-bottom: 1rem;
 }
 

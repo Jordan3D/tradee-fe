@@ -1,6 +1,6 @@
-import { Button, Modal, Pagination, Table as AntdTable, Tag } from 'antd';
+import { Button, Table as AntdTable, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { memo, ReactElement, useEffect, useMemo, useState } from 'react';
+import { memo, ReactElement, useMemo } from 'react';
 import { format } from 'date-fns-tz';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +10,10 @@ import { ITrade } from '../../../../interface/Trade';
 import routes from '../../../../router';
 import styled from 'styled-components';
 import { selectUser } from '../../../../store/common/meta';
-import { selectJIPnls } from '../../../../store/journalItem';
+import { selectJIPnls, removePnlById } from '../../../../store/journalItem';
+import { DeleteOutlined } from '@ant-design/icons';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../../../store';
 
 interface DataType extends ITrade {
     key: string;
@@ -39,6 +42,36 @@ const Container = styled.div`
 .table_content {
     width: 100%;
     overflow-y: scroll;
+    
+    .action-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            width: 3.6rem;
+            height: 3.6rem;
+            padding: 1.4rem;
+            border-radius: 50%;
+            justify-content: center;
+            align-items: center;
+        }
+     .action-text {
+        display: flex;
+     }   
+
+        .ant-table-cell {
+            position: relative;
+
+            &:hover {
+                .action-text {
+                  display: none;
+                }  
+                .action-btn {
+                    display: flex;
+                }
+            }
+        }
 }
 
 .trades-item {
@@ -65,7 +98,7 @@ const Container = styled.div`
 }
 `;
 
-const Pnl = memo((): ReactElement => {
+const Pnl = memo(({onRemove}: {onRemove: any}): ReactElement => {
     const user = useSelector(selectUser);
     const navigate = useNavigate();
     const pairs = useSelector(selectPairsMap);
@@ -78,7 +111,14 @@ const Pnl = memo((): ReactElement => {
             dataIndex: 'action',
             key: 'action',
             width: 120,
-            render: text => text.toLowerCase() === 'buy' ? 'Closed short' : 'Closed long',
+            render: (text, { key }) => (
+                <div className='action' key={key}>
+                    <Button className='action-btn' onClick={() => onRemove(key)}>
+                        <DeleteOutlined/>
+                    </Button>
+                    <div className='action-text'>{text.toLowerCase() === 'buy' ? 'Closed short' : 'Closed long'}</div>
+                </div>
+            ),
         },
         {
             title: 'Pair',
@@ -153,7 +193,7 @@ const Pnl = memo((): ReactElement => {
             width: '15%',
             render: notes => notes.length || '',
         }
-    ], [user, pairs, tagMap]);
+    ], [user, pairs, tagMap, onRemove]);
 
     const data: DataType[] = trades.map(trade => ({ key: trade.id, ...trade }));
 

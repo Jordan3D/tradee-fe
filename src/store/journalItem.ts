@@ -28,12 +28,18 @@ export const tradeSlice = createSlice({
         },
         setTransactions: (state, action: PayloadAction<ITransaction[]>) => {
             state.transactions = action.payload
-         }
+         },
+        removeTransactionById: (state, action: PayloadAction<string>) => {
+            state.transactions = state.transactions.filter(t => t.id !== action.payload);
+         },
+        removePnlById: (state, action: PayloadAction<string>) => {
+            state.pnls = state.pnls.filter(t => t.id !== action.payload);
+         } 
     },
 });
 
 
-export const { setDate: setJIDate, setPnls: setJIPnls, setTransactions: setJIsetTransactions } = tradeSlice.actions
+export const { setDate: setJIDate, setPnls: setJIPnls, setTransactions: setJIsetTransactions, removePnlById, removeTransactionById } = tradeSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectJournalItemStore = (state: RootState) => state.journalItem;

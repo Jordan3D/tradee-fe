@@ -49,10 +49,11 @@ export const Provider = ({
 
   const journalItemGet = useCallback( async (id: string) => {
     let res;
-    console.log(id);
     await processFetch<IJournalItem>({
       onRequest: () => jIGetApi(id),
-      onData: (data) => res = data,
+      onData: (data) => {
+        res = data
+      },
       ...processError
     });
     return res;

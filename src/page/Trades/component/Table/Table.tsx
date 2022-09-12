@@ -1,6 +1,6 @@
 import { Pagination, Table, TablePaginationConfig, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { ReactElement, useEffect, useMemo, useState } from 'react';
+import { ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import qs from 'qs';
 import { format } from 'date-fns-tz';
 import { useSelector } from 'react-redux';
@@ -111,6 +111,7 @@ const TableComponent = ({ className = '', selected = [], onSelected, onGetData }
     const navigate = useNavigate();
     const pairs = useSelector(selectPairsMap);
     const tagMap = useSelector(selectTagMap);
+    const buff = useRef<any>(null);
 
     const [selectedRowKeys, setSelectedRowKeys] = useState<Record<string, string[]>>({});
 
@@ -216,7 +217,7 @@ const TableComponent = ({ className = '', selected = [], onSelected, onGetData }
         navigate(routes.trade(trade.id));
     }
 
-    const onSelectChange = (_: any, newSelecedRows: ITrade[]) => {
+    const onSelectChange = (newSelecedRows: React.Key[]) => {
         setSelectedRowKeys({ ...selectedRowKeys, [page]: newSelecedRows });
     };
 
@@ -238,10 +239,12 @@ const TableComponent = ({ className = '', selected = [], onSelected, onGetData }
     useEffect(() => {
         return () => {
             if (onSelected) {
-                onSelected(Object.entries(selectedRowKeys).map(([page, arr]) => arr).flat());
+                onSelected(Object.entries(buff.current as Record<string, string[]>).map(([page, arr]) => arr).flat());
             }
         }
-    }, [selectedRowKeys, onSelected])
+    }, [onSelected])
+
+    buff.current = selectedRowKeys;
 
     return <Container className={`${className + ' '}`}>
         <div className={`table_content${onSelected ? ' tiny' : ' '}`}>

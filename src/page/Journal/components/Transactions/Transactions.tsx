@@ -10,6 +10,7 @@ import routes from '../../../../router';
 import styled from 'styled-components';
 import { selectUser } from '../../../../store/common/meta';
 import { selectJITrasactions } from '../../../../store/journalItem';
+import { DeleteOutlined } from '@ant-design/icons';
 
 interface DataType extends ITransaction {
     key: string;
@@ -38,6 +39,36 @@ const Container = styled.div`
 .table_content {
     width: 100%;
     overflow-y: scroll;
+
+    .action-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            width: 3.6rem;
+            height: 3.6rem;
+            padding: 1.4rem;
+            border-radius: 50%;
+            justify-content: center;
+            align-items: center;
+        }
+     .action-text {
+        display: flex;
+     }   
+
+        .ant-table-cell {
+            position: relative;
+
+            &:hover {
+                .action-text {
+                  display: none;
+                }  
+                .action-btn {
+                    display: flex;
+                }
+            }
+        }
 }
 
 .trades-item {
@@ -64,7 +95,7 @@ const Container = styled.div`
 }
 `;
 
-const Transactions = memo((): ReactElement => {
+const Transactions = memo(({onRemove}: {onRemove: any}): ReactElement => {
     const user = useSelector(selectUser);
     const navigate = useNavigate();
     const pairs = useSelector(selectPairsMap);
@@ -76,7 +107,14 @@ const Transactions = memo((): ReactElement => {
             dataIndex: 'side',
             key: 'side',
             width: 120,
-            render: text => text,
+            render: (text, { key }) => (
+                <div className='action' key={key}>
+                    <Button className='action-btn' onClick={() => onRemove(key)}>
+                        <DeleteOutlined/>
+                    </Button>
+                    <div className='action-text'>{text}</div>
+                </div>
+            ),
         },
         {
             title: 'Pair',
@@ -148,7 +186,7 @@ const Transactions = memo((): ReactElement => {
             width: 110,
             render: text => text,
         },
-    ], [user, pairs]);
+    ], [user, pairs, onRemove]);
 
     const data: DataType[] = transactions.map(t => ({ key: t.id, ...t }));
 

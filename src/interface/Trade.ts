@@ -19,13 +19,6 @@ export interface ITrade {
     notes: string[];
 }
 
-export interface IPair {
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    title: string;
-}
-
 export interface ITradeUpdate {
     tagsAdded?: ReadonlyArray<string>;
     tagsDeleted?: ReadonlyArray<string>;

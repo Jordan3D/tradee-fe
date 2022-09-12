@@ -5,7 +5,7 @@ import { processFetch } from '../../api/_main';
 import { setRedirect } from './meta';
 import routes from '../../router';
 import { refreshTokenApi } from '../../api/user';
-import { IPair } from '../../interface/Trade';
+import { IPair } from '../../interface/Pair';
 import { pairsGetApi } from '../../api/pair';
 import { fromListToIdsAndMap } from '../../utils/common';
 

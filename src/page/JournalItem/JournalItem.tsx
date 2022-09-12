@@ -12,7 +12,7 @@ import { AppDispatch } from '../../store';
 import { GlobalContext } from '../../state/context';
 import { NotesContext } from '../../state/notePageContext';
 import { fetchPairsData } from '../../store/common/pairs';
-import { selectJIDate, setJIDate, setJIPnls, setJIsetTransactions } from '../../store/journalItem';
+import { removePnlById, removeTransactionById, selectJIDate, setJIDate, setJIPnls, setJIsetTransactions } from '../../store/journalItem';
 import { useSelector } from 'react-redux';
 import { tradesIdsPostApi } from '../../api/trade';
 import { transactionsIdsPostApi } from '../../api/transaction';
@@ -58,7 +58,7 @@ const JournalItem = (): ReactElement => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const { tagsListHandler, getTrades, clearTrades, getTransactions, clearTransactions } = useContext(GlobalContext);
-    const { jICreateHandler, jIUpdateHandler, journalItemGet } = useContext(JournalContext);
+    const { jICreateHandler, jIUpdateHandler, journalItemGet, jIDeleteHandler } = useContext(JournalContext);
     const { id } = useParams();
     const { search } = useLocation();
     const tagList = useSelector(selectTagList);
@@ -107,13 +107,30 @@ const JournalItem = (): ReactElement => {
         setItem({ ...item, pnls: item?.pnls?.concat(selected) });
     }
 
+    const onRemovePnl = (id: string) => {
+        setItem({ ...item, pnls: item?.pnls?.filter(pId => pId !== id) });
+        dispatch(removePnlById(id));
+    };
+
     const onTransactionSelected = (selected: string[]) => {
         setItem({ ...item, transactions: item?.transactions?.concat(selected) });
     }
 
+    const onRemoveTransaction = (id: string) => {
+        setItem({ ...item, transactions: item?.transactions?.filter(tId => tId !== id) });
+        dispatch(removeTransactionById(id));
+    };
+
     const onClose = () => {
         navigate(-1);
     };
+
+    const onDelete = () => {
+        if(id){
+            jIDeleteHandler(id);
+            navigate(-1);
+        }
+    }
 
     const onFinish = (values: ICreateJI & IUpdateJI) => {
         const flatData = {
@@ -185,10 +202,10 @@ const JournalItem = (): ReactElement => {
                     })
             })()
         }
-    }, [journalItemGet, form, id])
+    }, [journalItemGet, form, id, setItem])
 
     return <Container>
-        <ItemTitle>New Item ({format(new Date(itemDate), 'MMMM dd yyyy')})</ItemTitle>
+        <ItemTitle>{`${id ? item?.title : 'New Item'} (${format(new Date(itemDate), 'MMMM dd yyyy')})`}</ItemTitle>
         <AntdForm
             form={form}
             name="journalItemForm"
@@ -212,7 +229,7 @@ const JournalItem = (): ReactElement => {
                     </div>
                     <Button className='add-btn' size='large' onClick={showModal('pnl')}>Add</Button>
                 </Header>
-                <Pnl />
+                <Pnl onRemove={onRemovePnl}/>
                 <Modal width={1500} destroyOnClose visible={isPnlModalVisible} onOk={handleOk} onCancel={handleCancel}>
                     <TablePnl onSelected={onPnlSelected} selected={item?.pnls} onGetData={getTrades} />
                 </Modal>
@@ -226,7 +243,7 @@ const JournalItem = (): ReactElement => {
                     </div>
                     <Button className='add-btn' size='large' onClick={showModal('transactions')}>Add</Button>
                 </Header>
-                <Transactions />
+                <Transactions onRemove={onRemoveTransaction} />
                 <Modal width={1500} destroyOnClose visible={isTransactionsModalVisible} onOk={handleOk} onCancel={handleCancel}>
                     <TableTransactions onSelected={onTransactionSelected} selected={item?.transactions} onGetData={getTransactions} />
                 </Modal>
@@ -262,6 +279,9 @@ const JournalItem = (): ReactElement => {
                 <Button type="default" size='large' htmlType="button" onClick={onClose}>
                     Back
                 </Button>
+                {id && <Button type="default" size='large' htmlType="button" onClick={onDelete}>
+                    Delete
+                </Button>}
                 <Button type="primary" size='large' htmlType="submit">
                     Submit
                 </Button>
