@@ -102,8 +102,8 @@ const Form = ({ values, onClose, onSelectItem }: Props) => {
                 added = value.tags.filter(id => editItem?.tags?.indexOf(id) === - 1) || [];
                 deleted = editItem?.tags?.filter(id => value.tags?.indexOf(id) === - 1) || [];
 
-                (value as IUpdateIdea).addedTags = added;
-                (value as IUpdateIdea).deletedTags = deleted;
+                (value as IUpdateIdea).tagsAdded = added;
+                (value as IUpdateIdea).tagsDeleted = deleted;
             }
             added = [];
             deleted = [];
@@ -112,23 +112,23 @@ const Form = ({ values, onClose, onSelectItem }: Props) => {
                 added = value.notes.filter(id => editItem?.notes?.indexOf(id) === - 1) || [];
                 deleted = editItem?.notes?.filter(id => value.notes?.indexOf(id) === - 1) || [];
 
-                (value as IUpdateIdea).addedNotes = added;
-                (value as IUpdateIdea).deletedNotes = deleted;
+                (value as IUpdateIdea).notesAdded = added;
+                (value as IUpdateIdea).notesDeleted = deleted;
             }
 
             added = [];
             deleted = [];
 
-            if (value.notes) {
+            if (photos.length) {
                 added = photos.filter(fp => editItem?.photos?.find(p => p.id !== fp.uid)) || [];
                 deleted = editItem?.photos?.filter(fp => photos?.find(p => p.uid !== fp.id)) || [];
 
-                (value as IUpdateIdea).addedPhotos = added.map(p => p.uid);
-                (value as IUpdateIdea).deletedPhotos = deleted.map(p => p.id);
+                (value as IUpdateIdea).photosAdded = added.map(p => p.uid);
+                (value as IUpdateIdea).photosDeleted = deleted.map(p => p.id);
             }
 
 
-            updateHandler(id, { ...value, content } as IUpdateIdea);
+            await updateHandler(id, { ...value, content } as IUpdateIdea);
             return;
         } else {
             const newItem = (await createHandler({ ...value, content, photos: photos.map(p => p.uid) } as ICreateIdea)) as IIdea;

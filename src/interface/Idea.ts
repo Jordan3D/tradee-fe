@@ -17,12 +17,12 @@ export interface ICreateIdea extends Omit<IIdea, 'photos'> {
 export interface IUpdateIdea {
     title: string;
     content: string;
-    addedPhotos: string[];
-    deletedPhotos: string[];
-    addedTags: string[];
-    deletedTags: string[];
-    addedNotes: string[];
-    deletedNotes: string[];
+    photosAdded: string[];
+    photosDeleted: string[];
+    tagsAdded: string[];
+    tagsDeleted: string[];
+    notesAdded: string[];
+    notesDeleted: string[];
 }
 
 export interface IIdeaFull extends IBase{

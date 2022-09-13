@@ -18,8 +18,10 @@ reportWebVitals();
 
 
 // TODO
-// - check new broker on test net 4
 // - error handling refactor 3
-// - ideas fe 1
-// - ideas be 1
-// - small fe fixes on trades and transactions (table view) 4
+// - adding photos tab (fe, be)
+// - tag filter (fe, be)
+// - note filter (fe, be)
+// - order trade and transaction by name (fe, be)
+// - order trade and transaction by createDate (fe, be)
+// - next feature : Trader Diary (Calendar, Day, display all trades within customized "dayStart" and "dayEnd", editable content, and two set : "read", "edit")

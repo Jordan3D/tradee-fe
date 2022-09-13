@@ -20,10 +20,10 @@ export interface IUpdateJI {
     content: string;
     pnls: string[];
     transactions: string[];
-    addedTags: string[];
-    deletedTags: string[];
-    addedNotes: string[];
-    deletedNotes: string[];
+    tagsAdded: string[];
+    tagsDeleted: string[];
+    notesAdded: string[];
+    notesDeleted: string[];
 }
 
 export interface IJournalItemFull extends IBase{

@@ -72,11 +72,10 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
     const { id } = values;
     const [form] = useForm();
     const tagList = useSelector(selectTagList);
-    const noteMap = useSelector(selectNoteMap);
-    const { noteCreateHandler, noteUpdateHandler, noteDeleteHandler } = useContext(NotesContext);
+    const {map, noteCreateHandler, noteUpdateHandler, noteDeleteHandler } = useContext(NotesContext);
     const [eState, setEState] = useState<EditorState>();
 
-    const editNote = id ? noteMap[id] : undefined;
+    const editNote = id ? map[id] : undefined;
 
     const tagOptions = useMemo(() => tagList.map(tag => ({ label: tag.title, value: tag.id }) as CustomTagProps), [tagList]);
 
