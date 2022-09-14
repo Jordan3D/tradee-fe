@@ -2,13 +2,17 @@ import { IFile, IIdea } from "../interface/Idea";
 import { CreateTag, UpdateTag } from "../interface/Tag";
 import fetchy from "./_main";
 
+type TIdeaListGetProps  = Readonly<{ lastId?: string, offset?: number, limit?: number, text?: string }>
+
 export type IdeaListGetApiResult = IIdea[];
-export const ideaListGetApi = async (
-    { lastId, limit, text }: Readonly<{ lastId?: string, limit?: number, text?: string }>
-): Promise<IdeaListGetApiResult> => {
+
+
+export const ideaListGetApi = async (args: TIdeaListGetProps): Promise<IdeaListGetApiResult> => {
     const token = localStorage.getItem('access_token');
+    const argsKeys = Object.keys(args) as ReadonlyArray<keyof TIdeaListGetProps>;
+
     return fetchy<IdeaListGetApiResult>(
-        `/idea/list?lastId=${lastId ?? ''}&limit=${limit ?? ''}&text=${text ?? ''}`,
+        `/idea/list${argsKeys.length ? '?' + argsKeys.map((key: keyof TIdeaListGetProps) => `${key}=${args[key]}`).join('&'): ''}`,
         { headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` } }
     )
 };

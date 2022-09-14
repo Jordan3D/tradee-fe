@@ -9,7 +9,8 @@ import { Provider as ContextProvider } from '../../state/context';
 import { Provider as NotesPageProvider } from '../../state/notePageContext';
 import { Provider as IdeasPageProvider } from '../../state/ideaPageContext';
 import { Provider as JournalProvider } from '../../state/journalContext';
-import { Provider as ContextLoaderProvider } from '../../state/loaderContext';
+import { Provider as ImagesContext } from '../../state/imagesContext';
+import { Provider as LoaderContext} from '../../state/loaderContext';
 import { Loader } from '../Loader';
 
 import 'react-toastify/dist/ReactToastify.css';
@@ -33,6 +34,7 @@ import { ProfilePage } from '../../page/Profile';
 import JournalItemPage from '../../page/JournalItem/JournalItem';
 import { TransactionsPage } from '../../page/Transactions';
 import GlobalStyles from '../../theme/GlobalStyles';
+import { ImagesPage } from '../../page/Images';
 
 const themes: TThemes = {
   dark,
@@ -60,35 +62,39 @@ function App() {
               <NotesPageProvider>
                 <IdeasPageProvider>
                   <JournalProvider>
-                    <ContextLoaderProvider>
-                      <ErrorBoundary>
-                        <>
-                          <Loader />
-                          <ToastContainer />
-                          <CommonLogicComponent />
-                          <Routes>
-                            <Route path={routes.start} element={<StartPage />} />
-                            <Route path={routes.signup} element={<StartPage />} />
-                            <Route path={routes.login} element={<StartPage />} />
-                            <Route path={routes.ideas} element={<IdeasPage />} />
-                            <Route path={routes.ideasItem()} element={<IdeasPage />} />
-                            <Route path={routes.journal} element={<JouranlPage />} />
-                            <Route path={routes.journalItemNew()} element={<JournalItemPage />} />
-                            <Route path={routes.journalItem()} element={<JournalItemPage />} />
-                            <Route path={routes.tags} element={<TagsPage />} />
-                            <Route path={routes.tagsItem()} element={<TagsPage />} />
-                            <Route path={routes.trades} element={<TradesPage />} />
-                            <Route path={routes.trade()} element={<TradePage />} />
-                            <Route path={routes.transactions} element={<TransactionsPage />} />
-                            <Route path={routes.main} element={<MainPage />} />
-                            <Route path={routes.profile} element={<ProfilePage />} />
-                            <Route path={routes.notes} element={<NotesPage />} />
-                            <Route path={routes.notesItem()} element={<NotesPage />} />
-                            <Route path='*' element={<Error helmetTitle='Not found' backButtonHandler={backOnError} />} />
-                          </Routes>
-                        </>
-                      </ErrorBoundary>
-                    </ContextLoaderProvider>
+                    <ImagesContext>
+                      <LoaderContext>
+                        <ErrorBoundary>
+                          <>
+                            <Loader />
+                            <ToastContainer />
+                            <CommonLogicComponent />
+                            <Routes>
+                              <Route path={routes.start} element={<StartPage />} />
+                              <Route path={routes.signup} element={<StartPage />} />
+                              <Route path={routes.login} element={<StartPage />} />
+                              <Route path={routes.ideas} element={<IdeasPage />} />
+                              <Route path={routes.ideasItem()} element={<IdeasPage />} />
+                              <Route path={routes.journal} element={<JouranlPage />} />
+                              <Route path={routes.journalItemNew()} element={<JournalItemPage />} />
+                              <Route path={routes.journalItem()} element={<JournalItemPage />} />
+                              <Route path={routes.tags} element={<TagsPage />} />
+                              <Route path={routes.tagsItem()} element={<TagsPage />} />
+                              <Route path={routes.trades} element={<TradesPage />} />
+                              <Route path={routes.trade()} element={<TradePage />} />
+                              <Route path={routes.transactions} element={<TransactionsPage />} />
+                              <Route path={routes.main} element={<MainPage />} />
+                              <Route path={routes.profile} element={<ProfilePage />} />
+                              <Route path={routes.notes} element={<NotesPage />} />
+                              <Route path={routes.notesItem()} element={<NotesPage />} />
+                              <Route path={routes.images} element={<ImagesPage />} />
+                              <Route path={routes.imagesItem()} element={<ImagesPage />} />
+                              <Route path='*' element={<Error helmetTitle='Not found' backButtonHandler={backOnError} />} />
+                            </Routes>
+                          </>
+                        </ErrorBoundary>
+                      </LoaderContext>
+                    </ImagesContext>
                   </JournalProvider>
                 </IdeasPageProvider>
               </NotesPageProvider>

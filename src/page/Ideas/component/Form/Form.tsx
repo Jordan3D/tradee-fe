@@ -85,8 +85,6 @@ const Form = ({ values, onClose, onSelectItem }: Props) => {
      editItem?.photos ? editItem?.photos.map(photo => ({uid: photo.id, thumbUrl: photo.url, name: photo.key})) as UploadFile[] : []
      , [editItem?.photos]);
 
-     console.log(photosAsUploadFile);
-
     const tagOptions = useMemo(() => tagList.map(tag => ({ label: tag.title, value: tag.id }) as CustomTagProps), [tagList]);
     const noteOptions = useMemo(() => noteList.map(note => ({ label: noteMap[note]?.title, value: noteMap[note]?.id }) as CustomTagProps), [noteList, noteMap]);
 

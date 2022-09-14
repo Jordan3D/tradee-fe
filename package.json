@@ -5,6 +5,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "@babel/core": "7.16.0",
+    "@egjs/react-infinitegrid": "4.6.0",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.3",
     "@reduxjs/toolkit": "^1.8.3",
     "@svgr/webpack": "5.5.0",
@@ -54,6 +55,7 @@
     "qs": "6.11.0",
     "react": "^18.2.0",
     "react-app-polyfill": "3.0.0",
+    "react-copy-to-clipboard": "^5.1.0",
     "react-dev-utils": "12.0.1",
     "react-dom": "^18.2.0",
     "react-draft-wysiwyg": "^1.15.0",
@@ -78,8 +80,7 @@
     "webpack": "5.64.4",
     "webpack-dev-server": "4.6.0",
     "webpack-manifest-plugin": "4.0.2",
-    "workbox-webpack-plugin": "6.4.1",
-    "@egjs/react-infinitegrid": "4.6.0"
+    "workbox-webpack-plugin": "6.4.1"
   },
   "scripts": {
     "start": "node scripts/start.js",

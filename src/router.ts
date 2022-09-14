@@ -1,12 +1,12 @@
 export type Route = 'ideas' | 'notes' | 'notesItem' | 'main' | 'profile' |
  'start' | 'login' | 'signup' | 'tags' | 'tagsItem' | 'journal' | 'trades' | 'trade' | 
- 'journalItem' | 'journalItemNew' | 'transactions' | 'ideasItem';
+ 'journalItem' | 'journalItemNew' | 'transactions' | 'ideasItem' | 'images' | 'imagesItem';
 
 const routes: Record<Route,any> = {
     ideas: '/ideas',
-    ideasItem: (id: string  = ':id') => `/ideas/${id}`,
+    ideasItem: (id: string  = ':id') => `${routes.ideas}/${id}`,
     notes: '/notes',
-    notesItem: (id: string  = ':id') => `/notes/${id}`,
+    notesItem: (id: string  = ':id') => `${routes.notes}/${id}`,
     main: '/main',
     profile: '/profile',
     journal: '/journal',
@@ -16,10 +16,12 @@ const routes: Record<Route,any> = {
     login: '/start/login',
     signup: '/start/signup',
     tags: '/tags',
-    tagsItem: (id: string  = ':id') => `/tags/${id}`,
+    tagsItem: (id: string  = ':id') => `${routes.tags}/${id}`,
     trades: '/trades',
     transactions: '/transactions',
-    trade: (id?: string) => `/trade/${id ? id : ':id'}`
+    trade: (id?: string) => `/trade/${id ? id : ':id'}`,
+    images: '/images',
+    imagesItem: (id: string  = ':id') => `${routes.images}/${id}`,
 };
 
 export default routes;

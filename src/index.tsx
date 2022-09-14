@@ -19,7 +19,6 @@ reportWebVitals();
 
 // TODO
 // - error handling refactor 3
-// - adding photos tab (fe, be)
 // - tag filter (fe, be)
 // - note filter (fe, be)
 // - order trade and transaction by name (fe, be)

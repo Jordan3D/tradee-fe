@@ -3,11 +3,12 @@ import { Modal, Upload } from 'antd';
 import type { RcFile } from 'antd/es/upload';
 import type { UploadFile } from 'antd/es/upload/interface';
 import { ReactElement, useEffect, useState } from 'react';
-import { ideaDeletePhotoApi, ideaUploadPhotoApi } from '../../api/idea';
+import { fileCreateApi, fileDeleteApi } from '../../api/file';
 
 type Props = {
     data: UploadFile[],
     onFileListChange(fl: UploadFile[]): void;
+    maxCount?: number
 }
 
 const getBase64 = (file: RcFile): Promise<string> =>
@@ -18,7 +19,7 @@ const getBase64 = (file: RcFile): Promise<string> =>
         reader.onerror = error => reject(error);
     });
 
-const ImageUploader = ({ data, onFileListChange }: Props): ReactElement => {
+const ImageUploader = ({ data, onFileListChange, maxCount = 5 }: Props): ReactElement => {
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [previewTitle, setPreviewTitle] = useState('');
@@ -39,7 +40,7 @@ const ImageUploader = ({ data, onFileListChange }: Props): ReactElement => {
     const onUpload = async (file: RcFile):Promise<boolean> => {
         const formData = new FormData();
         formData.append('photo', file as RcFile);
-        const result = await ideaUploadPhotoApi(formData);
+        const result = await fileCreateApi(formData);
 
         setFileList([...fileList, {uid:result.id, status: 'success', thumbUrl: result.url, name: result.key}]);
 
@@ -47,7 +48,7 @@ const ImageUploader = ({ data, onFileListChange }: Props): ReactElement => {
     }
 
     const onRemove = async (file: UploadFile):Promise<boolean> => {
-        const res = await ideaDeletePhotoApi(file.uid);
+        const res = await fileDeleteApi(file.uid);
         const index = fileList.findIndex(item => item.uid === file.uid);
         const fileListCopy = [...fileList];
         fileListCopy.splice(index, 1)
@@ -69,7 +70,7 @@ const ImageUploader = ({ data, onFileListChange }: Props): ReactElement => {
     return (
         <>
             <Upload
-                maxCount={5}
+                maxCount={maxCount}
                 beforeUpload={onUpload}
                 listType="picture-card"
                 fileList={fileList}
