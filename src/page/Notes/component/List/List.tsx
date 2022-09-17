@@ -7,6 +7,9 @@ import { NotesContext } from '../../../../state/notePageContext';
 import { selectNoteStatus } from '../../../../store/common/notes';
 import { Container, ItemContainer, ItemTitle, ItemContent } from './style';
 import { GlobalContext } from '../../../../state/context';
+import { SearchItems } from '../../../../components/SearchItems';
+import { tagListGetApi } from '../../../../api/tag';
+import { useUpdateEffect } from 'react-use';
 
 const { Search } = Input;
 
@@ -42,53 +45,65 @@ type ListProps = {
 
 const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement => {
     const { tagsListHandler } = useContext(GlobalContext);
-    const { noteListHandler, ids, clearData } = useContext(NotesContext);
+    const { isLastItem, ids, listHandler, clearData } = useContext(NotesContext);
     const savedValue = useRef<{ value: string }>({ value: '' });
     const timeout = useRef<{ value: number }>({ value: 0 });
+    const [searchText, setSearchText] = useState('');
     const [items, setItems] = useState<GridItem[]>([]);
     const [isSearching, setIsSearching] = useState(false);
-    const [loadMore, setLoadMore] = useState(true);
+    const [tagValues, setTagValues] = useState<string[]>([]);
     const status = useSelector(selectNoteStatus);
 
     const onAddNoteHandler = () => {
         onSelectItem('new');
     };
 
+    const onTagValues = useCallback((values: string[]) => {
+        setTagValues(values);
+    }, []);
+
+    const getData = (isCleared: boolean = false) => listHandler({ text: searchText, limit: 25, tags: tagValues }, isCleared);
+
     const onChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         const text = e.target.value?.toLowerCase();
         savedValue.current.value = text;
         setTimeout(async () => {
             if (text === savedValue.current.value) {
-                setIsSearching(true);
-                noteListHandler({ text, limit: 25 }, true);
+                setSearchText(text);
             }
-        }, 500)
-    }, []);
+        }, 1000)
+    }, [listHandler]);
 
     useEffect(() => {
         tagsListHandler();
     }, [])
 
     useEffect(() => {
-        noteListHandler({ limit: 25 });
         return clearData
     }, [])
+
+    useUpdateEffect(() => {
+        setIsSearching(true);
+        getData(true);
+    }, [tagValues, searchText]);
 
     useEffect(() => {
         setItems(ids.map((id, count) => ({ groupKey: count, id })));
         setTimeout(() => {
-            if(loadMore)
-            setLoadMore(false)
-
-            if(isSearching)
-            setIsSearching(false)
+            if (isSearching)
+                setIsSearching(false)
         }, 1000);
     }, [ids])
 
     return <Container className={`${className + ' '}`}>
         <div className='top'>
-            <Search className='seatch' allowClear placeholder="Search note" onChange={onChange} loading={status === 'pending'} />
-            <Button className='add_button' onClick={onAddNoteHandler}>Add note</Button>
+            <div>
+                <Search className='seatch' allowClear placeholder="Search note" onChange={onChange} loading={status === 'pending'} />
+                <Button className='add_button' onClick={onAddNoteHandler}>Add note</Button>
+            </div>
+            <div>
+                <SearchItems getItems={tagListGetApi} onValues={onTagValues} />
+            </div>
         </div>
         <div className='list'>
             {(!!ids.length && !isSearching) && <MasonryInfiniteGrid
@@ -96,14 +111,13 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
                 gap={34}
                 container
                 onRequestAppend={() => {
-                    if(Date.now() - timeout.current.value <1000){
+                    if (Date.now() - timeout.current.value < 1000) {
                         timeout.current.value = Date.now();
                         return;
                     }
 
-                    if (!isSearching && !loadMore) {
-                        setLoadMore(true);
-                        noteListHandler({ limit: 25, lastId: ids.length ? ids[ids.length - 1] : '' });
+                    if (!isSearching && !isLastItem) {
+                        listHandler({ limit: 25, lastId: ids.length ? ids[ids.length - 1] : '' });
                         timeout.current.value = Date.now();
                     }
                 }}

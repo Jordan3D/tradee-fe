@@ -23,7 +23,7 @@ const initialState: ITagState = {
 
 export const fetchTagData = createAsyncThunk('tags/fetchTagData', async (_, { rejectWithValue, dispatch, getState }) => {
     await processFetch({
-        onRequest: () => tagListGetApi(),
+        onRequest: () => tagListGetApi({}),
         onData: (data) => {
             const result = treeAndMapFromList(data);
             dispatch(setTagData({

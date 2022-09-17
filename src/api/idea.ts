@@ -1,18 +1,30 @@
+import qs from 'qs';
 import { IFile, IIdea } from "../interface/Idea";
 import { CreateTag, UpdateTag } from "../interface/Tag";
 import fetchy from "./_main";
 
-type TIdeaListGetProps  = Readonly<{ lastId?: string, offset?: number, limit?: number, text?: string }>
+type TIdeaListGetProps  = Readonly<{ lastId?: string, offset?: number, limit?: number, text?: string, tags?: string[] }>
 
-export type IdeaListGetApiResult = IIdea[];
+export type IdeaListGetOffsetApiResult = Readonly<{data: IIdea[], total: number}>;
+export type IdeaListGetCursorApiResult = Readonly<{data: IIdea[], isLast: boolean}>;
 
 
-export const ideaListGetApi = async (args: TIdeaListGetProps): Promise<IdeaListGetApiResult> => {
+export const ideaListOffsetGetApi = async (args: TIdeaListGetProps): Promise<IdeaListGetOffsetApiResult> => {
     const token = localStorage.getItem('access_token');
     const argsKeys = Object.keys(args) as ReadonlyArray<keyof TIdeaListGetProps>;
 
-    return fetchy<IdeaListGetApiResult>(
-        `/idea/list${argsKeys.length ? '?' + argsKeys.map((key: keyof TIdeaListGetProps) => `${key}=${args[key]}`).join('&'): ''}`,
+    return fetchy<IdeaListGetOffsetApiResult>(
+        `/idea/list${argsKeys.length ? '?' + qs.stringify(args, {arrayFormat: 'brackets'}) : ''}`,
+        { headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` } }
+    )
+};
+
+export const ideaListCursorGetApi = async (args: TIdeaListGetProps): Promise<IdeaListGetCursorApiResult> => {
+    const token = localStorage.getItem('access_token');
+    const argsKeys = Object.keys(args) as ReadonlyArray<keyof TIdeaListGetProps>;
+
+    return fetchy<IdeaListGetCursorApiResult>(
+        `/idea/list${argsKeys.length ? '?' + qs.stringify(args, {arrayFormat: 'brackets'}) : ''}`,
         { headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` } }
     )
 };

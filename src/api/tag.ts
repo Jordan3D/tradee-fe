@@ -4,9 +4,13 @@ import fetchy from "./_main";
 export type TTagMap = Record<string, TagWithChildren>;
 
 export type TagsListGetApiResult = ITag[];
-export const tagListGetApi = async (): Promise<TagsListGetApiResult> => {
+type tagListGetProps = {text?: string};
+export const tagListGetApi = async (args: {text?: string}): Promise<TagsListGetApiResult> => {
     const token = localStorage.getItem('access_token');
-    return await fetchy<TagsListGetApiResult>('/tag/list', {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`}});
+    const argsKeys = Object.keys(args) as ReadonlyArray<keyof tagListGetProps>;
+    return await fetchy<TagsListGetApiResult>
+        (`/tag/list${argsKeys.length ? '?' + argsKeys.map((key: keyof tagListGetProps) => 
+         `${key}=${args[key]}`).join('&'): ''}`, {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`}});
 };
 
 export type TagCreateApiResult = ITag;

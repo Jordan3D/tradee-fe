@@ -7,7 +7,7 @@ import routes from '../../router';
 import { refreshTokenApi } from '../../api/user';
 import { IIdea } from '../../interface/Idea';
 import { fromListToIdsAndMap } from '../../utils/common';
-import { ideaListGetApi } from '../../api/idea';
+import { ideaListOffsetGetApi } from '../../api/idea';
 
 interface IIdeaState {
     ids: string[],
@@ -27,8 +27,8 @@ const initialState: IIdeaState = {
 
 export const fetchData = createAsyncThunk('ideas/fetchData', async (argData: Readonly<{ offset?: number, limit?: number, text?: string }>, {rejectWithValue, dispatch, getState}) => {
     await processFetch({
-        onRequest: () => ideaListGetApi(argData),
-        onData: (data) => {
+        onRequest: () => ideaListOffsetGetApi(argData),
+        onData: ({data}) => {
             const { ids, map } = fromListToIdsAndMap(data);
           dispatch(setIdeaData({
             ids,

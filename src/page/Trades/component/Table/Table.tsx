@@ -201,7 +201,7 @@ const TableComponent = ({ className = '', selected = [], onSelected, onGetData }
     const data: DataType[] = trades.map(trade => ({ key: trade.id, ...trade }));
 
     const onChangeHandler = (pagination: TablePaginationConfig) => {
-        console.log(pagination)
+        // console.log(pagination)
     }
 
     const onPaginationChange = (page: number, pageSize: number) => {

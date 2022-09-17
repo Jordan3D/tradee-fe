@@ -1,15 +1,27 @@
-import { INoteFull } from "../interface/Note";
+import qs from 'qs';
+import { INote, INoteFull } from "../interface/Note";
 import { CreateTag, UpdateTag } from "../interface/Tag";
 import fetchy from "./_main";
 
 type TNoteListGetProps  = Readonly<{ lastId?: string, offset?: number, limit?: number, text?: string }>
 
-export type NoteListGetApiResult = INoteFull[];
-export const noteListGetApi = async (args: TNoteListGetProps): Promise<NoteListGetApiResult> => {
+export type NoteListGetOffsetApiResult = Readonly<{data: INoteFull[], total: number}>;
+export type NoteListGetCursorApiResult = Readonly<{data: INoteFull[], isLast: boolean}>;
+
+export const noteListOffsetGetApi = async (args: TNoteListGetProps): Promise<NoteListGetOffsetApiResult> => {
     const token = localStorage.getItem('access_token');
     const argsKeys = Object.keys(args) as ReadonlyArray<keyof TNoteListGetProps>;
-    return fetchy<NoteListGetApiResult>(
-        `/note/list${argsKeys.length ? '?' + argsKeys.map((key: keyof TNoteListGetProps) => `${key}=${args[key]}`).join('&'): ''}`,
+    return fetchy<NoteListGetOffsetApiResult>(
+        `/note/list${argsKeys.length ? '?' + qs.stringify(args, {arrayFormat: 'brackets'}): ''}`,
+        { headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` } }
+    )
+};
+
+export const noteListCursorGetApi = async (args: TNoteListGetProps): Promise<NoteListGetCursorApiResult> => {
+    const token = localStorage.getItem('access_token');
+    const argsKeys = Object.keys(args) as ReadonlyArray<keyof TNoteListGetProps>;
+    return fetchy<NoteListGetCursorApiResult>(
+        `/note/list${argsKeys.length ? '?' + qs.stringify(args, {arrayFormat: 'brackets'}): ''}`,
         { headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` } }
     )
 };

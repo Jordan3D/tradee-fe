@@ -10,7 +10,6 @@ import { Table as TableTransactions } from '../Transactions/component/Table';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store';
 import { GlobalContext } from '../../state/context';
-import { NotesContext } from '../../state/notePageContext';
 import { fetchPairsData } from '../../store/common/pairs';
 import { removePnlById, removeTransactionById, selectJIDate, setJIDate, setJIPnls, setJIsetTransactions } from '../../store/journalItem';
 import { useSelector } from 'react-redux';

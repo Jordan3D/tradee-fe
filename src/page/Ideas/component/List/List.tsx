@@ -3,12 +3,15 @@ import { ChangeEvent, memo, ReactElement, useCallback, useContext, useEffect, us
 import { useSelector } from 'react-redux';
 import { MasonryInfiniteGrid } from "@egjs/react-infinitegrid";
 import { fetchNotesData, selectNoteStatus } from '../../../../store/common/notes';
+import {useUpdateEffect} from 'react-use';
 import { Container, ItemContainer, ItemTitle, ItemContent } from './style';
 import { GlobalContext } from '../../../../state/context';
 import { IdeasContext } from '../../../../state/ideaPageContext';
 import { IIdea } from '../../../../interface/Idea';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../../store';
+import { SearchItems } from '../../../../components/SearchItems';
+import { tagListGetApi } from '../../../../api/tag';
 
 const { Search } = Input;
 
@@ -45,28 +48,34 @@ type ListProps = {
 const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement => {
     const dispatch = useDispatch<AppDispatch>();
     const { tagsListHandler } = useContext(GlobalContext);
-    const { listHandler, ids, clearData } = useContext(IdeasContext);
+    const { isLastItem, ids, listHandler, clearData } = useContext(IdeasContext);
     const savedValue = useRef<{ value: string }>({ value: '' });
     const timeout = useRef<{ value: number }>({ value: 0 });
+    const [searchText, setSearchText] = useState('');
     const [items, setItems] = useState<GridItem[]>([]);
     const [isSearching, setIsSearching] = useState(false);
-    const [loadMore, setLoadMore] = useState(true);
+    const [tagValues, setTagValues] = useState<string[]>([]);
     const status = useSelector(selectNoteStatus);
 
     const onAddNoteHandler = () => {
         onSelectItem('new');
     };
 
+    const onTagValues = useCallback((values: string[]) => {
+        setTagValues(values);
+    }, []);
+
+    const getData = (isCleared: boolean = false) => listHandler({ text: searchText, limit: 25, tags: tagValues }, isCleared);
+
     const onChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         const text = e.target.value?.toLowerCase();
         savedValue.current.value = text;
         setTimeout(async () => {
             if (text === savedValue.current.value) {
-                setIsSearching(true);
-                listHandler({ text, limit: 25 });
+                setSearchText(text);
             }
         }, 1000)
-    }, []);
+    }, [listHandler]);
 
     useEffect(() => {
         tagsListHandler();
@@ -74,26 +83,32 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
     }, [])
 
     useEffect(() => {
-        listHandler({ limit: 25 });
-
         return clearData
     }, [])
+
+    useUpdateEffect(() => {
+        setIsSearching(true);
+        getData(true);
+    }, [tagValues, searchText]);
+    
 
     useEffect(() => {
         setItems(ids.map((id, count) => ({ groupKey: count, id })));
         setTimeout(() => {
-            if(loadMore)
-            setLoadMore(false)
-
-            if(isSearching)
-            setIsSearching(false)
+            if (isSearching)
+                setIsSearching(false)
         }, 1000);
-    }, [ids])
+    }, [ids]);
 
     return <Container className={`${className + ' '}`}>
         <div className='top'>
-            <Search className='seatch' allowClear placeholder="Search idea" onChange={onChange} loading={status === 'pending'} />
-            <Button className='add_button' onClick={onAddNoteHandler}>Add idea</Button>
+            <div>
+                <Search className='seatch' allowClear placeholder="Search idea" onChange={onChange} loading={status === 'pending'} />
+                <Button className='add_button' onClick={onAddNoteHandler}>Add idea</Button>
+            </div>
+            <div>
+                <SearchItems getItems={tagListGetApi} onValues={onTagValues}/>
+            </div>
         </div>
         <div className='list'>
             {(!!ids.length && !isSearching) && <MasonryInfiniteGrid
@@ -101,14 +116,12 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
                 gap={34}
                 container
                 onRequestAppend={() => {
-                    console.log(Date.now() - timeout.current.value);
-                    if(Date.now() - timeout.current.value < 1000){
+                    if (Date.now() - timeout.current.value < 1000) {
                         timeout.current.value = Date.now();
                         return;
                     }
-                    if (!isSearching && !loadMore) {
-                        setLoadMore(true);
-                        listHandler({ limit: 25, lastId: ids.length ? ids[ids.length - 1] : '' });
+                    if (!isSearching && !isLastItem) {
+                        listHandler({ limit: 25, lastId: ids.length ? ids[ids.length - 1] : '', tags: tagValues });
                         timeout.current.value = Date.now();
                     }
                 }}

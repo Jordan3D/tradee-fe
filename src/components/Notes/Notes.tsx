@@ -95,7 +95,7 @@ const Container = styled.div`
 `;
 
 const Notes = ({ tradeId, notes, updateTrade }: { tradeId: string, notes: string[], updateTrade: () => Promise<void> }): ReactElement => {
-    const { noteListHandler } = useContext(NotesContext);
+    const { listHandler: noteListHandler } = useContext(NotesContext);
     const noteMap = useSelector(selectNoteMap);
     const noteList = useSelector(selectNoteIds);
     const [value, setValue] = useState<ReadonlyArray<string>>([]);

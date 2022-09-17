@@ -8,7 +8,7 @@ import {
 
 import { invokeFeedback } from '../utils/feedbacks/feedbacks';
 import { INoteCreate, INoteFull, INoteUpdate } from '../interface/Note';
-import { noteCreateApi, noteDeleteApi, noteListGetApi, noteUpdateApi } from '../api/note';
+import { noteCreateApi, noteDeleteApi, noteListCursorGetApi, noteUpdateApi } from '../api/note';
 import useError from '../utils/useError';
 import { processFetch } from '../api/_main';
 import { fromListToIdsAndMap } from '../utils/common';
@@ -21,20 +21,22 @@ export type Props = Readonly<{
 }>;
 
 export type TContext = Readonly<{
+  isLastItem: boolean,
   ids: string[];
   map: Record<string, INoteFull>;
   clearData: () => void,
-  noteListHandler: (argData: Readonly<{ offset?: number, limit?: number, text?: string, lastId?: string }>, clear?: boolean) => Promise<void>;
+  listHandler: (argData: Readonly<{ offset?: number, limit?: number, text?: string, lastId?: string, tags?: string[] }>, clear?: boolean) => Promise<void>;
   noteCreateHandler: (data: INoteCreate) => Promise<unknown>;
   noteUpdateHandler: (id: string, data: INoteUpdate) => Promise<unknown>;
   noteDeleteHandler: (id: string) => Promise<unknown>;
 }>;
 
 export const NotesContext = createContext<TContext>({
+  isLastItem: true,
   ids: [],
   map: {},
   clearData: () => {},
-  noteListHandler: () => Promise.resolve(),
+  listHandler: () => Promise.resolve(),
   noteCreateHandler: () => Promise.resolve(),
   noteUpdateHandler: () => Promise.resolve(),
   noteDeleteHandler: () => Promise.resolve(),
@@ -46,16 +48,18 @@ export const Provider = ({
   const navigate = useNavigate();
   const [ids, setIds] = useState<string[]>([]);
   const [map, setMap] = useState<Record<string, INoteFull>>({});
+  const [isLastItem, setIsLastItem] = useState(true);
   const processError = useError();
 
-  const noteListHandler = useCallback(async (argData: Readonly<{ offset?: number, limit?: number, text?: string }>, clear?: boolean) => {
+  const listHandler = useCallback(async (argData: Readonly<{ offset?: number, limit?: number, text?: string }>, clear?: boolean) => {
     return await processFetch({
-      onRequest: () => noteListGetApi(argData),
-      onData: (data) => {
+      onRequest: () => noteListCursorGetApi(argData),
+      onData: ({data, isLast}) => {
         const { ids: dataIds, map: dataMap } = fromListToIdsAndMap(data);
+        setIsLastItem(isLast);
         if (clear) {
-          setIds(ids);
-          setMap(map);
+          setIds(dataIds);
+          setMap(dataMap);
         } else {
           setIds([...ids, ...dataIds]);
           setMap({ ...map, ...dataMap });
@@ -137,10 +141,11 @@ export const Provider = ({
   return (
     <NotesContext.Provider
       value={{
+        isLastItem,
         ids,
         map,
         clearData,
-        noteListHandler,
+        listHandler,
         noteCreateHandler,
         noteUpdateHandler,
         noteDeleteHandler

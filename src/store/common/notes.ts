@@ -6,7 +6,7 @@ import { setRedirect } from './meta';
 import routes from '../../router';
 import { refreshTokenApi } from '../../api/user';
 import { INoteFull } from '../../interface/Note';
-import { noteListGetApi } from '../../api/note';
+import { noteListOffsetGetApi } from '../../api/note';
 import { fromListToIdsAndMap } from '../../utils/common';
 
 interface INotesState {
@@ -27,8 +27,8 @@ const initialState: INotesState = {
 
 export const fetchNotesData = createAsyncThunk('notes/fetchData', async (argData: Readonly<{ offset?: number, limit?: number, text?: string }>, {rejectWithValue, dispatch, getState}) => {
     await processFetch({
-        onRequest: () => noteListGetApi(argData),
-        onData: (data) => {
+        onRequest: () => noteListOffsetGetApi(argData),
+        onData: ({data}) => {
             const { ids, map } = fromListToIdsAndMap(data);
           dispatch(setData({
             noteIds: ids,

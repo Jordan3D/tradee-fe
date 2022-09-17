@@ -1,13 +1,10 @@
-import { Button, Form as AntdForm, Input, Popconfirm, Select, Tag, Upload } from 'antd';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
+import { Button, Form as AntdForm, Input, Upload } from 'antd';
+import { useCallback, useContext, useState } from 'react';
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import styled from 'styled-components';
 import { ImagesContext } from '../../../../state/imagesContext';
-import { UploadFile } from 'antd/es/upload';
 import { UploadOutlined } from '@ant-design/icons';
 import { RcFile } from 'antd/lib/upload';
-import { fileCreateApi } from '../../../../api/file';
 
 const Item = AntdForm.Item;
 const useForm = AntdForm.useForm;
@@ -20,24 +17,6 @@ type Props = Readonly<{
     onSelect: (id: string) => void
 }>
 
-const tagRender = (props: CustomTagProps) => {
-    const { label, value, closable, onClose } = props;
-    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
-    };
-    return (
-        <Tag
-            color={'orange'}
-            onMouseDown={onPreventMouseDown}
-            closable={closable}
-            onClose={onClose}
-            style={{ marginRight: 3 }}
-        >
-            {label}
-        </Tag>
-    );
-};
 
 const Container = styled.div`
   padding: 1.2em;
@@ -65,14 +44,10 @@ const Container = styled.div`
    }
 `;
 
-const Form = ({ values, onClose, onSelect }: Props) => {
-    const { id } = values;
+const Form = ({ values, onClose }: Props) => {
     const [form] = useForm();
-    const { map, imageCreateHandler, imageDeleteHandler, imageListHandler } = useContext(ImagesContext);
+    const { imageCreateHandler } = useContext(ImagesContext);
 
-    const imageData = id ? map[id] : undefined;
-
-    const [image, setImage] = useState<UploadFile | undefined>(imageData ? { uid: imageData.id, thumbUrl: imageData.url, name: imageData.key } : undefined);
     const [file, setFile] = useState<RcFile | undefined>(undefined);
     
     const onUpload = useCallback(async(file: RcFile):Promise<boolean> => {
@@ -85,7 +60,7 @@ const Form = ({ values, onClose, onSelect }: Props) => {
             const formData = new FormData();
             const fileNameSplited = file?.name.split('.').reverse() || [];
             formData.append('image', file as RcFile, `${value.name}.${fileNameSplited[0] || 'txt'}`);
-            await fileCreateApi(formData);
+            await imageCreateHandler(formData);
             onClose();
         }catch(e){
 
@@ -95,19 +70,6 @@ const Form = ({ values, onClose, onSelect }: Props) => {
     const onFinishFailed = (errorInfo: any) => {
         console.log('Failed:', errorInfo);
     };
-
-    const onDelete = async () => {
-        if (id) {
-            const res = await imageDeleteHandler(id);
-            if (res) {
-                onClose();
-            }
-        }
-    }
-
-    const onDeleteClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
-    }
 
     return <Container>
         <AntdForm

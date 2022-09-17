@@ -10,7 +10,7 @@ import { invokeFeedback } from '../utils/feedbacks/feedbacks';
 import useError from '../utils/useError';
 import { processFetch } from '../api/_main';
 import { ICreateIdea, IIdea, IUpdateIdea } from '../interface/Idea';
-import { ideaCreateApi, ideaDeleteApi, ideaListGetApi, ideaUpdateApi } from '../api/idea';
+import { ideaCreateApi, ideaDeleteApi, ideaListCursorGetApi, ideaUpdateApi } from '../api/idea';
 import { fromListToIdsAndMap } from '../utils/common';
 import { useNavigate } from 'react-router-dom';
 import { refreshTokenApi } from '../api/user';
@@ -21,16 +21,18 @@ export type Props = Readonly<{
 }>;
 
 export type TContext = Readonly<{
+  isLastItem: boolean,
   ids: string[];
   map: Record<string, IIdea>;
   clearData: () => void,
-  listHandler: (argData: Readonly<{ offset?: number, limit?: number, text?: string, lastId?: string }>) => void;
+  listHandler: (argData: Readonly<{ offset?: number, limit?: number, text?: string, lastId?: string, tags?: string[] }>, clear?: boolean) => void;
   createHandler: (data: ICreateIdea) => Promise<unknown>;
   updateHandler: (id: string, data: IUpdateIdea) => Promise<unknown>;
   deleteHandler: (id: string) => Promise<unknown>;
 }>;
 
 export const IdeasContext = createContext<TContext>({
+  isLastItem: true,
   ids: [],
   map: {},
   clearData: () => {},
@@ -46,17 +48,19 @@ export const Provider = ({
   const navigate = useNavigate();
   const [ids, setIds] = useState<string[]>([]);
   const [map, setMap] = useState<Record<string, IIdea>>({});
+  const [isLastItem, setIsLastItem] = useState(true);
   const processError = useError();
 
 
-  const listHandler = useCallback(async (argData: Readonly<{ offset?: number, limit?: number, text?: string }>, clear?: boolean) => {
+  const listHandler = useCallback(async (argData: Readonly<{ limit?: number, text?: string, lastId?: string }>, clear?: boolean) => {
     return await processFetch({
-      onRequest: () => ideaListGetApi(argData),
-      onData: (data) => {
+      onRequest: () => ideaListCursorGetApi(argData),
+      onData: ({data, isLast}) => {
         const { ids: dataIds, map: dataMap  } = fromListToIdsAndMap(data);
+        setIsLastItem(isLast);
         if (clear) {
-          setIds(ids);
-          setMap(map);
+          setIds(dataIds);
+          setMap(dataMap);
         } else {
           setIds([...ids, ...dataIds]);
           setMap({ ...map, ...dataMap });
@@ -76,6 +80,7 @@ export const Provider = ({
   }, [ids, map, navigate]);
 
   const clearData = useCallback(() => {
+    console.log('clear');
     setIds([]);
     setMap({});
   }, []);
@@ -138,6 +143,7 @@ export const Provider = ({
   return (
     <IdeasContext.Provider
       value={{
+        isLastItem,
         ids,
         map,
         clearData,

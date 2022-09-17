@@ -19,7 +19,7 @@ const toastConfigs = (type: FeedbackType, overrides?: ToastOptions): ToastOption
             ...overrides
         },
         success: {
-            position: "top-left",
+            position: "top-right",
             autoClose: 3000,
             hideProgressBar: false,
             closeOnClick: true,
@@ -31,7 +31,7 @@ const toastConfigs = (type: FeedbackType, overrides?: ToastOptions): ToastOption
             ...overrides
         },
         warning: {
-            position: "top-left",
+            position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
             closeOnClick: true,
