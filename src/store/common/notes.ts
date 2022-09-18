@@ -27,7 +27,7 @@ const initialState: INotesState = {
 
 export const fetchNotesData = createAsyncThunk('notes/fetchData', async (argData: Readonly<{ offset?: number, limit?: number, text?: string }>, {rejectWithValue, dispatch, getState}) => {
     await processFetch({
-        onRequest: () => noteListOffsetGetApi(argData),
+        onRequest: () => noteListOffsetGetApi({offset: 0, ...argData}),
         onData: ({data}) => {
             const { ids, map } = fromListToIdsAndMap(data);
           dispatch(setData({

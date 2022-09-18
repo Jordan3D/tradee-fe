@@ -12,9 +12,11 @@ const Container = styled.div`
     display: flex;
     height: 100%;
     margin: 0 auto;
+    padding-left: 3rem;
 
     .title {
-        margin: 0;
+        margin: 0 !important;
+        height: auto;
     }
 
     @media screen and (max-width: 1200px){

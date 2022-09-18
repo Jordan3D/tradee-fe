@@ -25,7 +25,7 @@ export type TContext = Readonly<{
   ids: string[];
   map: Record<string, IIdea>;
   clearData: () => void,
-  listHandler: (argData: Readonly<{ offset?: number, limit?: number, text?: string, lastId?: string, tags?: string[] }>, clear?: boolean) => void;
+  listHandler: (argData: Readonly<{ offset?: number, limit?: number, text?: string, lastId?: string, tags?: string[], notes?: string[] }>, clear?: boolean) => void;
   createHandler: (data: ICreateIdea) => Promise<unknown>;
   updateHandler: (id: string, data: IUpdateIdea) => Promise<unknown>;
   deleteHandler: (id: string) => Promise<unknown>;

@@ -5,7 +5,6 @@ const ItemTitle = styled.div`
   font-weight: 500;
   height: 3rem;
   color: black;
-  margin-bottom: 1.6rem;
 `;
 
 export default ItemTitle;

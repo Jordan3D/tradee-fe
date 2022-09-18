@@ -22,4 +22,6 @@ reportWebVitals();
 // - note filter (fe, be)
 // - order trade and transaction by name (fe, be)
 // - order trade and transaction by createDate (fe, be)
+// - fe refactor
 // - next feature : Trader Diary (Calendar, Day, display all trades within customized "dayStart" and "dayEnd", editable content, and two set : "read", "edit")
+// - next feature : rules

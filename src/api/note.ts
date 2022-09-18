@@ -12,7 +12,7 @@ export const noteListOffsetGetApi = async (args: TNoteListGetProps): Promise<Not
     const token = localStorage.getItem('access_token');
     const argsKeys = Object.keys(args) as ReadonlyArray<keyof TNoteListGetProps>;
     return fetchy<NoteListGetOffsetApiResult>(
-        `/note/list${argsKeys.length ? '?' + qs.stringify(args, {arrayFormat: 'brackets'}): ''}`,
+        `/note/list/full${argsKeys.length ? '?' + qs.stringify(args, {arrayFormat: 'brackets'}): ''}`,
         { headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` } }
     )
 };
@@ -21,10 +21,20 @@ export const noteListCursorGetApi = async (args: TNoteListGetProps): Promise<Not
     const token = localStorage.getItem('access_token');
     const argsKeys = Object.keys(args) as ReadonlyArray<keyof TNoteListGetProps>;
     return fetchy<NoteListGetCursorApiResult>(
+        `/note/list/full${argsKeys.length ? '?' + qs.stringify(args, {arrayFormat: 'brackets'}): ''}`,
+        { headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` } }
+    )
+};
+
+export const noteListGetApi = async (args: {text?: string}): Promise<INote[]> => {
+    const token = localStorage.getItem('access_token');
+    const argsKeys = Object.keys(args) as ReadonlyArray<keyof {text?: string}>;
+    return fetchy<INote[]>(
         `/note/list${argsKeys.length ? '?' + qs.stringify(args, {arrayFormat: 'brackets'}): ''}`,
         { headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` } }
     )
 };
+
 
 export type NoteCreateApiResult = INoteFull;
 export const noteCreateApi = async (data: CreateTag): Promise<NoteCreateApiResult> => {

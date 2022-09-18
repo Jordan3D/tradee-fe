@@ -1,46 +1,41 @@
 # Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Алгоритм работы с приложением:
+- создать аккаунт
+- добавить профиль байбита
+- синхронизировать транзакции
 
-## Available Scripts
+# Непосредственно работа с данными
 
-In the project directory, you can run:
+Перед началом рабочего дня провести "разведку" по:
+- календарю событий из мира финансов
+- мировые новости
+- графики spx и btc
 
-### `npm start`
+Далее предварительно создать список задач на день. Минимальные, желаемые и максимальные.
+Все это нужно записать в дневник трейдера и в конце рабочего дня (или по ходу) записать результаты.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Перед заходом в сделку желательно описать ее в журнале , назначить цели, причины, и назначить стратегию/и работы с ассетом на данной сделке. Если не получилось до, то обязательно сразу после входа.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+По ходу движения цены можно описывать все что считается важным в дневник. Далее из полученой информации можно будет формировать следующие формы : заметки, идеи (стратегии).
 
-### `npm test`
+# Заметки
+Любая информация которая может быьб полезной в описании более абстрактных вещей или просто полезная сама по себе
+Используется в сделках, идеях, журнале сделок
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Для более быстрого доступа и каталогизации информации используются теги
 
-### `npm run build`
+# Теги
+Информация по которой можно быстро найти другую информацию которая была отмечено этим тегом
+Отмечают заметки, идеи, журнал, сделки, дни в дневнике
+Так же у тега может быть родитель другой тег. Полезно для создания категорий
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+После завершенной сделки добавляется вся необходимая информация в сам айтем в ручную предварительно синхронизировав с аккаунтом биржы.
+Желательно сделать ремарку в дневнике. Сделка автоматически должна появится на странице дневника в день ее создания и день закрытия.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Для распознания паттернов и алгоритмов находясь в сделке, перед заходом и выходом из создаются идеи (стратегии).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+# Идеи
+Алгоритм действий для достижения максимальной прибыли и минимальных потерь в сделках.
+Идеи могут быть как и универсальными для всех инструметов (ассетов), так и индивидуальны.
+Это можно подчеркнуть с помощью заметок и тегов.

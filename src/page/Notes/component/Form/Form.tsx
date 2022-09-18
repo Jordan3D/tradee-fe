@@ -211,7 +211,7 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
                             Close
                         </Button>
                         <Popconfirm
-                            title="Are you sure to delete this task?"
+                            title="Are you sure to delete this note?"
                             onConfirm={onDelete}
                             okText="Yes"
                             cancelText="No"

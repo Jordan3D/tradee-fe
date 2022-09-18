@@ -1,7 +1,8 @@
-import { ReactElement, useEffect, useRef, useState } from 'react';
+import { memo, ReactElement, useEffect, useRef, useState } from 'react';
 import { Select, Tag } from 'antd';
 import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import styled from 'styled-components';
+import { useUpdateEffect } from 'react-use';
 ;
 
 interface Item {
@@ -32,7 +33,12 @@ const Container = styled.div`
 
 `;
 
-const SearchItems = ({ predefinedValue = [], getItems, onValues }: {predefinedValue?: string[], getItems(args: {text?: string}): Promise<Item[]>, onValues(values: string[]): void }): ReactElement => {
+interface Props {
+    className?: string,
+    predefinedValue?: string[], getItems(args: {text?: string}): Promise<Item[]>, onValues(values: string[]): void
+}
+
+const SearchItems = memo(({ className = '', predefinedValue = [], getItems, onValues }: Props): ReactElement => {
     const [value, setValue] = useState<string[]>(predefinedValue);
     const ref = useRef({value: ''})
 
@@ -44,7 +50,7 @@ const SearchItems = ({ predefinedValue = [], getItems, onValues }: {predefinedVa
             if(value === ref.current.value){
                 getItems({text: value}).then(items => setOptions(items.map(item => ({ label: item.title, value: item.id }) as CustomTagProps)))
             }
-        }, 1000)
+        }, 500)
     };
 
     const onSelect = (v: string) => {
@@ -59,19 +65,18 @@ const SearchItems = ({ predefinedValue = [], getItems, onValues }: {predefinedVa
     }
 
     const filterOption = (inputValue: string, option: CustomTagProps | undefined) => {
-        return option ? inputValue.indexOf(option.label as string) !== -1 : false
+        return option ? (option.label as string).indexOf(inputValue) !== -1 : false
     }
 
-    useEffect(() => {
+    useUpdateEffect(() => {
         onValues(value);
     }, [value]);
 
-    return <Container>
+    return <Container className={className}>
         <Select
                 allowClear
                     mode="multiple"
                     className='add'
-                    key={"label"}
                     filterOption={filterOption}
                     defaultValue={value}
                     onSearch={onSearch}
@@ -82,6 +87,6 @@ const SearchItems = ({ predefinedValue = [], getItems, onValues }: {predefinedVa
                     options={options}
                 />
     </Container>
-};
+});
 
 export default SearchItems;

@@ -82,7 +82,7 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
         return clearData
     }, [])
 
-    useUpdateEffect(() => {
+    useEffect(() => {
         setIsSearching(true);
         getData(true);
     }, [tagValues, searchText]);

@@ -62,7 +62,6 @@ export const Container = styled.div`
 .list {
     width: 100%;
     margin-top: 2rem;
-    overflow-y: scroll;
 }
 
 .item {

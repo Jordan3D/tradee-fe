@@ -27,7 +27,7 @@ const initialState: IIdeaState = {
 
 export const fetchData = createAsyncThunk('ideas/fetchData', async (argData: Readonly<{ offset?: number, limit?: number, text?: string }>, {rejectWithValue, dispatch, getState}) => {
     await processFetch({
-        onRequest: () => ideaListOffsetGetApi(argData),
+        onRequest: () => ideaListOffsetGetApi({offset: 0, ...argData}),
         onData: ({data}) => {
             const { ids, map } = fromListToIdsAndMap(data);
           dispatch(setIdeaData({

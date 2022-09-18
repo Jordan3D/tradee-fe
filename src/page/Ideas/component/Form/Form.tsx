@@ -55,6 +55,10 @@ const Container = styled.div`
     .form-div {
 
     }
+    
+    .content {
+        min-height: 30rem;
+    }
 
     &__buttons {
         display: flex;
@@ -215,7 +219,7 @@ const Form = ({ values, onClose, onSelectItem }: Props) => {
                 <Item
                     label="Content"
                     name="content"
-                    className='idea_form__item'
+                    className='idea_form__item content'
                 >
                     <Editor
                         editorState={eState}
@@ -263,7 +267,7 @@ const Form = ({ values, onClose, onSelectItem }: Props) => {
                             Close
                         </Button>
                         <Popconfirm
-                            title="Are you sure to delete this task?"
+                            title="Are you sure to delete this idea?"
                             onConfirm={onDelete}
                             okText="Yes"
                             cancelText="No"

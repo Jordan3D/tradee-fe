@@ -1,3 +1,4 @@
+import qs from 'qs';
 import { ITag, CreateTag, UpdateTag, TagWithChildren } from "../interface/Tag";
 import fetchy from "./_main";
 
@@ -9,8 +10,7 @@ export const tagListGetApi = async (args: {text?: string}): Promise<TagsListGetA
     const token = localStorage.getItem('access_token');
     const argsKeys = Object.keys(args) as ReadonlyArray<keyof tagListGetProps>;
     return await fetchy<TagsListGetApiResult>
-        (`/tag/list${argsKeys.length ? '?' + argsKeys.map((key: keyof tagListGetProps) => 
-         `${key}=${args[key]}`).join('&'): ''}`, {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`}});
+        (`/tag/list${argsKeys.length ? '?' + qs.stringify(args, {arrayFormat: 'brackets'}): ''}`, {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`}});
 };
 
 export type TagCreateApiResult = ITag;

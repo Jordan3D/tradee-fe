@@ -3,7 +3,7 @@ import { IFile, IIdea } from "../interface/Idea";
 import { CreateTag, UpdateTag } from "../interface/Tag";
 import fetchy from "./_main";
 
-type TIdeaListGetProps  = Readonly<{ lastId?: string, offset?: number, limit?: number, text?: string, tags?: string[] }>
+type TIdeaListGetProps  = Readonly<{ lastId?: string, offset?: number, limit?: number, text?: string, tags?: string[], notes?: string[] }>
 
 export type IdeaListGetOffsetApiResult = Readonly<{data: IIdea[], total: number}>;
 export type IdeaListGetCursorApiResult = Readonly<{data: IIdea[], isLast: boolean}>;
