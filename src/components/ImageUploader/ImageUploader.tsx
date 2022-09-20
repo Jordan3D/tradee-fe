@@ -39,7 +39,7 @@ const ImageUploader = ({ data, onFileListChange, maxCount = 5 }: Props): ReactEl
 
     const onUpload = async (file: RcFile):Promise<boolean> => {
         const formData = new FormData();
-        formData.append('photo', file as RcFile);
+        formData.append('image', file as RcFile);
         const result = await fileCreateApi(formData);
 
         setFileList([...fileList, {uid:result.id, status: 'success', thumbUrl: result.url, name: result.key}]);
@@ -66,6 +66,10 @@ const ImageUploader = ({ data, onFileListChange, maxCount = 5 }: Props): ReactEl
     useEffect(() => {
         onFileListChange(fileList);
     },[fileList, onFileListChange])
+
+    useEffect(() => {
+        setFileList(data);
+    }, [data])
 
     return (
         <>

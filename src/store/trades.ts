@@ -12,22 +12,24 @@ interface ITradesState {
     data: ITrade[],
     total: number,
     page: number,
-    pageSize: number
+    pageSize: number,
+    orderBy: [string, 'ASC' | 'DESC'] | []
 }
 
 const initialState: ITradesState = {
     data: [],
     total: 0,
     page: 0,
-    pageSize: 0
+    pageSize: 0,
+    orderBy: []
 }
 
-export const fetchTradeData = createAsyncThunk('trades/fetchData', async (args:{offset ?:number, limit?:number, orderBy?: string | string[]}, { rejectWithValue, dispatch, getState }) => {
+export const fetchTradeData = createAsyncThunk('trades/fetchData', async (args:{offset ?:number, limit?:number, orderBy?: string[]}, { rejectWithValue, dispatch, getState }) => {
     await processFetch({
         onRequest: () => tradesGetApi(args),
         onData: (result) => {
-            const {data, total, limit, offset} = result as TTradesGetResult;
-            dispatch(setTradeData({data, total, page: (offset / limit) + 1, pageSize: Number(limit)}))
+            const {data, total, limit, offset, orderBy} = result as TTradesGetResult;
+            dispatch(setTradeData({data, total, page: (offset / limit) + 1, pageSize: Number(limit), orderBy: orderBy.split(',') as [string, 'ASC' | 'DESC'] | []}))
         },
         onError: async (response: Response) => {
             if(response.status === 401){
@@ -45,11 +47,12 @@ export const tradeSlice = createSlice({
     initialState,
     reducers: {
         setTradeData: (state, action: PayloadAction<Partial<ITradesState>>) => {
-            const {data, page, total, pageSize} = action.payload;
+            const {data, page, total, pageSize, orderBy} = action.payload;
             state.data = data ?? state.data;
             state.page = page ?? state.page;
             state.total = total ?? state.total;
             state.pageSize = pageSize ?? state.pageSize;
+            state.orderBy = orderBy ?? state.orderBy
         },
         clearTradeData: (state) => {
             state.data = initialState.data;

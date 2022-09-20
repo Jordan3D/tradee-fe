@@ -51,7 +51,7 @@ padding: 1.2em;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-top 2rem;
+        margin-top: 2rem;
     }
     &__item {
         padding: 0.6rem;
@@ -74,7 +74,6 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
     const tagOptions = useMemo(() => tagList.map(tag => ({ label: tag.title, value: tag.id }) as CustomTagProps), [tagList]);
 
     const onFinish = async (value: INoteCreate | INoteUpdate & Readonly<{tags: string[]}>) => {
-        console.log(value);
         if (id) {
             let tagsAdded = [];
             let tagsDeleted = [];
@@ -111,7 +110,6 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
     const onDelete = async() => {
         if (id) {
             const res = await noteDeleteHandler(id);
-            console.log(res);
             if(res){
                 onClose();
             }

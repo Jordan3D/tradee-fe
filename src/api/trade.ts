@@ -2,8 +2,8 @@ import { ITrade, ITradeUpdate } from "../interface/Trade";
 import fetchy from "./_main";
 
 
-export type TTradesGetProps = Readonly<{offset ?:number, limit?:number}>;
-export type TTradesGetResult = Readonly<{data: ITrade[], total: number, offset :number, limit:number}>;
+export type TTradesGetProps = Readonly<{offset ?:number, limit?:number, orderBy?: string[]}>;
+export type TTradesGetResult = Readonly<{data: ITrade[], total: number, offset :number, limit:number, orderBy: string}>;
 
 export const tradesGetApi = async (args: TTradesGetProps): Promise<TTradesGetResult> => {
     const token = localStorage.getItem('access_token');

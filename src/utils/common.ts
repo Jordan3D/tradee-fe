@@ -1,3 +1,4 @@
+import { SortOrder } from 'antd/lib/table/interface';
 import {getDate, getMonth} from 'date-fns';
 interface MayHaveId {
   id: string;
@@ -37,4 +38,14 @@ export function fromListToDatesMap<T extends MayHaveCreateDate>(list : T[], mode
   })
 
   return result;
+}
+
+export const sortMap = {
+  'ascend': 'ASC',
+  'descend': 'DESC'
+};
+
+export const sortMapKeys: Record<string, SortOrder> = {
+  'ASC': 'ascend',
+  'DESC': 'descend'
 }

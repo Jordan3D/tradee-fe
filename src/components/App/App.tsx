@@ -1,7 +1,7 @@
 import { HelmetProvider } from 'react-helmet-async';
 import { StartPage } from '../../page/Start';
 import { TagsPage } from '../../page/Tags';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Provider as ReduxProvider } from 'react-redux'
 import { ToastContainer } from 'react-toastify';
 import ErrorBoundary from '../../partials/ErrorBoundary';
@@ -10,7 +10,7 @@ import { Provider as NotesPageProvider } from '../../state/notePageContext';
 import { Provider as IdeasPageProvider } from '../../state/ideaPageContext';
 import { Provider as JournalProvider } from '../../state/journalContext';
 import { Provider as ImagesContext } from '../../state/imagesContext';
-import { Provider as LoaderContext} from '../../state/loaderContext';
+import { Provider as LoaderContext } from '../../state/loaderContext';
 import { Loader } from '../Loader';
 
 import 'react-toastify/dist/ReactToastify.css';
@@ -89,6 +89,7 @@ function App() {
                               <Route path={routes.notesItem()} element={<NotesPage />} />
                               <Route path={routes.images} element={<ImagesPage />} />
                               <Route path={routes.imagesItem()} element={<ImagesPage />} />
+                              <Route path='' element={<Navigate to={routes.main} />}/>
                               <Route path='*' element={<Error helmetTitle='Not found' backButtonHandler={backOnError} />} />
                             </Routes>
                           </>

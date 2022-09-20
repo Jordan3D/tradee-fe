@@ -1,7 +1,7 @@
-import { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Button, Table, Select, Tag } from 'antd';
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Page } from '../../components/Page';
 import { ITrade } from '../../interface/Trade';
 import { tradeGetApi } from '../../api/trade';
@@ -9,43 +9,15 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store';
 import { fetchPairsData, selectPairsMap } from '../../store/common/pairs';
-import { GlobalContext } from '../../state/context';
-import { NotesContext } from '../../state/notePageContext';
 import {Notes} from '../../components/Notes';
 import {Tags} from './components/Tags';
-import styled from 'styled-components';
 import { selectUser } from '../../store/common/meta';
 import { format } from 'date-fns-tz';
+import { Container } from './style';
 
 interface DataType extends ITrade {
     key: string;
 }
-
-const Container = styled.div`
- position: relative;
- .trade{
-    &__custom-info{
-        display: flex;
-        flex-direction: column;
-        margin-top: 1rem;
-
-        .title {
-            font-weight: 500;
-            padding: 1rem;
-            color: white;
-        }
-    }
-    &__notes {
-        border: 0.3rem solid  pink;
-        height: 20rem;    
-    }
-    &__tags {
-        border: 0.3rem solid wheat;
-        height: 10rem;  
-        margin-top: 0.5rem;  
-    }
-}
-`;
 
 const Trade = (): ReactElement => {
     const dispatch = useDispatch<AppDispatch>();

@@ -6,10 +6,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import qs from 'qs';
 import { AppDispatch } from '../../store';
 import { fetchPairsData } from '../../store/common/pairs';
-import { TTradesGetProps } from '../../api/trade';
 import { GlobalContext } from '../../state/context';
-import { NotesContext } from '../../state/notePageContext';
 import styled from 'styled-components';
+import { TTransactionsGetProps } from '../../api/transaction';
 
 const defaultParams = {
     limit: 25,
@@ -52,12 +51,16 @@ const Transactions = (): ReactElement => {
     const navigate = useNavigate();
     const { getTransactions } = useContext(GlobalContext);
     const { search, pathname } = location;
-    const params : TTradesGetProps = useMemo(() => qs.parse(search.substring(1)), [search]);
+    const params : TTransactionsGetProps = useMemo(() => qs.parse(search.substring(1)), [search]);
     const [ready, setReady] = useState(false);
     const summParams = useMemo(() => ({
         ...defaultParams,
         ...params
     }), [params]);
+
+    const onSetParams = (argParams: TTransactionsGetProps) => {
+        navigate(`${pathname}?${qs.stringify({...summParams, ...argParams})}`)
+    }
 
     useEffect(() => {
         navigate(`${pathname}?${qs.stringify(summParams)}`)
@@ -76,7 +79,7 @@ const Transactions = (): ReactElement => {
     }, [dispatch])
 
     return <Container>
-       { !ready ? null :<Table/>}
+       { !ready ? null :<Table onSetParams={onSetParams}/>}
     </Container>
 };
 

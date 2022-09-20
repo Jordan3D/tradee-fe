@@ -12,22 +12,25 @@ interface ITransactionState {
     data: ITransaction[],
     total: number,
     page: number,
-    pageSize: number
+    pageSize: number,
+    orderBy: [string, 'ASC' | 'DESC'] | []
 }
 
 const initialState: ITransactionState = {
     data: [],
     total: 0,
     page: 0,
-    pageSize: 0
+    pageSize: 0,
+    orderBy: []
 }
 
 export const fetchTransactionData = createAsyncThunk('transactions/fetchData', async (args:{offset ?:number, limit?:number, orderBy?: string | string[]}, { rejectWithValue, dispatch, getState }) => {
     await processFetch({
         onRequest: () => transactionsGetApi(args),
         onData: (result) => {
-            const {data, total, limit, offset} = result as TTransactionsGetResult;
-            dispatch(setTransactionData({data, total, page: (offset / limit), pageSize: Number(limit)}))
+            const {data, total, limit, offset, orderBy} = result as TTransactionsGetResult;
+            console.log(orderBy);
+            dispatch(setTransactionData({data, total, page: (offset / limit), pageSize: Number(limit), orderBy: orderBy.split(',') as [string, 'ASC' | 'DESC'] | []}))
         },
         onError: async (response: Response) => {
             if(response.status === 401){
@@ -45,17 +48,19 @@ export const transactionSlice = createSlice({
     initialState,
     reducers: {
         setTransactionData: (state, action: PayloadAction<ITransactionState>) => {
-            const {data, page, total, pageSize} = action.payload;
+            const {data, page, total, pageSize, orderBy} = action.payload;
             state.data = data;
             state.page = page;
             state.total = total;
             state.pageSize = pageSize
+            state.orderBy = orderBy
         },
         clearTransactionData: (state) => {
             state.data = initialState.data;
             state.page = initialState.page;
             state.pageSize = initialState.pageSize;
             state.total = initialState.total;
+            state.orderBy = initialState.orderBy
         }
     },
 });

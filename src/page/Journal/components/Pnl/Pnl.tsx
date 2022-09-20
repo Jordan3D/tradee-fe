@@ -12,90 +12,13 @@ import styled from 'styled-components';
 import { selectUser } from '../../../../store/common/meta';
 import { selectJIPnls, removePnlById } from '../../../../store/journalItem';
 import { DeleteOutlined } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../../../store';
+import {Table} from '../../../../components/Table';
 
 interface DataType extends ITrade {
     key: string;
 }
 
-const Container = styled.div`
-     display: flex;
-     flex-direction: column;
-     width: 100%;
-     margin-top: 1rem;
-
-    .add_button {
-        margin: 2rem;
-    }
-
-    table {
-         font-size: 1.2rem;
-    }
-
-    .list {
-            height: 50vw;
-            overflow-y: scroll;
-            padding: 1rem;
-    }
-
-.table_content {
-    width: 100%;
-    overflow-y: scroll;
-    
-    .action-btn {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
-            width: 3.6rem;
-            height: 3.6rem;
-            padding: 1.4rem;
-            border-radius: 50%;
-            justify-content: center;
-            align-items: center;
-        }
-     .action-text {
-        display: flex;
-     }   
-
-        .ant-table-cell {
-            position: relative;
-
-            &:hover {
-                .action-text {
-                  display: none;
-                }  
-                .action-btn {
-                    display: flex;
-                }
-            }
-        }
-}
-
-.trades-item {
-    &__root {
-        display: flex;
-        height: 6.5rem;
-        border: 1px solid #d3d031;
-        background-color: #ffffd0;
-        margin-bottom: 1rem;
-        box-shadow: 0.4rem 0.4rem 5px 0px rgba(0, 0, 0, 0.332); 
-        transition: 0.35s ease all;
-        cursor: pointer;
-
-        &:hover {
-            border-color: #e7e421;
-            background-color: #e5e5ab;
-            box-shadow: 0.1rem 0.1rem 5px 0px rgba(0, 0, 0, 0.151); 
-        }
-        
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-}
+const Container = styled(Table)`
 `;
 
 const Pnl = memo(({onRemove}: {onRemove: any}): ReactElement => {

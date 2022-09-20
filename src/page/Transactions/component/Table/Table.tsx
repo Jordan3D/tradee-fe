@@ -1,4 +1,4 @@
-import { Pagination, Table, TablePaginationConfig } from 'antd';
+import { Pagination, Table as AntTable, TablePaginationConfig } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import qs from 'qs';
@@ -10,6 +10,9 @@ import styled from 'styled-components';
 import { selectUser } from '../../../../store/common/meta';
 import { ITransaction } from '../../../../interface/Transaction';
 import { selectTransactionsStore } from '../../../../store/transactions';
+import {Table} from '../../../../components/Table';
+import { SorterResult } from 'antd/es/table/interface';
+import { sortMap, sortMapKeys } from '../../../../utils/common';
 
 interface DataType extends ITransaction {
     key: string;
@@ -20,6 +23,7 @@ type TableComponentProps = {
     selected?: string[];
     onSelected?(rows: TableComponentProps['selected']): void;
     onGetData?(params: any): void;
+    onSetParams?(params: any): void;
 }
 
 type PaginationProps = {
@@ -41,75 +45,22 @@ const PaginationComponent = ({ total, pageSize, current, onChange }: PaginationP
     )
 }
 
-const Container = styled.div`
-       display: flex;
-        padding: 1rem;
-        flex-direction: column;
-        justify-content: space-between;
-        width: 100%;
+const Container = styled(Table)`
 
-    .add_button {
-        margin: 2rem;
-    }
-
-    table {
-         font-size: 1.2rem;
-    }
-
-    .list {
-            height: 50vw;
-            overflow-y: scroll;
-            padding: 1rem;
-    }
-
-.table_content {
-    height: 80vh;
-    width: 100%;
-    overflow-y: scroll;
-    margin-bottom: 1rem;
-
-    &.tiny {
-        height: auto;
-    }
-    .disabled-row {
-        background-color: #dcdcdc;
-  pointer-events: none;
-    }
-}
-
-.trades-item {
-    &__root {
-        display: flex;
-        height: 6.5rem;
-        border: 1px solid #d3d031;
-        background-color: #ffffd0;
-        margin-bottom: 1rem;
-        box-shadow: 0.4rem 0.4rem 5px 0px rgba(0, 0, 0, 0.332); 
-        transition: 0.35s ease all;
-        cursor: pointer;
-
-        &:hover {
-            border-color: #e7e421;
-            background-color: #e5e5ab;
-            box-shadow: 0.1rem 0.1rem 5px 0px rgba(0, 0, 0, 0.151); 
-        }
-        
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-}
 `;
 
-const TableComponent = ({ className = '', selected = [], onSelected, onGetData }: TableComponentProps): ReactElement => {
-    const { data: transactions, page, total, pageSize } = useSelector(selectTransactionsStore);
+const TableComponent = ({ className = '', selected = [], onSelected, onGetData, onSetParams }: TableComponentProps): ReactElement => {
+    const { data: transactions, page, total, pageSize, orderBy } = useSelector(selectTransactionsStore);
     const user = useSelector(selectUser);
     const { pathname } = useLocation();
     const navigate = useNavigate();
     const pairs = useSelector(selectPairsMap);
     const buff = useRef<any>(null);
+    const [orederKey, orderDirection = 'ASC'] = orderBy; 
 
     const [selectedRowKeys, setSelectedRowKeys] = useState<Record<string, string[]>>({});
+
+    console.log(orederKey === 'trade_time' ?  sortMapKeys[orderDirection] : undefined);
 
     const columns: ColumnsType<DataType> = useMemo(() => [
         {
@@ -132,6 +83,8 @@ const TableComponent = ({ className = '', selected = [], onSelected, onGetData }
             key: 'trade_time',
             width: 160,
             render: (value: string) => format(new Date(value), 'dd/MM/yyyy HH:mm:ss', { timeZone: `GMT${user?.config.utc}` }),
+            sortOrder: orederKey === 'trade_time' ?  sortMapKeys[orderDirection] : undefined,
+            sorter: true
         },
         {
             title: 'Order type',
@@ -160,6 +113,8 @@ const TableComponent = ({ className = '', selected = [], onSelected, onGetData }
             key: 'order_qty',
             width: 110,
             render: text => text,
+            sortOrder: orederKey === 'order_qty' ?  sortMapKeys[orderDirection] : undefined,
+            sorter: true
         },
         {
             title: 'Exec quantity',
@@ -189,20 +144,33 @@ const TableComponent = ({ className = '', selected = [], onSelected, onGetData }
             width: 110,
             render: text => text,
         },
-    ], [user, pairs]);
+    ], [user, pairs, orederKey, orderDirection]);
 
     const data: DataType[] = transactions.map(t => ({ key: t.id, ...t }));
 
-    const onChangeHandler = (pagination: TablePaginationConfig) => {
-        console.log(pagination)
+    const onChangeHandler = (_0: TablePaginationConfig, _1: any, sorter: SorterResult<DataType> | SorterResult<DataType>[]) => {
+        if(Array.isArray(sorter)){
+            return;
+        }
+        const sortDirection = sorter.order ? sortMap[sorter.order] : '';
+        const params = { orderBy: [sorter.field, sortDirection] };
+
+        if(!sortDirection) {
+            return;
+        }
+        if (onGetData) {
+            onGetData(params);
+        } else if(onSetParams){
+            onSetParams(params);
+        }
     }
 
     const onPaginationChange = (page: number, pageSize: number) => {
         const params = { limit: pageSize, offset: pageSize * (page - 1) };
         if(onGetData){
             onGetData(params);
-        } else {
-            navigate(`${pathname}?${qs.stringify(params)}`)
+        } else if(onSetParams){
+            onSetParams(params);
         }
     }
 
@@ -231,7 +199,7 @@ const TableComponent = ({ className = '', selected = [], onSelected, onGetData }
 
     return <Container className={`${className + ' '}`}>
         <div className={`table_content${onSelected ? ' tiny' : ' '}`}>
-            <Table
+            <AntTable
                 columns={columns}
                 dataSource={data}
                 pagination={false}

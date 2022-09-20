@@ -59,10 +59,14 @@ const Trades = (): ReactElement => {
         ...params
     }), [params]);
 
+    const onSetParams = (argParams: TTradesGetProps) => {
+        navigate(`${pathname}?${qs.stringify({...summParams, ...argParams})}`)
+    }
+
     useEffect(() => {
         navigate(`${pathname}?${qs.stringify(summParams)}`)
         setReady(true);
-    }, [pathname, navigate, summParams, setReady, dispatch])
+    }, [pathname, navigate, summParams])
 
     useEffect(() => {
       
@@ -78,7 +82,7 @@ const Trades = (): ReactElement => {
     }, [dispatch, tagsListHandler])
 
     return <Container>
-       { !ready ? null :<Table/>}
+       { !ready ? null :<Table onSetParams={onSetParams}/>}
     </Container>
 };
 

@@ -5,20 +5,19 @@ import { ITag } from "./Tag";
 export interface IIdea extends IBase{
     title: string;
     content: string;
-    photos: IFile[];
+    images: IFile[];
     tags: string[];
     notes: string[];
 }
 
-export interface ICreateIdea extends Omit<IIdea, 'photos'> {
-    photos: string[];
+export interface ICreateIdea extends Omit<IIdea, 'images'> {
+    images: string[];
 }
 
 export interface IUpdateIdea {
     title: string;
     content: string;
-    photosAdded: string[];
-    photosDeleted: string[];
+    images: string[];
     tagsAdded: string[];
     tagsDeleted: string[];
     notesAdded: string[];
@@ -28,7 +27,7 @@ export interface IUpdateIdea {
 export interface IIdeaFull extends IBase{
     title: string;
     content: string;
-    photos: string[];
+    images: string[];
     tags: ITag[];
     notes: INote[];
 }

@@ -3,8 +3,9 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import { Editor } from "react-draft-wysiwyg";
 import draftToHtmlPuri from "draftjs-to-html";
+import htmlToDraft from 'html-to-draftjs';
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { EditorState, convertToRaw, convertFromHTML, ContentState } from 'draft-js';
+import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import { useSelector } from 'react-redux';
 import { selectTagList } from '../../../../store/common/tags';
 import styled from 'styled-components';
@@ -81,13 +82,13 @@ const Form = ({ values, onClose, onSelectItem }: Props) => {
     const noteMap = useSelector(selectNoteMap);
     const { map, createHandler, updateHandler, deleteHandler } = useContext(IdeasContext);
     const [eState, setEState] = useState<EditorState>();
-    const [photos, setPhotos] = useState<UploadFile[]>([]);
+    const [images, setImages] = useState<UploadFile[]>([]);
 
     const editItem = id ? map[id] : undefined;
 
     const photosAsUploadFile = useMemo(() =>
-     editItem?.photos ? editItem?.photos.map(photo => ({uid: photo.id, thumbUrl: photo.url, name: photo.key})) as UploadFile[] : []
-     , [editItem?.photos]);
+     editItem?.images ? editItem?.images.map(image => ({uid: image.id, thumbUrl: image.url, name: image.key})) as UploadFile[] : []
+     , [editItem?.images]);
 
     const tagOptions = useMemo(() => tagList.map(tag => ({ label: tag.title, value: tag.id }) as CustomTagProps), [tagList]);
     const noteOptions = useMemo(() => noteList.map(note => ({ label: noteMap[note]?.title, value: noteMap[note]?.id }) as CustomTagProps), [noteList, noteMap]);
@@ -121,19 +122,10 @@ const Form = ({ values, onClose, onSelectItem }: Props) => {
             added = [];
             deleted = [];
 
-            if (photos.length) {
-                added = photos.filter(fp => editItem?.photos?.find(p => p.id !== fp.uid)) || [];
-                deleted = editItem?.photos?.filter(fp => photos?.find(p => p.uid !== fp.id)) || [];
-
-                (value as IUpdateIdea).photosAdded = added.map(p => p.uid);
-                (value as IUpdateIdea).photosDeleted = deleted.map(p => p.id);
-            }
-
-
-            await updateHandler(id, { ...value, content } as IUpdateIdea);
+            await updateHandler(id, { ...value, content, images:  images.map(p => p.uid) } as IUpdateIdea);
             return;
         } else {
-            const newItem = (await createHandler({ ...value, content, photos: photos.map(p => p.uid) } as ICreateIdea)) as IIdea;
+            const newItem = (await createHandler({ ...value, content, images: images.map(p => p.uid) } as ICreateIdea)) as IIdea;
             onSelectItem(newItem.id);
         }
     };
@@ -164,12 +156,13 @@ const Form = ({ values, onClose, onSelectItem }: Props) => {
     }
 
     const onFileListChange = useCallback((list: UploadFile[]) => {
-        setPhotos(list);
+        console.log(list);
+        setImages(list);
     }, [])
 
     useEffect(() => {
         const state = (() => {
-            const blocks = convertFromHTML(editItem?.content || '');
+            const blocks = htmlToDraft(editItem?.content || '');
             return EditorState.createWithContent(ContentState.createFromBlockArray(blocks.contentBlocks, blocks.entityMap));
         })();
 
@@ -180,9 +173,13 @@ const Form = ({ values, onClose, onSelectItem }: Props) => {
             content: editItem?.content,
             tags: editItem?.tags,
             notes: editItem?.notes,
-            photos: editItem?.photos
+            images: editItem?.images
         });
     }, [form, editItem])
+
+    useEffect(() => {
+        setImages(photosAsUploadFile);
+    }, [photosAsUploadFile]);
 
     return <Container>
         <AntdForm
@@ -258,7 +255,7 @@ const Form = ({ values, onClose, onSelectItem }: Props) => {
                         options={noteOptions}
                     />
                 </Item>
-               <ImageUploader data={photosAsUploadFile} onFileListChange={onFileListChange}/>
+               <ImageUploader data={images} onFileListChange={onFileListChange}/>
             </div>
             <div className='form-div'>
                 <Item>

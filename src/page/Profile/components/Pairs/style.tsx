@@ -25,29 +25,6 @@ table {
 width: 100%;
 margin-bottom: 1rem;
 }
-
-.trades-item {
-&__root {
- display: flex;
- height: 6.5rem;
- border: 1px solid #d3d031;
- background-color: #ffffd0;
- margin-bottom: 1rem;
- box-shadow: 0.4rem 0.4rem 5px 0px rgba(0, 0, 0, 0.332); 
- transition: 0.35s ease all;
- cursor: pointer;
-
- &:hover {
-     border-color: #e7e421;
-     background-color: #e5e5ab;
-     box-shadow: 0.1rem 0.1rem 5px 0px rgba(0, 0, 0, 0.151); 
- }
- 
- &:last-child {
-     margin-bottom: 0;
- }
-}
-}
 `;
 
 export const Header = styled.div`

@@ -3,7 +3,7 @@ import fetchy from "./_main";
 
 
 export type TTransactionsGetProps = Readonly<{offset ?:number, limit?:number}>;
-export type TTransactionsGetResult = Readonly<{data: ITransaction[], total: number, offset :number, limit:number}>;
+export type TTransactionsGetResult = Readonly<{data: ITransaction[], total: number, offset :number, limit:number, orderBy: string}>;
 
 export const transactionsGetApi = async (args: TTransactionsGetProps): Promise<TTransactionsGetResult> => {
     const token = localStorage.getItem('access_token');
