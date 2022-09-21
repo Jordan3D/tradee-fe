@@ -18,7 +18,7 @@ const Container = styled.div`
  display: flex;
     .page {
       &__content {
-        padding: ${props => props.theme.padding};
+        padding: ${props => props.theme.page.content.padding};
          flex-grow: 1;
          background-color: ${props => props.theme.page.bgColor};
       }
@@ -27,6 +27,7 @@ const Container = styled.div`
         position: fixed;
         top: 0;
         left: 0;
+        box-shadow: 0.2rem 0.2rem 2px 0px rgba(0, 0, 0, 0.144); 
     }
 `
 

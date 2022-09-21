@@ -11,7 +11,10 @@ const lightTheme: TradeeTheme = {
     textColor: '#3f3f24'
   },
   page: {
-    bgColor: 'white'
+    bgColor: 'white',
+    content : {
+      padding: '2.2rem'
+    }
   },
   note: {},
   colors: lightColors,

@@ -27,12 +27,12 @@ export const Container = styled.div`
     border-width: 0;
     font-size: 2rem;
     background-color: #6183aab5;
-    box-shadow: ${props => props.theme.shadows.default('#0a0a02b5')};
+    box-shadow: ${props => props.theme.shadows.default('#0a0a0258')};
 
     &:hover {
         background-color: #3f6086b5;
         color: ${props => props.theme.sidebar.mainColor};
-        box-shadow: ${props => props.theme.shadows.tooltip('#0a0a02b5', props.theme.sidebar.mainColor)};
+        box-shadow: ${props => props.theme.shadows.tooltip('#0a0a0258', props.theme.sidebar.mainColor)};
     }
 }
 

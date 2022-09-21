@@ -12,7 +12,7 @@ import { IIdea } from '../../../../interface/Idea';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../../store';
 import { SearchItems } from '../../../../components/SearchItems';
-import { Container, ItemContainer, ItemTitle, ItemContent, ItemHover, ItemOpen, ItemEdit } from './style';
+import { Container, ItemContainer, ItemTitle, ItemFilterTitle, ItemHover, ItemOpen, ItemEdit } from './style';
 import ItemDemo from '../ItemDemo/ItemDemo';
 
 const { Search } = Input;
@@ -132,20 +132,22 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
                 </Button>
             </div>
             <div className='filters'>
-                <div className='filter-item'>
+                <div className='search-item'>
                     <Search allowClear placeholder="Search idea" onChange={onChange} loading={status === 'pending'} />
                 </div>
+                <div className='other-items'>
                 <div className='filter-item'>
-                    <ItemTitle>
+                    <ItemFilterTitle>
                         Tags
-                    </ItemTitle>
+                    </ItemFilterTitle>
                     <SearchItems key={'tags'} getItems={tagListGetApi} onValues={onTagValues} />
                 </div>
                 <div className='filter-item'>
-                    <ItemTitle>
+                    <ItemFilterTitle>
                         Notes
-                    </ItemTitle>
+                    </ItemFilterTitle>
                     <SearchItems key={'notes'} getItems={noteListGetApi} onValues={onNoteValues} />
+                </div>
                 </div>
             </div>
         </div>

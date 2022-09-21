@@ -1,3 +1,4 @@
 export type TPageStyle = {
-    bgColor: string
+    bgColor: string,
+    content : Record<string, string>
 }

@@ -3,13 +3,13 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import { Editor } from "react-draft-wysiwyg";
 import draftToHtmlPuri from "draftjs-to-html";
+import htmlToDraft from 'html-to-draftjs';
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { EditorState, convertToRaw, convertFromHTML, ContentState } from 'draft-js';
+import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import { NotesContext } from '../../../../state/notePageContext';
 import { INote, INoteCreate, INoteUpdate } from '../../../../interface/Note';
 import { useSelector } from 'react-redux';
 import { selectTagList } from '../../../../store/common/tags';
-import { selectNoteMap } from '../../../../store/common/notes';
 import styled from 'styled-components';
 
 const Item = AntdForm.Item;
@@ -24,7 +24,7 @@ type Props = Readonly<{
 }>
 
 const tagRender = (props: CustomTagProps) => {
-    const { label, value, closable, onClose } = props;
+    const { label, closable, onClose } = props;
     const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
         event.preventDefault();
         event.stopPropagation();
@@ -75,7 +75,7 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
     const {map, noteCreateHandler, noteUpdateHandler, noteDeleteHandler } = useContext(NotesContext);
     const [eState, setEState] = useState<EditorState>();
 
-    const editNote = id ? map[id] : undefined;
+    const editItem = id ? map[id] : undefined;
 
     const tagOptions = useMemo(() => tagList.map(tag => ({ label: tag.title, value: tag.id }) as CustomTagProps), [tagList]);
 
@@ -88,8 +88,8 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
             let tagsAdded = [];
             let tagsDeleted = [];
             if (value.tags) {
-                tagsAdded = value.tags.filter(tagId => editNote?.tags?.indexOf(tagId) === - 1) || [];
-                tagsDeleted = editNote?.tags?.filter(tagId => value.tags?.indexOf(tagId) === - 1) || [];
+                tagsAdded = value.tags.filter(tagId => editItem?.tags?.indexOf(tagId) === - 1) || [];
+                tagsDeleted = editItem?.tags?.filter(tagId => value.tags?.indexOf(tagId) === - 1) || [];
 
                 (value as INoteUpdate).tagsAdded = tagsAdded;
                 (value as INoteUpdate).tagsDeleted = tagsDeleted;
@@ -130,18 +130,18 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
 
     useEffect(() => {
         const state = (() => {
-            const blocks = convertFromHTML(editNote?.content || '');
+            const blocks = htmlToDraft(editItem?.content || '');
             return EditorState.createWithContent(ContentState.createFromBlockArray(blocks.contentBlocks, blocks.entityMap));
         })();
 
         setEState(state);
 
         form.setFieldsValue({
-            title: editNote?.title,
-            content: editNote?.content,
-            tags: editNote?.tags
+            title: editItem?.title,
+            content: editItem?.content,
+            tags: editItem?.tags
         });
-    }, [form, editNote])
+    }, [form, editItem])
 
     return <Container>
         <AntdForm

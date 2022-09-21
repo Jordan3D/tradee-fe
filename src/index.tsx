@@ -15,10 +15,3 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
-
-
-// TODO
-// - error handling refactor 3
-// - fe refactor
-// - next feature : Trader Diary (Calendar, Day, display all trades within customized "dayStart" and "dayEnd", editable content, and two set : "read", "edit")
-// - next feature : rules

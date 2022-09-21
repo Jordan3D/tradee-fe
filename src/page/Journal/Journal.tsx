@@ -1,3 +1,4 @@
+import { EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
 import React, { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -30,6 +31,7 @@ const Grid = styled.div`
 `;
 
 const GridItem = styled(Button)`
+   position: relative;
    display: flex;
    align-items: center;
    justify-content: center;
@@ -38,7 +40,45 @@ const GridItem = styled(Button)`
    border: 1px solid gray;
    font-size: 1.2rem;
    font-weight: 600;
+
+   &:hover {
+    .on-hover {
+            display: flex;
+            align-items: flex-end;
+            padding-bottom: 1rem;
+        }
+   }
 `;
+
+export const ItemHover = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.10);
+    justify-content: space-evenly;
+    align-items: center;
+    z-index: 1;
+    padding-top: 2rem;
+
+    .icon {
+        &:hover {
+            color: darkblue;
+        }
+    }
+`
+
+export const  ItemOpen = styled(EyeOutlined)`
+    font-size: 3rem;
+    color: green;
+`
+
+export const ItemEdit = styled(EditOutlined)`
+     font-size: 3rem;
+     color: orange;
+`
 
 const Journal = (): ReactElement => {
     const navigate = useNavigate();
@@ -46,6 +86,7 @@ const Journal = (): ReactElement => {
     const [dates, setDates] = useState<Readonly<{ startDate: number, endDate: number }> | undefined>(undefined);
     const [mode, setMode] = useState<'month' | 'year'>('month');
     const [chosen, setChosen] = useState<IJournalItemFull[] | undefined>(undefined);
+    const [watchItem, setWatchItem] = useState<string | undefined>(undefined);
 
     const calendarData = useMemo(() => fromListToDatesMap(data, mode), [data, mode]);
 
@@ -63,7 +104,13 @@ const Journal = (): ReactElement => {
         setChosen(calendarData[n]);
     }, [calendarData]);
 
-    const onItemClick = useCallback((id: string) => () => navigate(routes.journalItem(id)), [navigate]);
+    const onEditHandler =  useCallback((id: string) => () => {
+        navigate(routes.journalItem(id))
+    }, [navigate]);
+
+    const onWatchHandler = (id: string) => () => {
+        setWatchItem(id);
+    }
 
     useEffect(() => {
         if (dates?.startDate && dates?.endDate) {
@@ -83,10 +130,14 @@ const Journal = (): ReactElement => {
         />
         <Modal width={1000} visible={!!chosen} onCancel={() => setChosen(undefined)} footer={null}>
             <Grid>
-                {chosen?.map(item => <GridItem onClick={onItemClick(item.id)}>
+                {chosen?.map(item => <GridItem>
                     {
                         (item.pnls.reduce((p, c) => p + c.pnl, 0)).toFixed(2)
                     }
+                    <ItemHover className='on-hover'>
+                        <ItemOpen className='icon' onClick={onWatchHandler(item.id)} />
+                        <ItemEdit className='icon' onClick={onEditHandler(item.id)} />
+                    </ItemHover>
                 </GridItem>)}
             </Grid>
         </Modal>

@@ -1,37 +1,47 @@
-import { Button, Input } from 'antd';
+import { Button, Input, Modal } from 'antd';
 import { ChangeEvent, memo, ReactElement, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MasonryInfiniteGrid } from "@egjs/react-infinitegrid";
 import { INote } from '../../../../interface/Note';
 import { NotesContext } from '../../../../state/notePageContext';
 import { selectNoteStatus } from '../../../../store/common/notes';
-import { Container, ItemContainer, ItemTitle, ItemContent } from './style';
 import { GlobalContext } from '../../../../state/context';
 import { SearchItems } from '../../../../components/SearchItems';
 import { tagListGetApi } from '../../../../api/tag';
-import { useUpdateEffect } from 'react-use';
+import { Container, ItemContainer, ItemTitle, ItemHover, ItemOpen, ItemEdit, ItemFilterTitle } from './style';
+import ItemDemo from '../ItemDemo/ItemDemo';
+import { PlusOutlined } from '@ant-design/icons';
 
 const { Search } = Input;
 
 type ItemProps = {
     item: GridItem;
-    onSelectItem: (id: string) => void;
+    onEditItem: (id: string) => void;
+    onWatchItem: (id: string) => void;
 }
 
-const Item = memo(({ item, onSelectItem }: ItemProps): ReactElement => {
+const Item = memo(({ item, onEditItem, onWatchItem }: ItemProps): ReactElement => {
     const { map } = useContext(NotesContext);
     const itemData = map[item.id] as INote;
     // const className = `${isSelected ? ' --selected' : ''}`;
 
-    const onClickHandler = () => {
-        onSelectItem(item.id);
+    const onEditHandler = () => {
+        onEditItem(item.id);
     };
 
-    return itemData && <ItemContainer className="item" onClick={onClickHandler}>
+    const onWatchHandler = () => {
+        onWatchItem(item.id);
+    }
+
+
+    return itemData && <ItemContainer className="item">
         <ItemTitle>
             {itemData.title}
         </ItemTitle>
-        <ItemContent dangerouslySetInnerHTML={{ __html: itemData.content }} />
+        <ItemHover className='on-hover'>
+            <ItemOpen className='icon' onClick={onWatchHandler} />
+            <ItemEdit className='icon' onClick={onEditHandler} />
+        </ItemHover>
     </ItemContainer>
 })
 
@@ -52,6 +62,7 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
     const [items, setItems] = useState<GridItem[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [tagValues, setTagValues] = useState<string[]>([]);
+    const [watchItem, setWatchItem] = useState<string | undefined>(undefined);
     const status = useSelector(selectNoteStatus);
 
     const onAddNoteHandler = () => {
@@ -73,6 +84,14 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
             }
         }, 1000)
     }, [listHandler]);
+
+    const onWatchItem = useCallback((id: string) => {
+        setWatchItem(id)
+    }, [setWatchItem]);
+
+    const handleModalCancel = useCallback(() => {
+        setWatchItem(undefined)
+    }, [setWatchItem]);
 
     useEffect(() => {
         tagsListHandler();
@@ -98,11 +117,22 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
     return <Container className={`${className + ' '}`}>
         <div className='top'>
             <div>
-                <Search className='seatch' allowClear placeholder="Search note" onChange={onChange} loading={status === 'pending'} />
-                <Button className='add_button' onClick={onAddNoteHandler}>Add note</Button>
+                <Button className='add_button' onClick={onAddNoteHandler}>
+                    <PlusOutlined />
+                </Button>
             </div>
-            <div>
-                <SearchItems getItems={tagListGetApi} onValues={onTagValues} />
+            <div className='filters'>
+                <div className='search-item'>
+                    <Search allowClear placeholder="Search idea" onChange={onChange} loading={status === 'pending'} />
+                </div>
+                <div className='other-items'>
+                    <div className='filter-item'>
+                        <ItemFilterTitle>
+                            Tags
+                        </ItemFilterTitle>
+                        <SearchItems key={'tags'} getItems={tagListGetApi} onValues={onTagValues} />
+                    </div>
+                </div>
             </div>
         </div>
         <div className='list'>
@@ -122,9 +152,12 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
                     }
                 }}
             >
-                {items.map((item: GridItem) => <Item item={item} data-grid-groupkey={item.groupKey} onSelectItem={onSelectItem} />)}
+                {items.map((item: GridItem) => <Item item={item} data-grid-groupkey={item.groupKey} onWatchItem={onWatchItem} onEditItem={onSelectItem} />)}
             </MasonryInfiniteGrid>}
         </div>
+        <Modal width={1300} destroyOnClose visible={!!watchItem} footer={false} onCancel={handleModalCancel}>
+            <ItemDemo id={watchItem as string} />
+        </Modal>
     </Container>
 });
 

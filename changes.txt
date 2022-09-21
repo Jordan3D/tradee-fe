@@ -1,0 +1,20 @@
+# TODO
+- error handling refactor 3
+- fe refactor
+- next feature : Trader Diary (Calendar, Day, display all trades within customized "dayStart" and "dayEnd", editable content, and two set : "read", "edit")
+- next feature : rules
+
+
+# Refactor
+
+ General
+-- Make color pallete
+
+ Journal Item
+- Change padding on th to 1rem in tables
+- Make visual division in "edit" mode
+- Add "view" mode
+- Add warning if there are no ideas on creation
+
+
+? add flag to Idea that do  "on add new Idea create a tag + on edit tilte - edit idea tag title"

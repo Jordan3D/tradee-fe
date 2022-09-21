@@ -11,7 +11,10 @@ const darkTheme: TradeeTheme = {
     textColor: '#3f3f24'
   },
   page: {
-    bgColor: '#fbfff7'
+    bgColor: '#fbfff7',
+    content : {
+      padding: '2.2rem'
+    }
   },
   note: {},
   colors: darkColors,

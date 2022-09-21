@@ -6,9 +6,9 @@ position: relative;
 display: flex;
 justify-content: center;
     height: 16rem;
-    border-color: #9ac6ff;
+    border-color: transparent;
     border-width: 0.2rem;
-    border-style: dotted;
+    border-style: solid;
     background-color: #e9f2ff;
     margin-bottom: 1rem;
     box-shadow: 0.1rem 0.1rem 5px 0px rgba(0, 0, 0, 0.151); 
@@ -19,13 +19,14 @@ justify-content: center;
 
     &:hover {
         border-color: #67a2ee;
-        border-style: solid;
         border-radius: 0.4rem;
         background-color: #bed9fd;
         box-shadow: 0.4rem 0.4rem 5px 0px rgba(0, 0, 0, 0.332); 
 
         .on-hover {
             display: flex;
+            align-items: flex-end;
+            padding-bottom: 3rem;
         }
 
         .title {
@@ -51,7 +52,6 @@ export const Container = styled.div`
         height: 8rem;
         width: 8rem;
         margin: 2rem;
-        border-radius: 50%;
         font-size: 4.4rem;
         color: #1f9f1f;
         border-color: #ddfde4;
@@ -68,6 +68,18 @@ export const Container = styled.div`
         }
     }
 
+    .search-item {
+        padding-top: 2rem;
+        width: 40rem;
+    }
+
+    .other-items {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        flex-grow: 1;
+    }
+
     .filters {
         display: flex;
         flex-grow: 1;
@@ -75,10 +87,10 @@ export const Container = styled.div`
     }
 
     .filter-item {
-        width: 33%;
+        width: 40rem;
         display: flex;
         flex-direction: column;
-        padding: 1rem 2rem;
+        padding: 0.6rem 1.6rem;
     }
 
 .container {
@@ -110,7 +122,8 @@ export const Container = styled.div`
 export const ItemTitle = styled.div`
 position: relative;
     text-align: center;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
+    line-height: 1.5rem;
     font-weight: 500;
     margin-bottom: 1rem;
     z-index: 2;
@@ -118,6 +131,16 @@ position: relative;
 
 export const ItemContent = styled.div`
     font-size: 1.4rem;
+`
+
+export const ItemFilterTitle = styled.h3`
+     font-size: 1.6rem;
+     line-height: 2.2rem;
+     margin-bottom: 0;
+    line-height: 2.2rem;
+    margin-bottom: 0;
+    padding-left: 0.6rem;
+    color: #273b48;
 `
 
 export const ItemHover = styled.div`

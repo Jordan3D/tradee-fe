@@ -22,7 +22,7 @@ const mediaQueries: MediaQueries = {
 };
 
 export const shadows: Shadows = {
-  default: (color) => `2px 4px 11px ${color}`,
+  default: (color) => `1px 2px 8px ${color}`,
   level1: (color1 = 'rgba(25, 19, 38, 0.1)', color2 = 'rgba(25, 19, 38, 0.05)') => `0px 2px 12px -8px ${color1}, 0px 1px 1px ${color2}`,
   active: (color1 = '#0098A1', color2 = '#1973ded4') => `0px 0px 0px 2px ${color1}, 0px 0px 4px 6px ${color2}`,
   success: (color1 = '#31D0AA', color2 = 'rgba(49, 208, 170, 0.2)') => `0px 0px 0px 1px ${color1}, 0px 0px 0px 4px ${color2}`,
@@ -49,7 +49,7 @@ const zIndices: ZIndices = {
   modal: 100,
 };
 
-export default {
+const result = {
   siteWidth: 1200,
   border: {
     width: '0.2rem',
@@ -67,3 +67,5 @@ export default {
     formItemTitle: '1.6rem'
   }
 };
+
+export default result;

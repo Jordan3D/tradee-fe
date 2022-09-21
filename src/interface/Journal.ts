@@ -1,4 +1,5 @@
 import { IBase } from "./Base";
+import { IIdea } from "./Idea";
 import { INote } from "./Note";
 import { ITag } from "./Tag";
 import { ITrade } from "./Trade";
@@ -11,6 +12,7 @@ export interface IJournalItem extends IBase{
     transactions: string[];
     tags: string[];
     notes: string[];
+    ideas: string[];
 }
 
 export interface ICreateJI extends IJournalItem {}
@@ -19,6 +21,7 @@ export interface IUpdateJI {
     title: string;
     content: string;
     pnls: string[];
+    ideas: string[];
     transactions: string[];
     tagsAdded: string[];
     tagsDeleted: string[];
@@ -33,4 +36,5 @@ export interface IJournalItemFull extends IBase{
     transactions: ITransaction[];
     tags: ITag[];
     notes: INote[];
+    ideas: IIdea[];
 }

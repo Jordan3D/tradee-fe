@@ -25,7 +25,7 @@ const initialState: IIdeaState = {
     limit: 20
 }
 
-export const fetchData = createAsyncThunk('ideas/fetchData', async (argData: Readonly<{ offset?: number, limit?: number, text?: string }>, {rejectWithValue, dispatch, getState}) => {
+export const fetchIdeasData = createAsyncThunk('ideas/fetchData', async (argData: Readonly<{ offset?: number, limit?: number, text?: string }>, {rejectWithValue, dispatch, getState}) => {
     await processFetch({
         onRequest: () => ideaListOffsetGetApi({offset: 0, ...argData}),
         onData: ({data}) => {
@@ -61,13 +61,13 @@ export const ideasSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
-        builder.addCase(fetchData.pending, (state, action) => {
+        builder.addCase(fetchIdeasData.pending, (state, action) => {
             state.status = 'pending';
         });
-        builder.addCase(fetchData.rejected, (state, action) => {
+        builder.addCase(fetchIdeasData.rejected, (state, action) => {
             state.status = 'failed';
         });
-        builder.addCase(fetchData.fulfilled, (state, action) => {
+        builder.addCase(fetchIdeasData.fulfilled, (state, action) => {
             state.status = 'succeeded';
         })
     }

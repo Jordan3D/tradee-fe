@@ -1,16 +1,22 @@
 import { Button, Input, Modal, Form as AntdForm, Select, Tag } from 'antd';
-import qs from 'qs';
 import { format } from 'date-fns';
+import draftToHtmlPuri from "draftjs-to-html";
+import htmlToDraft from 'html-to-draftjs';
+import qs from 'qs';
+import { Editor } from "react-draft-wysiwyg";
+import { EditorState, convertToRaw, ContentState } from 'draft-js';
+import { useDispatch } from 'react-redux';
 import { ReactElement, useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Page } from '../../components/Page';
 import { Pnl } from '../Journal/components/Pnl';
 import { Table as TablePnl } from '../Trades/component/Table';
 import { Table as TableTransactions } from '../Transactions/component/Table';
-import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store';
 import { GlobalContext } from '../../state/context';
 import { fetchPairsData } from '../../store/common/pairs';
+import ItemTitle from '../../components/Form/ItemTitle';
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { removePnlById, removeTransactionById, selectJIDate, setJIDate, setJIPnls, setJIsetTransactions } from '../../store/journalItem';
 import { useSelector } from 'react-redux';
 import { tradesIdsPostApi } from '../../api/trade';
@@ -22,7 +28,8 @@ import { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import { selectTagList } from '../../store/common/tags';
 import { fetchNotesData, selectNoteIds, selectNoteMap } from '../../store/common/notes';
 import { Container, Header, Buttons } from './style';
-import ItemTitle from '../../components/Form/ItemTitle';
+import { fetchIdeasData, selectIdeaIds, selectIdeaMap } from '../../store/common/ideas';
+import { ideaListOffsetGetApi } from '../../api/idea';
 
 const useForm = AntdForm.useForm;
 const FormItem = AntdForm.Item;
@@ -35,7 +42,7 @@ type TJouranlParams = {
 export type TForm = Omit<IJournalItem, 'tags' | 'notes' | 'createdAt' | 'updatedAt' | 'id'>;
 
 const tagRender = (props: CustomTagProps) => {
-    const { label, value, closable, onClose } = props;
+    const { label, closable, onClose } = props;
     const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
         event.preventDefault();
         event.stopPropagation();
@@ -43,6 +50,25 @@ const tagRender = (props: CustomTagProps) => {
     return (
         <Tag
             color={'orange'}
+            onMouseDown={onPreventMouseDown}
+            closable={closable}
+            onClose={onClose}
+            style={{ marginRight: 3 }}
+        >
+            {label}
+        </Tag>
+    );
+};
+
+const ideaRender = (props: CustomTagProps) => {
+    const { label, value, closable, onClose } = props;
+    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+    };
+    return (
+        <Tag
+            color={'grey'}
             onMouseDown={onPreventMouseDown}
             closable={closable}
             onClose={onClose}
@@ -63,8 +89,11 @@ const JournalItem = (): ReactElement => {
     const tagList = useSelector(selectTagList);
     const noteList = useSelector(selectNoteIds);
     const noteMap = useSelector(selectNoteMap);
+    const ideaList = useSelector(selectIdeaIds);
+    const ideaMap = useSelector(selectIdeaMap);
     const [isPnlModalVisible, setIsPnlModalVisible] = useState(false);
     const [isTransactionsModalVisible, setIsTransactionsModalVisible] = useState(false);
+    const [eState, setEState] = useState<EditorState>();
     const params: TJouranlParams = useMemo(() => qs.parse(search.substring(1)), [search]);
 
     const [form] = useForm();
@@ -75,11 +104,13 @@ const JournalItem = (): ReactElement => {
         pnls: [],
         transactions: [],
         tags: [],
-        notes: []
+        notes: [],
+        ideas: []
     });
 
     const tagOptions = useMemo(() => tagList.map(tag => ({ label: tag.title, value: tag.id }) as CustomTagProps), [tagList]);
     const noteOptions = useMemo(() => noteList.map(note => ({ label: noteMap[note]?.title, value: noteMap[note]?.id }) as CustomTagProps), [noteList, noteMap]);
+    const ideaOptions = useMemo(() => ideaList.map(idea => ({ label: ideaMap[idea]?.title, value: ideaMap[idea]?.id }) as CustomTagProps), [ideaList, ideaMap]);
 
     const onFilter = (inputValue: string, option?: CustomTagProps) => {
         return option?.label?.toString().indexOf(inputValue) !== -1;
@@ -125,13 +156,17 @@ const JournalItem = (): ReactElement => {
     };
 
     const onDelete = () => {
-        if(id){
+        if (id) {
             jIDeleteHandler(id);
             navigate(-1);
         }
     }
 
     const onFinish = (values: ICreateJI & IUpdateJI) => {
+        console.log(values);
+        const content = draftToHtmlPuri(
+            convertToRaw((eState as EditorState)?.getCurrentContent())
+        );
         const flatData = {
             pnls: item?.pnls as string[],
             transactions: item?.transactions as string[],
@@ -144,11 +179,15 @@ const JournalItem = (): ReactElement => {
                 notesDeleted: item?.notes?.filter(id => values?.notes?.indexOf(id) === - 1) || []
             };
 
-            jIUpdateHandler(id, { ...values, ...additional, ...flatData });
+            jIUpdateHandler(id, { ...values, ...additional, ...flatData, content });
         } else {
-            jICreateHandler({ ...values, ...flatData } as ICreateJI);
+            jICreateHandler({ ...values, ...flatData, content } as ICreateJI);
         }
         navigate(-1);
+    };
+
+    const onEditorStateChange = (editorState: EditorState) => {
+        setEState(editorState);
     };
 
     const onFinishFailed = (errorInfo: any) => {
@@ -161,6 +200,7 @@ const JournalItem = (): ReactElement => {
         dispatch(fetchPairsData());
         tagsListHandler();
         dispatch(fetchNotesData({}));
+        dispatch(fetchIdeasData({}));
         return () => {
             clearTrades();
             clearTransactions();
@@ -189,6 +229,12 @@ const JournalItem = (): ReactElement => {
         if (id) {
             (async () => {
                 const data = await journalItemGet(id);
+                const state = (() => {
+                    const blocks = htmlToDraft(data?.content || '');
+                    return EditorState.createWithContent(ContentState.createFromBlockArray(blocks.contentBlocks, blocks.entityMap));
+                })();
+
+                setEState(state);
                 setItem(data);
                 if (data)
                     form.setFieldsValue({
@@ -197,7 +243,8 @@ const JournalItem = (): ReactElement => {
                         pnls: data.pnls,
                         transactions: data.transactions,
                         tags: data.tags,
-                        notes: data.notes
+                        notes: data.notes,
+                        ideas: data.ideas
                     })
             })()
         }
@@ -217,7 +264,13 @@ const JournalItem = (): ReactElement => {
                 <Input />
             </FormItem>
             <FormItem name="content" label="Content">
-                <Input />
+                <Editor
+                    editorState={eState}
+                    toolbarClassName="toolbarClassName"
+                    wrapperClassName="wrapperClassName"
+                    editorClassName="editorClassName"
+                    onEditorStateChange={onEditorStateChange}
+                />
             </FormItem>
             <FormItem>
                 <Header>
@@ -228,7 +281,7 @@ const JournalItem = (): ReactElement => {
                     </div>
                     <Button className='add-btn' size='large' onClick={showModal('pnl')}>Add</Button>
                 </Header>
-                <Pnl onRemove={onRemovePnl}/>
+                <Pnl onRemove={onRemovePnl} />
                 <Modal width={1500} destroyOnClose visible={isPnlModalVisible} onOk={handleOk} onCancel={handleCancel}>
                     <TablePnl onSelected={onPnlSelected} selected={item?.pnls} onGetData={getTrades} />
                 </Modal>
@@ -272,6 +325,20 @@ const JournalItem = (): ReactElement => {
                     filterOption={onFilter}
                     style={{ width: '100%' }}
                     options={noteOptions}
+                />
+            </FormItem>
+            <FormItem
+                label="Ideas"
+                name="ideas"
+                className='note_form__item'
+            >
+                <Select
+                    allowClear
+                    mode="multiple"
+                    tagRender={ideaRender}
+                    filterOption={onFilter}
+                    style={{ width: '100%' }}
+                    options={ideaOptions}
                 />
             </FormItem>
             <Buttons>
