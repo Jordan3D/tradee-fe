@@ -1,2 +1,2 @@
-export {default as JouranlPage} from './Journal';
+export {default as JournalPage} from './Journal';
 export * from './Journal';

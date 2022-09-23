@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import MainButton from '../../components/Buttons';
 import { Page } from '../../components/Page';
-import { IJournalItem, IJournalItemFull } from '../../interface/Journal';
+import { IJournalItemFull } from '../../interface/Journal';
 import routes from '../../router';
 import { JournalContext } from '../../state/journalContext';
 import { fromListToDatesMap } from '../../utils/common';
@@ -86,7 +86,6 @@ const Journal = (): ReactElement => {
     const [dates, setDates] = useState<Readonly<{ startDate: number, endDate: number }> | undefined>(undefined);
     const [mode, setMode] = useState<'month' | 'year'>('month');
     const [chosen, setChosen] = useState<IJournalItemFull[] | undefined>(undefined);
-    const [watchItem, setWatchItem] = useState<string | undefined>(undefined);
 
     const calendarData = useMemo(() => fromListToDatesMap(data, mode), [data, mode]);
 
@@ -108,10 +107,6 @@ const Journal = (): ReactElement => {
         navigate(routes.journalItem(id))
     }, [navigate]);
 
-    const onWatchHandler = (id: string) => () => {
-        setWatchItem(id);
-    }
-
     useEffect(() => {
         if (dates?.startDate && dates?.endDate) {
             journalDataHandler({ startDate: dates.startDate, endDate: dates.endDate });
@@ -130,14 +125,10 @@ const Journal = (): ReactElement => {
         />
         <Modal width={1000} visible={!!chosen} onCancel={() => setChosen(undefined)} footer={null}>
             <Grid>
-                {chosen?.map(item => <GridItem>
+                {chosen?.map(item => <GridItem onClick={onEditHandler(item.id)}>
                     {
                         (item.pnls.reduce((p, c) => p + c.pnl, 0)).toFixed(2)
                     }
-                    <ItemHover className='on-hover'>
-                        <ItemOpen className='icon' onClick={onWatchHandler(item.id)} />
-                        <ItemEdit className='icon' onClick={onEditHandler(item.id)} />
-                    </ItemHover>
                 </GridItem>)}
             </Grid>
         </Modal>

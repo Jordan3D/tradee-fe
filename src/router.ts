@@ -1,6 +1,6 @@
 export type Route = 'ideas' | 'notes' | 'notesItem' | 'main' | 'profile' |
  'start' | 'login' | 'signup' | 'tags' | 'tagsItem' | 'journal' | 'trades' | 'trade' | 
- 'journalItem' | 'journalItemNew' | 'transactions' | 'ideasItem' | 'images' | 'imagesItem';
+ 'journalItem' | 'journalItemNew' | 'transactions' | 'ideasItem' | 'images' | 'imagesItem' | 'diary' | 'diaryItem' | 'diaryItemNew';
 
 const routes: Record<Route,any> = {
     ideas: '/ideas',
@@ -22,6 +22,9 @@ const routes: Record<Route,any> = {
     trade: (id?: string) => `/trade/${id ? id : ':id'}`,
     images: '/images',
     imagesItem: (id: string  = ':id') => `${routes.images}/${id}`,
+    diary: '/diary',
+    diaryItemNew: (date?: string) => `/diary/item/new${date ? `?date=${date}` : ''}`,
+    diaryItem: (id: string  = ':id') => `${routes.diary}/${id}`,
 };
 
 export default routes;

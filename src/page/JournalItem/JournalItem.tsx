@@ -266,9 +266,6 @@ const JournalItem = (): ReactElement => {
             <FormItem name="content" label="Content">
                 <Editor
                     editorState={eState}
-                    toolbarClassName="toolbarClassName"
-                    wrapperClassName="wrapperClassName"
-                    editorClassName="editorClassName"
                     onEditorStateChange={onEditorStateChange}
                 />
             </FormItem>
