@@ -9,10 +9,6 @@ display: flex;
 justify-content: space-evenly;
 flex-direction: column;
 
-
-.contentWrapper {
-    min-height: 40rem;
-  }
 `;
 export const Header = styled.div`
   display: flex;

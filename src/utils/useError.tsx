@@ -3,6 +3,7 @@ import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { refreshTokenApi } from '../api/user';
 import routes from '../router';
+import { invokeFeedback } from './feedbacks/feedbacks';
 
 const useError = () => {
   const navigate = useNavigate();
@@ -17,7 +18,10 @@ const useError = () => {
 
   const result = useMemo(() => ({
     onError,
-    afterAllTries: () => navigate(routes.login)
+    afterAllTries: () => {
+      invokeFeedback({ msg: 'Error should be fix before continue the work', type: 'error', override: {autoClose: 3000}});
+      //navigate(routes.login)
+    }
   }), [onError, navigate])
 
   return result;

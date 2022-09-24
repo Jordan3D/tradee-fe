@@ -31,26 +31,26 @@ const Sidebar = ({ className = '' }: Props): ReactElement => {
         <List>
             {
                  user ?<>
-                <ItemButton onClick={onClickHandler('profile')}>Profile</ItemButton>
-                <ItemButton onClick={logoutHandler}>Logout</ItemButton>
+                <ItemButton key="profile" onClick={onClickHandler('profile')}>Profile</ItemButton>
+                <ItemButton key="logout" onClick={logoutHandler}>Logout</ItemButton>
                 </> : <>
-                <ItemButton onClick={onClickHandler('login')}>Login</ItemButton>
-                <ItemButton onClick={onClickHandler('signup')}>Signup</ItemButton>
+                <ItemButton key="login" onClick={onClickHandler('login')}>Login</ItemButton>
+                <ItemButton key="signup" onClick={onClickHandler('signup')}>Signup</ItemButton>
                 </>
             }
         </List>
     </List>, [onClickHandler, user, logoutHandler])
 
     const menuPopoverContent = useCallback(() => <List> {
-            list.map(item => <ItemButton className={itemClass(item)} onClick={onClickHandler(item)}>{item}</ItemButton>)
+            list.map(item => <ItemButton key={item} className={itemClass(item)} onClick={onClickHandler(item)}>{item}</ItemButton>)
         }</List>
         , [itemClass, onClickHandler])
 
     return <Container className={className}>
-        <Popover content={profilePopoverContent} trigger="click">
+        <Popover key="user" content={profilePopoverContent} trigger="click">
             <Button type="primary" className="circle-btn"><UserOutlined /></Button>
         </Popover>
-        {user ? <Popover content={menuPopoverContent} trigger="click">
+        {user ? <Popover key="menu" content={menuPopoverContent} trigger="click">
             <Button type="primary" className="circle-btn"><MenuOutlined /></Button>
         </Popover> : <></>} 
     </Container>

@@ -86,7 +86,8 @@ export const Container = styled.div`
     }
 
     .filter-item {
-        width: 40rem;
+        max-width: 50rem;
+        width: 50%;
         display: flex;
         flex-direction: column;
         padding: 0.6rem 1.6rem;

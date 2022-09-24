@@ -1,4 +1,4 @@
-import { Button, Input, Modal, Form as AntdForm, Select, Tag } from 'antd';
+import { Button, Input, Modal, Form as AntdForm, Select } from 'antd';
 import { format } from 'date-fns';
 import draftToHtmlPuri from "draftjs-to-html";
 import htmlToDraft from 'html-to-draftjs';
@@ -29,7 +29,7 @@ import { selectTagList } from '../../store/common/tags';
 import { fetchNotesData, selectNoteIds, selectNoteMap } from '../../store/common/notes';
 import { Container, Header, Buttons } from './style';
 import { fetchIdeasData, selectIdeaIds, selectIdeaMap } from '../../store/common/ideas';
-import { ideaListOffsetGetApi } from '../../api/idea';
+import TagRender from '../../components/Tags/TagRender';
 
 const useForm = AntdForm.useForm;
 const FormItem = AntdForm.Item;
@@ -41,43 +41,6 @@ type TJouranlParams = {
 
 export type TForm = Omit<IJournalItem, 'tags' | 'notes' | 'createdAt' | 'updatedAt' | 'id'>;
 
-const tagRender = (props: CustomTagProps) => {
-    const { label, closable, onClose } = props;
-    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
-    };
-    return (
-        <Tag
-            color={'orange'}
-            onMouseDown={onPreventMouseDown}
-            closable={closable}
-            onClose={onClose}
-            style={{ marginRight: 3 }}
-        >
-            {label}
-        </Tag>
-    );
-};
-
-const ideaRender = (props: CustomTagProps) => {
-    const { label, value, closable, onClose } = props;
-    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
-    };
-    return (
-        <Tag
-            color={'grey'}
-            onMouseDown={onPreventMouseDown}
-            closable={closable}
-            onClose={onClose}
-            style={{ marginRight: 3 }}
-        >
-            {label}
-        </Tag>
-    );
-};
 
 const JournalItem = (): ReactElement => {
     const dispatch = useDispatch<AppDispatch>();
@@ -162,8 +125,8 @@ const JournalItem = (): ReactElement => {
         }
     }
 
-    const onFinish = (values: ICreateJI & IUpdateJI) => {
-        console.log(values);
+    const onFinish = async (values: ICreateJI & IUpdateJI) => {
+        let result;
         const content = draftToHtmlPuri(
             convertToRaw((eState as EditorState)?.getCurrentContent())
         );
@@ -179,11 +142,12 @@ const JournalItem = (): ReactElement => {
                 notesDeleted: item?.notes?.filter(id => values?.notes?.indexOf(id) === - 1) || []
             };
 
-            jIUpdateHandler(id, { ...values, ...additional, ...flatData, content });
+            result = await jIUpdateHandler(id, { ...values, ...additional, ...flatData, content });
         } else {
-            jICreateHandler({ ...values, ...flatData, content } as ICreateJI);
+            result = await jICreateHandler({ ...values, ...flatData, content } as ICreateJI);
         }
-        navigate(-1);
+        if (result?.id)
+            navigate(-1);
     };
 
     const onEditorStateChange = (editorState: EditorState) => {
@@ -266,6 +230,7 @@ const JournalItem = (): ReactElement => {
             <FormItem name="content" label="Content">
                 <Editor
                     editorState={eState}
+                    wrapperClassName="contentWrapper"
                     onEditorStateChange={onEditorStateChange}
                 />
             </FormItem>
@@ -304,7 +269,7 @@ const JournalItem = (): ReactElement => {
             >
                 <Select
                     mode="multiple"
-                    tagRender={tagRender}
+                    tagRender={TagRender({})}
                     filterOption={onFilter}
                     style={{ width: '100%' }}
                     options={tagOptions}
@@ -318,7 +283,7 @@ const JournalItem = (): ReactElement => {
                 <Select
                     allowClear
                     mode="multiple"
-                    tagRender={tagRender}
+                    tagRender={TagRender({ color: 'lightpink', map: noteMap })}
                     filterOption={onFilter}
                     style={{ width: '100%' }}
                     options={noteOptions}
@@ -332,7 +297,7 @@ const JournalItem = (): ReactElement => {
                 <Select
                     allowClear
                     mode="multiple"
-                    tagRender={ideaRender}
+                    tagRender={TagRender({ color: 'grey', map: ideaMap })}
                     filterOption={onFilter}
                     style={{ width: '100%' }}
                     options={ideaOptions}

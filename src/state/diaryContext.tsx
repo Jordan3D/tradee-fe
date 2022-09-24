@@ -19,8 +19,8 @@ export type Props = Readonly<{
 export type TContext = Readonly<{
   data: IDiaryItemFull[];
   diaryDataHandler: (argData: Readonly<{ startDate?: number, endDate?: number }>) => void;
-  dICreateHandler: (data: ICreateDI) => void;
-  dIUpdateHandler: (id: string, data: IUpdateDI) => void;
+  dICreateHandler: (data: ICreateDI) => Promise<{id: string}| undefined>;
+  dIUpdateHandler: (id: string, data: IUpdateDI) => Promise<{id: string} | undefined>;
   dIDeleteHandler: (id: string) => void;
   diaryItemGet: (id: string) => Promise<IDiaryItem | undefined>
 }>;
@@ -28,8 +28,8 @@ export type TContext = Readonly<{
 export const DiaryContext = createContext<TContext>({
   data: [],
   diaryDataHandler: () => Promise.resolve(),
-  dICreateHandler: () => Promise.resolve(),
-  dIUpdateHandler: () => Promise.resolve(),
+  dICreateHandler: () => Promise.resolve({id: ''}),
+  dIUpdateHandler: () => Promise.resolve({id: ''}),
   dIDeleteHandler: () => Promise.resolve(),
   diaryItemGet: () => Promise.resolve(undefined)
 });
@@ -60,27 +60,33 @@ export const Provider = ({
   }, [processError]);
 
   const dICreateHandler = async (argData: ICreateDI) => {
+    let res;
     await processFetch<IDiaryItem>({
       onRequest: () => dICreateApi(argData),
       onData: (data) => {
+        res = data;
         if (data.id) {
           invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
         }
       },
       ...processError
     });
+    return res;
   };
 
   const dIUpdateHandler = async (id: string, argData: IUpdateDI) => {
+    let res;
     await processFetch<IDiaryItem>({
       onRequest: () => dIUpdateApi(id, argData),
       onData: (data) => {
         if (data) {
+          res = data;
           invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
         }
       },
       ...processError
     });
+    return res;
   };
 
   const dIDeleteHandler = async (id: string) => {

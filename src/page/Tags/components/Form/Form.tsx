@@ -1,11 +1,12 @@
 import './style.scss';
-import { Button, Checkbox, Form as AntdForm, Input, Select, Tag } from 'antd';
+import { Button, Checkbox, Form as AntdForm, Input, Select } from 'antd';
 import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import { CreateTag, UpdateTag } from '../../../../interface/Tag';
 import { useContext, useEffect, useMemo } from 'react';
 import { GlobalContext } from '../../../../state/context';
 import { useSelector } from 'react-redux';
 import { selectTagList, selectTagMap } from '../../../../store/common/tags';
+import TagRender from '../../../../components/Tags/TagRender';
 
 const Item = AntdForm.Item;
 const useForm = AntdForm.useForm;
@@ -16,25 +17,6 @@ type Props = TTagForm & {
     values: TTagForm
     onClose: () => void
 }
-
-const tagRender = (props: CustomTagProps) => {
-    const { label, value, closable, onClose } = props;
-    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
-    };
-    return (
-        <Tag
-            color={value}
-            onMouseDown={onPreventMouseDown}
-            closable={closable}
-            onClose={onClose}
-            style={{ marginRight: 3 }}
-        >
-            {label}
-        </Tag>
-    );
-};
 
 const Form = ({ values, onClose }: Props) => {
     const { id, parentId } = values;
@@ -102,7 +84,7 @@ const Form = ({ values, onClose }: Props) => {
                 <Select
                     showArrow
                     allowClear
-                    tagRender={tagRender}
+                    tagRender={TagRender({})}
                     style={{ width: '100%' }}
                     options={tagOptions}
                 />

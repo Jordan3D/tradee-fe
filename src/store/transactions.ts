@@ -29,8 +29,7 @@ export const fetchTransactionData = createAsyncThunk('transactions/fetchData', a
         onRequest: () => transactionsGetApi(args),
         onData: (result) => {
             const {data, total, limit, offset, orderBy} = result as TTransactionsGetResult;
-            console.log(orderBy);
-            dispatch(setTransactionData({data, total, page: (offset / limit), pageSize: Number(limit), orderBy: orderBy.split(',') as [string, 'ASC' | 'DESC'] | []}))
+            dispatch(setTransactionData({data, total, page: (offset / limit) + 1, pageSize: Number(limit), orderBy: orderBy.split(',') as [string, 'ASC' | 'DESC'] | []}))
         },
         onError: async (response: Response) => {
             if(response.status === 401){

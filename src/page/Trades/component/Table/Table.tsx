@@ -58,8 +58,6 @@ const TableComponent = ({ className = '', selected = [], onSelected, onGetData, 
     const buff = useRef<any>(null);
     const [orederKey, orderDirection = 'ASC'] = orderBy; 
 
-    console.log(orederKey, orderDirection);
-
     const [selectedRowKeys, setSelectedRowKeys] = useState<Record<string, string[]>>({});
 
     const columns: ColumnsType<DataType> = useMemo(() => [
@@ -76,6 +74,8 @@ const TableComponent = ({ className = '', selected = [], onSelected, onGetData, 
             key: 'pairId',
             width: '15%',
             render: text => pairs[text]?.title || 'unknown',
+            sortOrder: orederKey === 'pairId' ?  sortMapKeys[orderDirection] : undefined,
+            sorter: true
         },
         {
             title: 'Leverage',

@@ -3,6 +3,7 @@ import { Select, Tag } from 'antd';
 import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import styled from 'styled-components';
 import { useUpdateEffect } from 'react-use';
+import TagRender from '../Tags/TagRender';
 ;
 
 interface Item {
@@ -40,7 +41,8 @@ interface Props {
 
 const SearchItems = memo(({ className = '', predefinedValue = [], getItems, onValues }: Props): ReactElement => {
     const [value, setValue] = useState<string[]>(predefinedValue);
-    const ref = useRef({value: ''})
+    const ref = useRef({value: ''});
+    const isClearingRef = useRef({value: false}); // is needed for correct clearing beacuse of multiple paralel deselecting 
 
     const [options, setOptions] = useState<CustomTagProps[]>([]);
 
@@ -58,19 +60,27 @@ const SearchItems = memo(({ className = '', predefinedValue = [], getItems, onVa
     };
 
     const onDeselect = (v: string) => {
+        if(isClearingRef.current.value){
+            return
+        }
         const index = value.indexOf(v);
         const buff = value.slice();
         buff.splice(index, 1);
         setValue(buff);
     }
 
+    const onClear = () => {
+        isClearingRef.current.value = true;
+        setValue([]);
+    }
+
     const filterOption = (inputValue: string, option: CustomTagProps | undefined) => {
-        return option ? (option.label as string).indexOf(inputValue) !== -1 : false
+        return option ? (option.label as string).toLowerCase().indexOf(inputValue.toLowerCase()) !== -1 : false
     }
 
     useUpdateEffect(() => {
         onValues(value);
-    }, [value]);
+    }, [value, onValues]);
 
     return <Container className={className}>
         <Select
@@ -80,9 +90,10 @@ const SearchItems = memo(({ className = '', predefinedValue = [], getItems, onVa
                     filterOption={filterOption}
                     defaultValue={value}
                     onSearch={onSearch}
-                    tagRender={tagRender}
+                    tagRender={TagRender({})}
                     onSelect={onSelect}
                     onDeselect={onDeselect}
+                    onClear={onClear}
                     style={{ width: '100%' }}
                     options={options}
                 />

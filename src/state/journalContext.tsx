@@ -19,8 +19,8 @@ export type Props = Readonly<{
 export type TContext = Readonly<{
   data: IJournalItemFull[];
   journalDataHandler: (argData: Readonly<{ startDate?: number, endDate?: number }>) => void;
-  jICreateHandler: (data: ICreateJI) => void;
-  jIUpdateHandler: (id: string, data: IUpdateJI) => void;
+  jICreateHandler: (data: ICreateJI) => Promise<{id: string} | undefined>;
+  jIUpdateHandler: (id: string, data: IUpdateJI) => Promise<{id: string} | undefined>;
   jIDeleteHandler: (id: string) => void;
   journalItemGet: (id: string) => Promise<IJournalItem | undefined>
 }>;
@@ -28,8 +28,8 @@ export type TContext = Readonly<{
 export const JournalContext = createContext<TContext>({
   data: [],
   journalDataHandler: () => Promise.resolve(),
-  jICreateHandler: () => Promise.resolve(),
-  jIUpdateHandler: () => Promise.resolve(),
+  jICreateHandler: () => Promise.resolve({id: ''}),
+  jIUpdateHandler: () => Promise.resolve({id: ''}),
   jIDeleteHandler: () => Promise.resolve(),
   journalItemGet: () => Promise.resolve(undefined)
 });
@@ -60,27 +60,33 @@ export const Provider = ({
   }, [processError]);
 
   const jICreateHandler = async (argData: ICreateJI) => {
+    let res;
     await processFetch<IJournalItem>({
       onRequest: () => jICreateApi(argData),
       onData: (data) => {
         if (data.id) {
+          res = data
           invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
         }
       },
       ...processError
     });
+    return res;
   };
 
   const jIUpdateHandler = async (id: string, argData: IUpdateJI) => {
+    let res;
     await processFetch<IJournalItem>({
       onRequest: () => jIUpdateApi(id, argData),
       onData: (data) => {
         if (data) {
+          res = data
           invokeFeedback({ msg: 'Success', type: 'success', override: {autoClose: 3000}});
         }
       },
       ...processError
     });
+    return res;
   };
 
   const jIDeleteHandler = async (id: string) => {

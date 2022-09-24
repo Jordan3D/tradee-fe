@@ -1,4 +1,4 @@
-import { Button, Form as AntdForm, Input, Popconfirm, Select, Tag, UploadFile } from 'antd';
+import { Button, Form as AntdForm, Input, Popconfirm, Select, UploadFile } from 'antd';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import { Editor } from "react-draft-wysiwyg";
@@ -13,6 +13,7 @@ import { IdeasContext } from '../../../../state/ideaPageContext';
 import { ICreateIdea, IIdea, IUpdateIdea } from '../../../../interface/Idea';
 import { selectNoteIds, selectNoteMap } from '../../../../store/common/notes';
 import {ImageUploader} from '../../../../components/ImageUploader';
+import TagRender from '../../../../components/Tags/TagRender';
 
 const Item = AntdForm.Item;
 const useForm = AntdForm.useForm;
@@ -24,25 +25,6 @@ type Props = Readonly<{
     onClose: () => void
     onSelectItem: (id: string) => void
 }>
-
-const tagRender = (props: CustomTagProps) => {
-    const { label, closable, onClose } = props;
-    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
-    };
-    return (
-        <Tag
-            color={'orange'}
-            onMouseDown={onPreventMouseDown}
-            closable={closable}
-            onClose={onClose}
-            style={{ marginRight: 3 }}
-        >
-            {label}
-        </Tag>
-    );
-};
 
 const Container = styled.div`
   padding: 1.2em;
@@ -220,9 +202,7 @@ const Form = ({ values, onClose, onSelectItem }: Props) => {
                 >
                     <Editor
                         editorState={eState}
-                        toolbarClassName="toolbarClassName"
                         wrapperClassName="wrapperClassName"
-                        editorClassName="editorClassName"
                         onEditorStateChange={onEditorStateChange}
                     />
                 </Item>
@@ -235,7 +215,7 @@ const Form = ({ values, onClose, onSelectItem }: Props) => {
                     <Select
                         allowClear
                         mode="multiple"
-                        tagRender={tagRender}
+                        tagRender={TagRender({})}
                         onSearch={onSearch}
                         style={{ width: '100%' }}
                         options={tagOptions}
@@ -249,7 +229,7 @@ const Form = ({ values, onClose, onSelectItem }: Props) => {
                     <Select
                         allowClear
                         mode="multiple"
-                        tagRender={tagRender}
+                        tagRender={TagRender({color: 'lightpink', map: noteMap})}
                         onSearch={onSearch}
                         style={{ width: '100%' }}
                         options={noteOptions}

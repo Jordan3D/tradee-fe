@@ -21,6 +21,7 @@ import { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import { selectTagList } from '../../store/common/tags';
 import { Container, Buttons } from './style';
 import { DiaryContext } from '../../state/diaryContext';
+import TagRender from '../../components/Tags/TagRender';
 
 const useForm = AntdForm.useForm;
 const FormItem = AntdForm.Item;
@@ -31,25 +32,6 @@ type TJouranlParams = {
 }
 
 export type TForm = Omit<IDiaryItem, 'createdAt' | 'updatedAt' | 'id'>;
-
-const tagRender = (props: CustomTagProps) => {
-    const { label, closable, onClose } = props;
-    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
-    };
-    return (
-        <Tag
-            color={'orange'}
-            onMouseDown={onPreventMouseDown}
-            closable={closable}
-            onClose={onClose}
-            style={{ marginRight: 3 }}
-        >
-            {label}
-        </Tag>
-    );
-};
 
 const DiaryItem = (): ReactElement => {
     const dispatch = useDispatch<AppDispatch>();
@@ -87,16 +69,21 @@ const DiaryItem = (): ReactElement => {
         }
     }
 
-    const onFinish = (values: ICreateDI & IUpdateDI) => {
-        console.log(values);
+    const onFinish = async (values: ICreateDI & IUpdateDI) => {
+        let result;
         const content = draftToHtmlPuri(
             convertToRaw((eState as EditorState)?.getCurrentContent())
         );
         if (id) {
-            dIUpdateHandler(id, { ...values, content });
+            const additional = {
+                tagsAdded: values?.tags.filter(id => item?.tags?.indexOf(id) === - 1) || [],
+                tagsDeleted: item?.tags?.filter(id => values?.tags?.indexOf(id) === - 1) || [],
+            }
+            result = await dIUpdateHandler(id, { ...values, ...additional, content });
         } else {
-            dICreateHandler({ ...values, content } as ICreateDI);
+            result = await dICreateHandler({ ...values, content } as ICreateDI);
         }
+        if (result?.id)
         navigate(-1);
     };
 
@@ -173,7 +160,7 @@ const DiaryItem = (): ReactElement => {
             >
                 <Select
                     mode="multiple"
-                    tagRender={tagRender}
+                    tagRender={TagRender({})}
                     filterOption={onFilter}
                     style={{ width: '100%' }}
                     options={tagOptions}

@@ -1,4 +1,4 @@
-import { Button, Form as AntdForm, Input, Popconfirm, Select, Tag } from 'antd';
+import { Button, Form as AntdForm, Input, Popconfirm, Select } from 'antd';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import { Editor } from "react-draft-wysiwyg";
@@ -11,6 +11,7 @@ import { INote, INoteCreate, INoteUpdate } from '../../../../interface/Note';
 import { useSelector } from 'react-redux';
 import { selectTagList } from '../../../../store/common/tags';
 import styled from 'styled-components';
+import TagRender from '../../../../components/Tags/TagRender';
 
 const Item = AntdForm.Item;
 const useForm = AntdForm.useForm;
@@ -22,25 +23,6 @@ type Props = Readonly<{
     onClose: () => void
     onSelectNote: (id: string) => void
 }>
-
-const tagRender = (props: CustomTagProps) => {
-    const { label, closable, onClose } = props;
-    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
-    };
-    return (
-        <Tag
-            color={'orange'}
-            onMouseDown={onPreventMouseDown}
-            closable={closable}
-            onClose={onClose}
-            style={{ marginRight: 3 }}
-        >
-            {label}
-        </Tag>
-    );
-};
 
 const Container = styled.div`
   padding: 1.2em;
@@ -182,9 +164,7 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
                 >
                     <Editor
                         editorState={eState}
-                        toolbarClassName="toolbarClassName"
-                        wrapperClassName="wrapperClassName"
-                        editorClassName="editorClassName"
+                        wrapperClassName="contentWrapper"
                         onEditorStateChange={onEditorStateChange}
                     />
                 </Item>
@@ -197,7 +177,7 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
                     <Select
                         allowClear
                         mode="multiple"
-                        tagRender={tagRender}
+                        tagRender={TagRender({})}
                         onSearch={onSearch}
                         style={{ width: '100%' }}
                         options={tagOptions}

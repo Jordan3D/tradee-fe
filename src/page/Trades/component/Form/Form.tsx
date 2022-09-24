@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import { selectTagList } from '../../../../store/common/tags';
 import { selectNoteMap } from '../../../../store/common/notes';
 import styled from 'styled-components';
+import TagRender from '../../../../components/Tags/TagRender';
 
 const Item = AntdForm.Item;
 const useForm = AntdForm.useForm;
@@ -191,7 +192,7 @@ const Form = ({ values, onClose, onSelectNote }: Props) => {
                 <Select
                 allowClear
                     mode="multiple"
-                    tagRender={tagRender}
+                    tagRender={TagRender({})}
                     onSearch={onSearch}
                     style={{ width: '100%' }}
                     options={tagOptions}

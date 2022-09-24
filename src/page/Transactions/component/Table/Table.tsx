@@ -60,8 +60,6 @@ const TableComponent = ({ className = '', selected = [], onSelected, onGetData, 
 
     const [selectedRowKeys, setSelectedRowKeys] = useState<Record<string, string[]>>({});
 
-    console.log(orederKey === 'trade_time' ?  sortMapKeys[orderDirection] : undefined);
-
     const columns: ColumnsType<DataType> = useMemo(() => [
         {
             title: 'Action',
@@ -76,6 +74,8 @@ const TableComponent = ({ className = '', selected = [], onSelected, onGetData, 
             key: 'pairId',
             width: 180,
             render: text => pairs[text]?.title || 'unknown',
+            sortOrder: orederKey === 'pairId' ?  sortMapKeys[orderDirection] : undefined,
+            sorter: true
         },
         {
             title: 'Trade time',

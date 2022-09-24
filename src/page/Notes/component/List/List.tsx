@@ -70,8 +70,9 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
     };
 
     const onTagValues = useCallback((values: string[]) => {
+        console.log(values);
         setTagValues(values);
-    }, []);
+    }, [setTagValues]);
 
     const getData = (isCleared: boolean = false) => listHandler({ text: searchText, limit: 25, tags: tagValues }, isCleared);
 

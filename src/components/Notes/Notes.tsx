@@ -8,26 +8,7 @@ import { tradeUpdateApi } from '../../api/trade';
 import { INote } from '../../interface/Note';
 import { CloseOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-;
-
-const tagRender = (props: CustomTagProps) => {
-    const { label, value, closable, onClose } = props;
-    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
-    };
-    return (
-        <Tag
-            color={'orange'}
-            onMouseDown={onPreventMouseDown}
-            closable={closable}
-            onClose={onClose}
-            style={{ marginRight: 3 }}
-        >
-            {label}
-        </Tag>
-    );
-};
+import TagRender from '../Tags/TagRender';
 
 const NoteItem = ({ item, onDelete }: { item: INote | undefined, onDelete: (id: string) => Promise<void> }) => {
     const onDeleteItem = async () => {
@@ -131,7 +112,7 @@ const Notes = ({ tradeId, notes, updateTrade }: { tradeId: string, notes: string
                     mode="multiple"
                     className='add'
                     value={value}
-                    tagRender={tagRender}
+                    tagRender={TagRender({})}
                     onSelect={onSelect}
                     style={{ width: '100%' }}
                     options={noteOptions}

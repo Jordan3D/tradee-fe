@@ -9,6 +9,7 @@
 
  General
 -- Make color pallete
+-- place to the contexts forms for each items
 
  Journal Item
 - Change padding on th to 1rem in tables
