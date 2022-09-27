@@ -81,7 +81,7 @@ const DiaryItem = (): ReactElement => {
             }
             result = await dIUpdateHandler(id, { ...values, ...additional, content });
         } else {
-            result = await dICreateHandler({ ...values, content } as ICreateDI);
+            result = await dICreateHandler({ ...values, content, createdAt: new Date(itemDate) } as ICreateDI);
         }
         if (result?.id)
         navigate(-1);

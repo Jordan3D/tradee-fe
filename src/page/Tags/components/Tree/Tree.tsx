@@ -53,7 +53,7 @@ const Tree = ({ className, onSetForm }: Props): ReactElement => {
       return {
         key,
         title: <TreeNodeTitle 
-        title={tag.title} onDelete={onDeleteTag(tag.id)} onEdit={onSetForm({parentId, id:tag.id})} onAdd={onSetForm({parentId: tag.id})}/>,
+        title={tag.title} onDelete={onDeleteTag(tag.id)} onEdit={onSetForm({parentId, id:tag.id})} onAdd={onSetForm({parentId: tag.id, id: 'new'})}/>,
         children: tag.children && tag.children.length ? transferDataWithComponents(tag.children, key, tag.id) : []
       }
     });

@@ -144,7 +144,7 @@ const JournalItem = (): ReactElement => {
 
             result = await jIUpdateHandler(id, { ...values, ...additional, ...flatData, content });
         } else {
-            result = await jICreateHandler({ ...values, ...flatData, content } as ICreateJI);
+            result = await jICreateHandler({ ...values, ...flatData, content, createdAt: new Date(itemDate) } as ICreateJI);
         }
         if (result?.id)
             navigate(-1);

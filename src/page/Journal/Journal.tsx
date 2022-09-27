@@ -28,6 +28,8 @@ const Calendar = styled(CustomCalendar)`
 const Grid = styled.div`
   display  : grid;
   grid-template-columns: auto auto auto;
+  justify-content: flex-start;
+  gap: 1rem;
 `;
 
 const GridItem = styled(Button)`
