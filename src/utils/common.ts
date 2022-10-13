@@ -1,5 +1,5 @@
 import { SortOrder } from 'antd/lib/table/interface';
-import {getDate, getMonth} from 'date-fns';
+import {getDate, getMonth, format} from 'date-fns';
 interface MayHaveId {
   id: string;
 }
@@ -24,12 +24,11 @@ export function fromListToIdsAndMap<T extends MayHaveId>(list: T[]): {
   return result;
 };
 
-export function fromListToDatesMap<T extends MayHaveCreateDate>(list : T[], mode: 'month' | 'year'): Record<number, T[]> {
-  let result = {} as Record<number, T[]>;
-  let getter = mode === 'month' ? getDate : getMonth;
+export function fromListToDatesMap<T extends MayHaveCreateDate>(list : T[], mode: 'month' | 'year'): Record<string, T[]> {
+  let result = {} as Record<string, T[]>;
 
   list.forEach(item => {
-    const n = getter(new Date(item.createdAt));
+    const n = format(new Date(item.createdAt), 'month' ? 'MM/dd' : 'MM');
     if(result[n]){
       result[n] = result[n].concat([item]);
     } else {

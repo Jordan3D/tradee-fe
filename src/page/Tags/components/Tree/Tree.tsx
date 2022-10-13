@@ -7,28 +7,10 @@ import { TreeNodeTitle } from './components/TreeNodeTitle';
 import { GlobalContext } from '../../../../state/context';
 import { selectTagTree } from '../../../../store/common/tags';
 import { useSelector } from 'react-redux';
+import { transferToTreeNode } from '../../../../utils/tags';
+import { getKeysByTitleMatchValue } from '../../../../utils/tree/tree';
 
 const { Search } = Input;
-
-const transferData = (tagList: ReadonlyArray<TagWithChildren>, parentKey: string): DataNode[] => {
-  return tagList.map((tag: TagWithChildren, i: number) => (
-    {
-      key: parentKey ? parentKey + '-' + i : '' + i,
-      title: tag.title,
-      children: tag.children ? transferData(tag.children, '' + i) : []
-    }
-  ));
-};
-
-const getExpandedKeys = (gData: DataNode[], value: string): string[] => {
-  return foo(gData, undefined);
-  function foo(gData: DataNode[], parent?: string): string[] {
-    return gData.map((n: DataNode) => {
-      const res = n.children ? foo(n.children, n.key as string) : [];
-      return (n.title as string).indexOf(value) !== -1 && parent ? res.concat([parent]) : res;
-    }).flat();
-  }
-};
 
 type Props = Readonly<{
   className?: string,
@@ -41,7 +23,7 @@ const Tree = ({ className, onSetForm }: Props): ReactElement => {
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
   const [autoExpandParent, setAutoExpandParent] = useState(true);
   const [searchValue, setSearchValue] = useState('');
-  const [gData, setGData] = useState(transferData(tagTree, ''));
+  const [gData, setGData] = useState(transferToTreeNode(tagTree, ''));
 
   const transferDataWithComponents = useCallback((tagList: ReadonlyArray<TagWithChildren>, parentKey?: string, parentId?: string): DataNode[] => {
 
@@ -61,9 +43,9 @@ const Tree = ({ className, onSetForm }: Props): ReactElement => {
 
   const onChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value?.toLowerCase();
-    const transferedList = transferData(tagTree, '');
+    const transferedList = transferToTreeNode(tagTree, '');
 
-    const expandedKeys = getExpandedKeys(transferedList, value);
+    const expandedKeys = getKeysByTitleMatchValue(transferedList, value);
 
     if (value) {
       const hasSearchTerm = (n: string) => n.toLowerCase().indexOf(value) !== -1;

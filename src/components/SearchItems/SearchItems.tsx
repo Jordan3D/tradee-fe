@@ -1,5 +1,5 @@
-import { memo, ReactElement, useEffect, useRef, useState } from 'react';
-import { Select, Tag } from 'antd';
+import { memo, ReactElement, useRef, useState } from 'react';
+import { Select } from 'antd';
 import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import styled from 'styled-components';
 import { useUpdateEffect } from 'react-use';
@@ -9,25 +9,6 @@ import TagRender from '../Tags/TagRender';
 interface Item {
     id: string
     title: string
-};
-
-const tagRender = (props: CustomTagProps) => {
-    const { label, value, closable, onClose } = props;
-    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
-    };
-    return (
-        <Tag
-            color={'orange'}
-            onMouseDown={onPreventMouseDown}
-            closable={closable}
-            onClose={onClose}
-            style={{ marginRight: 3 }}
-        >
-            {label}
-        </Tag>
-    );
 };
 
 const Container = styled.div`   

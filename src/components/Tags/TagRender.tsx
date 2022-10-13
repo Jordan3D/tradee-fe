@@ -23,7 +23,7 @@ interface MapItem {
     content: string
 }
 
-const TagRender = ({color = 'orange', map}: {color?: string, map?: Record<string, MapItem | undefined>}) => (props: CustomTagProps) => {
+const TagRender = ({color = 'orange', map, isTest}: {color?: string, map?: Record<string, MapItem | undefined>, isTest?: boolean}) => (props: CustomTagProps) => {
     const { label, value, closable, onClose } = props;
     const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
         event.preventDefault();
@@ -38,8 +38,9 @@ const TagRender = ({color = 'orange', map}: {color?: string, map?: Record<string
             closable={closable}
             onClose={onClose}
             style={{ marginRight: 3 }}
+            className={'customTag'}
         >
-           {item && item.content ? <Tooltip title={<div dangerouslySetInnerHTML={{__html: item.content || ''}}/>}>
+           {item && item.content ? <Tooltip visible={isTest} title={<div dangerouslySetInnerHTML={{__html: item.content || ''}}/>}>
             <div className='note-item__title'>
                 {label}
             </div>

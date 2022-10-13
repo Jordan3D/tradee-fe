@@ -27,7 +27,7 @@ const Calendar = styled(CustomCalendar)`
 
 const Grid = styled.div`
   display  : grid;
-  grid-template-columns: auto auto auto;
+  grid-template-columns: auto auto auto auto;
   justify-content: flex-start;
   gap: 1rem;
 `;
@@ -101,7 +101,7 @@ const Journal = (): ReactElement => {
         navigate(routes.journalItemNew(date))
     }, [navigate]);
 
-    const onClickCell = useCallback((n: number) => {
+    const onClickCell = useCallback((n: string) => {
         setChosen(calendarData[n]);
     }, [calendarData]);
 

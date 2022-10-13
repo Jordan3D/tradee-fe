@@ -36,10 +36,10 @@ const ItemCounter = styled.div`
 `;
 
 interface Props<T> {
-    data: Record<number, T[]>
+    data: Record<string, T[]>
     onAdd(date?: string): (e: React.MouseEvent) => void;
     onSetInterval(startDate: number, endDate: number, mode: 'month' | 'year'): void
-    onDoubleClickCell(n: number): void
+    onDoubleClickCell(n: string): void
 }
 
 const CustomCalendar = ({data, onAdd, onSetInterval, onDoubleClickCell}:Props<IBase>): ReactElement => {
@@ -48,12 +48,12 @@ const CustomCalendar = ({data, onAdd, onSetInterval, onDoubleClickCell}:Props<IB
         return '';
     };
 
-    const onDoubleClickHandler = (n: number) => (e: React.MouseEvent) => {
+    const onDoubleClickHandler = (n: string) => (e: React.MouseEvent) => {
         onDoubleClickCell(n);
     }
 
     const dateCellRender = (value: Moment) => {
-        const dateN = value.date();
+        const dateN = value.format('MM/DD');
         return <DateCell onDoubleClick={onDoubleClickHandler(dateN)}>
             <ItemCounter>
                 {data[dateN]?.length}

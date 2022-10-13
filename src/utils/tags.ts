@@ -1,3 +1,4 @@
+import { DataNode } from "antd/lib/tree";
 import { TTagMap } from "../api/tag";
 import { ITag, TagWithChildren } from "../interface/Tag";
 
@@ -28,4 +29,14 @@ export const treeAndMapFromList = (list: ITag[]): Readonly<{ tree: TagWithChildr
       }),
       map
     }
+  };
+
+  export const transferToTreeNode = (tagList: ReadonlyArray<TagWithChildren>, parentKey: string): DataNode[] => {
+    return tagList.map((tag: TagWithChildren, i: number) => (
+      {
+        key: parentKey ? parentKey + '-' + i : '' + i,
+        title: tag.title,
+        children: tag.children ? transferToTreeNode(tag.children, '' + i) : []
+      }
+    ));
   };
