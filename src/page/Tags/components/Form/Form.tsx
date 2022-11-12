@@ -30,6 +30,7 @@ const Form = ({ values, onClose }: Props) => {
     const tagOptions = useMemo(() => tagList.map(tag => ({ label: tag.title, value: tag.id }) as CustomTagProps), [tagList]);
 
     const onFinish = (values: CreateTag | UpdateTag) => {
+        console.log(values);
         if (id && id !== 'new') {
             tagUpdateHandler(id, values as UpdateTag);
             return;
@@ -40,6 +41,14 @@ const Form = ({ values, onClose }: Props) => {
     const onFinishFailed = (errorInfo: any) => {
         console.log('Failed:', errorInfo);
     };
+
+    const onSelectClear = () => {
+        setTimeout(() => {
+            form.setFieldsValue({
+                parentId: null
+            })
+        })
+    }
 
     useEffect(() => {
         form.setFieldsValue({
@@ -84,6 +93,7 @@ const Form = ({ values, onClose }: Props) => {
                 <Select
                     showArrow
                     allowClear
+                    onClear={onSelectClear}
                     tagRender={TagRender({})}
                     style={{ width: '100%' }}
                     options={tagOptions}

@@ -1,5 +1,5 @@
 import { Drawer } from 'antd';
-import { ReactElement, useState } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 import { Page } from '../../components/Page';
 import { List } from './component/List';
 import { Form, TIdeaForm } from './component/Form';
@@ -43,16 +43,16 @@ const Ideas = (): ReactElement => {
     const { id } = useParams();
     const [formValues, setFormValues] = useState<TIdeaForm>({ id });
 
-    const onCloseForm = () => {
+    const onCloseForm = useCallback(() => {
         setFormValues({});
-    };
+    }, [setFormValues]);
 
-    const onSelectItem = (id: string) => {
+    const onSelectItem = useCallback((id: string) => {
         setFormValues({ id });
-    };
+    }, [setFormValues]);
 
     return <Container>
-        <List selectedItem={formValues?.id} onSelectItem={onSelectItem} />
+        <List onSelectItem={onSelectItem} />
         <Drawer destroyOnClose closable={false} width={1000} title={<ItemTitle className='title'>{formValues?.id === 'new' ? 'New idea' : 'Edit idea'}</ItemTitle>} placement="right" onClose={onCloseForm} visible={!!formValues?.id}>
             <Form values={formValues} onClose={onCloseForm} onSelectItem={onSelectItem} />
         </Drawer>

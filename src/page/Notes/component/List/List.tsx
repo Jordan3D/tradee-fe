@@ -74,7 +74,8 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
         setTagValues(values);
     }, [setTagValues]);
 
-    const getData = (isCleared: boolean = false) => listHandler({ text: searchText, limit: 25, tags: tagValues }, isCleared);
+    const getData = useCallback((isCleared: boolean = false) => 
+    listHandler({ text: searchText, limit: 25, tags: tagValues }, isCleared), [listHandler, searchText, tagValues]);
 
     const onChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         const text = e.target.value?.toLowerCase();
@@ -84,7 +85,7 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
                 setSearchText(text);
             }
         }, 1000)
-    }, [listHandler]);
+    }, [setSearchText]);
 
     const onWatchItem = useCallback((id: string) => {
         setWatchItem(id)
@@ -96,16 +97,16 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
 
     useEffect(() => {
         tagsListHandler();
-    }, [])
+    }, [tagsListHandler])
 
     useEffect(() => {
         return clearData
-    }, [])
+    }, [clearData])
 
     useEffect(() => {
         setIsSearching(true);
         getData(true);
-    }, [tagValues, searchText]);
+    }, [tagValues, getData]);
 
     useEffect(() => {
         setItems(ids.map((id, count) => ({ groupKey: count, id })));
@@ -113,7 +114,7 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
             if (isSearching)
                 setIsSearching(false)
         }, 1000);
-    }, [ids])
+    }, [ids, isSearching])
 
     return <Container className={`${className + ' '}`}>
         <div className='top'>

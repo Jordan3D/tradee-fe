@@ -112,7 +112,7 @@ export const Provider = ({
         localStorage.setItem('access_token', data?.access_token);
         localStorage.setItem('refresh_token', data?.refresh_token);
         await selfCheck();
-        navigate(routes.main);
+        navigate(routes.main());
       } else {
         invokeFeedback({ msg: 'Server gave no data', type: 'warning' });
       }
@@ -129,7 +129,7 @@ export const Provider = ({
 
       if (data) {
         invokeFeedback({ msg: 'Signup successful', type: 'success' });
-        navigate(routes.login);
+        navigate(routes.login());
       } else {
         invokeFeedback({ msg: 'Server gave no data', type: 'warning' });
       }

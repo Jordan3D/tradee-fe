@@ -26,13 +26,13 @@ const ViewSwitch = ():ReactElement => {
 
     const switchTo = useCallback((view: Route) => () => {
         if(view === 'signup'){
-            navigate(routes.signup);
+            navigate(routes.signup());
             return;
         } 
-        navigate(routes.login);
+        navigate(routes.login());
     }, [navigate])
 
-    const isActive = useCallback((view: Route) => location.pathname === routes[view] ? 'active' : '',[location])
+    const isActive = useCallback((view: Route) => location.pathname === routes[view]() ? 'active' : '',[location])
 
     return <Container>
         <Button 

@@ -42,7 +42,7 @@ export const fetchNotesData = createAsyncThunk('notes/fetchData', async (argData
                 localStorage.setItem('refresh_token', refresh_token);
             }
         },
-        afterAllTries: () => dispatch(setRedirect(routes.login))
+        afterAllTries: () => dispatch(setRedirect(routes.login()))
       });
 });
 

@@ -42,7 +42,6 @@ type GridItem = { id: string, groupKey: number };
 
 type ListProps = {
     className?: string;
-    selectedItem?: string;
     onSelectItem: (id: string) => void;
 }
 
@@ -109,7 +108,7 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
                     }
                 }}
             >
-                {items.map((item: GridItem) => <Item item={item} data-grid-groupkey={item.groupKey}/>)}
+                {items.map((item: GridItem) => <Item key={item.id} item={item} data-grid-groupkey={item.groupKey}/>)}
             </MasonryInfiniteGrid>}
         </div>
     </Container>

@@ -4,7 +4,6 @@ import type { RootState } from '..'
 import { IUser } from '../../interface/User'
 import { processFetch } from '../../api/_main';
 import { refreshTokenApi, selfGetApi } from '../../api/user';
-import { invokeFeedback } from '../../utils/feedbacks/feedbacks';
 import routes from '../../router';
 
 interface IMetaState {
@@ -42,7 +41,7 @@ export const fetchUser = createAsyncThunk('meta/fetchUser', async (_, {rejectWit
         },
         afterAllTries: () => {
             dispatch(setUser(undefined))
-            dispatch(setRedirect(routes.login))
+            dispatch(setRedirect(routes.login()))
         }
       });
 });
@@ -51,7 +50,7 @@ export const logout = createAsyncThunk('meta/logout', async (_, {rejectWithValue
     dispatch(setUser(undefined));
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
-    dispatch(setRedirect(routes.login));
+    dispatch(setRedirect(routes.login()));
     
 });
 

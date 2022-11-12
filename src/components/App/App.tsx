@@ -53,7 +53,7 @@ const CustomThemeProvider = (props: any): ReactElement => {
 function App() {
 
   const backOnError = () => {
-    window.location.replace(routes.main);
+    window.location.replace(routes.main());
   };
 
   return (
@@ -75,29 +75,29 @@ function App() {
                               <ToastContainer />
                               <CommonLogicComponent />
                               <Routes>
-                                <Route path={routes.start} element={<StartPage />} />
-                                <Route path={routes.signup} element={<StartPage />} />
-                                <Route path={routes.login} element={<StartPage />} />
-                                <Route path={routes.ideas} element={<IdeasPage />} />
+                                <Route path={routes.start()} element={<StartPage />} />
+                                <Route path={routes.signup()} element={<StartPage />} />
+                                <Route path={routes.login()} element={<StartPage />} />
+                                <Route path={routes.ideas()} element={<IdeasPage />} />
                                 <Route path={routes.ideasItem()} element={<IdeasPage />} />
-                                <Route path={routes.journal} element={<JournalPage />} />
+                                <Route path={routes.journal()} element={<JournalPage />} />
                                 <Route path={routes.journalItemNew()} element={<JournalItemPage />} />
                                 <Route path={routes.journalItem()} element={<JournalItemPage />} />
-                                <Route path={routes.tags} element={<TagsPage />} />
+                                <Route path={routes.tags()} element={<TagsPage />} />
                                 <Route path={routes.tagsItem()} element={<TagsPage />} />
-                                <Route path={routes.trades} element={<TradesPage />} />
+                                <Route path={routes.trades()} element={<TradesPage />} />
                                 <Route path={routes.trade()} element={<TradePage />} />
-                                <Route path={routes.transactions} element={<TransactionsPage />} />
-                                <Route path={routes.main} element={<MainPage />} />
-                                <Route path={routes.profile} element={<ProfilePage />} />
-                                <Route path={routes.notes} element={<NotesPage />} />
+                                <Route path={routes.transactions()} element={<TransactionsPage />} />
+                                <Route path={routes.main()} element={<MainPage />} />
+                                <Route path={routes.profile()} element={<ProfilePage />} />
+                                <Route path={routes.notes()} element={<NotesPage />} />
                                 <Route path={routes.notesItem()} element={<NotesPage />} />
-                                <Route path={routes.images} element={<ImagesPage />} />
+                                <Route path={routes.images()} element={<ImagesPage />} />
                                 <Route path={routes.imagesItem()} element={<ImagesPage />} />
-                                <Route path={routes.diary} element={<DiaryPage />} />
+                                <Route path={routes.diary()} element={<DiaryPage />} />
                                 <Route path={routes.diaryItem()} element={<DiaryItemPage />} />
                                 <Route path={routes.diaryItemNew()} element={<DiaryItemPage />} />
-                                <Route path='' element={<Navigate to={routes.main} />} />
+                                <Route path='' element={<Navigate to={routes.main()} />} />
                                 <Route path='*' element={<Error helmetTitle='Not found' backButtonHandler={backOnError} />} />
                               </Routes>
                             </>

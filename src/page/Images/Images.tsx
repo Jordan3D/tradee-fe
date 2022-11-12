@@ -1,5 +1,5 @@
 import { Drawer } from 'antd';
-import { ReactElement, useState } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 import { Page } from '../../components/Page';
 import { List } from './component/List';
 import { Form, TNoteForm } from './component/Form';
@@ -45,12 +45,12 @@ const Images = (): ReactElement => {
         setFormValues({});
     };
 
-    const onSelect= (id: string) => {
+    const onSelect= useCallback((id: string) => {
         setFormValues({ id });
-    };
+    }, [setFormValues]);
 
     return <Container>
-        <List selectedItem={formValues?.id} onSelectItem={onSelect} />
+        <List onSelectItem={onSelect} />
         <Drawer destroyOnClose closable={false} width={1000} title={<ItemTitle className='title'>{'Add image'}</ItemTitle>} placement="right" onClose={onCloseForm} visible={!!formValues?.id}>
             <Form values={formValues} onClose={onCloseForm} onSelect={onSelect} />
         </Drawer>

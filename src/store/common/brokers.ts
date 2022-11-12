@@ -3,7 +3,6 @@ import { PayloadAction , createAsyncThunk} from '@reduxjs/toolkit'
 import type { RootState } from '..'
 import { processFetch } from '../../api/_main';
 import { refreshTokenApi } from '../../api/user';
-import { invokeFeedback } from '../../utils/feedbacks/feedbacks';
 import routes from '../../router';
 import { IBroker } from '../../interface/Broker';
 import { brokersGetApi } from '../../api/broker';
@@ -32,7 +31,7 @@ export const fetchBrokerList = createAsyncThunk('meta/fetchBrokerList', async (_
                 localStorage.setItem('refresh_token', refresh_token);
             }
         },
-        afterAllTries: () => dispatch(setRedirect(routes.login))
+        afterAllTries: () => dispatch(setRedirect(routes.login()))
       });
 });
 

@@ -39,7 +39,7 @@ export const fetchTagData = createAsyncThunk('tags/fetchTagData', async (_, { re
                 localStorage.setItem('refresh_token', refresh_token);
             }
         },
-        afterAllTries: () => dispatch(setRedirect(routes.login))
+        afterAllTries: () => dispatch(setRedirect(routes.login()))
     });
 });
 

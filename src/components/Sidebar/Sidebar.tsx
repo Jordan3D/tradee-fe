@@ -23,7 +23,7 @@ const Sidebar = ({ className = '' }: Props): ReactElement => {
     const itemClass = useCallback((path: string) => `sidebar__item ${path === pathname ? 'chosen' : ''}`, [pathname]);
 
     const onClickHandler = useCallback((path: Route) => () => {
-        navigate(routes[path]);
+        navigate(routes[path]());
     }, [navigate]);
 
     const profilePopoverContent = useCallback(() => <List>

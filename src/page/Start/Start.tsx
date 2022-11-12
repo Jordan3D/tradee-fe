@@ -20,7 +20,7 @@ const Start = (): ReactElement => {
     const user = useSelector(selectUser);
     const status = useSelector(selectUserStatus);
 
-    const currentLocation = (Object.keys(routes) as Route[]).find((route: Route) => routes[route] === location.pathname);
+    const currentLocation = (Object.keys(routes) as Route[]).find((route: Route) => routes[route]() === location.pathname);
 
     useEffect(() => {
         selfCheck();
@@ -28,7 +28,7 @@ const Start = (): ReactElement => {
 
     useEffect(() => {
         if (user) {
-            navigate(routes.main)
+            navigate(routes.main())
         }
     }, [user, navigate]);
 

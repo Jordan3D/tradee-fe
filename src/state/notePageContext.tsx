@@ -61,8 +61,8 @@ export const Provider = ({
           setIds(dataIds);
           setMap(dataMap);
         } else {
-          setIds([...ids, ...dataIds]);
-          setMap({ ...map, ...dataMap });
+          setIds((ids) => ([...ids, ...dataIds]));
+          setMap((map) => ({ ...map, ...dataMap }));
         }
       },
       onError: async (response: Response) => {
@@ -73,10 +73,10 @@ export const Provider = ({
         }
       },
       afterAllTries: () => {
-        navigate(routes.login)
+        navigate(routes.login())
       }
     });
-  }, [ids, map, navigate]);
+  }, [navigate]);
 
   const noteCreateHandler = async (argData: INoteCreate) => {
     let res;

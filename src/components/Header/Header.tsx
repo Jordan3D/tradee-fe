@@ -58,18 +58,18 @@ const Header = forwardRef(({ children }: Props, ref: any): ReactElement => {
     }
 
     const onLoginHandler = () => {
-        navigate(routes.login)
+        navigate(routes.login())
     }
 
     const onSignUpHandler = () => {
-        navigate(routes.signup)
+        navigate(routes.signup())
     }
 
     const renderRoutes = useCallback(() => {
         const excludeRoutes = ['login', 'signup'] as Route[];
         return Object.entries(routes).map(([key, value]) =>
             !excludeRoutes.includes(key as Route) ?
-                <Button key={key} className="header__route" onClick={onRoute(value)}>{key}</Button> :
+                <Button key={key} className="header__route" onClick={onRoute(value())}>{key}</Button> :
                 <></>
         )
     }, [onRoute]);

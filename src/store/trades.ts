@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
-import { RootState, store } from '.'
+import { RootState } from '.'
 import { processFetch } from '../api/_main';
 import { setRedirect } from './common/meta';
 import routes from '../router';
@@ -38,7 +38,7 @@ export const fetchTradeData = createAsyncThunk('trades/fetchData', async (args:{
                 localStorage.setItem('refresh_token', refresh_token);
             }
         },
-        afterAllTries: () => dispatch(setRedirect(routes.login))
+        afterAllTries: () => dispatch(setRedirect(routes.login()))
     });
 });
 

@@ -1,5 +1,5 @@
 import { Drawer } from 'antd';
-import { ReactElement, useState } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 import { Page } from '../../components/Page';
 import { List } from './component/List';
 import { Form, TNoteForm } from './component/Form';
@@ -46,12 +46,12 @@ const Notes = (): ReactElement => {
         setFormValues({});
     };
 
-    const onSelectNote = (id: string) => {
+    const onSelectNote = useCallback((id: string) => {
         setFormValues({ id });
-    };
+    }, []);
 
     return <Container>
-        <List selectedItem={formValues?.id} onSelectItem={onSelectNote} />
+        <List onSelectItem={onSelectNote} />
         <Drawer destroyOnClose closable={false} width={1000} title={<ItemTitle className='title'>{formValues?.id === 'new' ? 'New note' : 'Edit note'}</ItemTitle>} placement="right" onClose={onCloseForm} visible={!!formValues?.id}>
             <Form values={formValues} onClose={onCloseForm} onSelectNote={onSelectNote} />
         </Drawer>

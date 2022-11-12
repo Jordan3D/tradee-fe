@@ -1,4 +1,4 @@
-import { ReactElement, useContext, useEffect, useState } from 'react';
+import { ReactElement, useCallback, useContext, useEffect, useState } from 'react';
 import { Page } from '../../components/Page';
 import { Tree } from './components/Tree';
 import { GlobalContext } from '../../state/context';
@@ -57,9 +57,9 @@ const Tags = (): ReactElement => {
     const { tagsListHandler } = useContext(GlobalContext);
     const [formValues, setFormValues] = useState<TTagForm>({id});
 
-    const onSetForm = (value: Readonly<{ id?: string, parentId?: string }>) => () => {
+    const onSetForm = useCallback((value: Readonly<{ id?: string, parentId?: string }>) => () => {
         setFormValues(value)
-    }
+    }, [setFormValues])
 
     const onCloseForm = () => {
         setFormValues({});

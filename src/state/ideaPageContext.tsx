@@ -74,7 +74,7 @@ export const Provider = ({
         }
       },
       afterAllTries: () => {
-        navigate(routes.login)
+        navigate(routes.login())
       }
     });
   }, [ids, map, navigate]);

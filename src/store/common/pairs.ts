@@ -36,7 +36,7 @@ export const fetchPairsData = createAsyncThunk('pair/fetchData', async (_, {reje
                 localStorage.setItem('refresh_token', refresh_token);
             }
         },
-        afterAllTries: () => dispatch(setRedirect(routes.login))
+        afterAllTries: () => dispatch(setRedirect(routes.login()))
       });
 });
 
