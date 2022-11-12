@@ -92,7 +92,7 @@ export const Provider = ({
   const jIDeleteHandler = async (id: string) => {
     return processFetch({
       onRequest: () => jIDeleteApi(id),
-      onData: () => {},
+      onData: () => {return},
       ...processError
     });
   };

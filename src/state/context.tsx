@@ -55,8 +55,8 @@ export type TContext = Readonly<{
 
 export const GlobalContext = createContext<TContext>({
   errorPageShown: false,
-  showErrorPage: () => {},
-  logoutHandler: () => {},
+  showErrorPage: () => {return},
+  logoutHandler: () => {return},
   loginHandler: () => Promise.resolve(),
   signupHandler: () => Promise.resolve(),
   accessCheck: () => Promise.resolve(true),
@@ -68,10 +68,10 @@ export const GlobalContext = createContext<TContext>({
   getBrokers:() => Promise.resolve(),
   createBroker:() => Promise.resolve(),
   removeBroker:() => Promise.resolve(),
-  getTrades: () => {},
-  getTransactions: () => {},
-  clearTrades: () => {},
-  clearTransactions: () => {}
+  getTrades: () => {return},
+  getTransactions: () => {return},
+  clearTrades: () => {return},
+  clearTransactions: () => {return},
 });
 
 const defaultGetTradesParams = {

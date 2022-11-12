@@ -44,7 +44,7 @@ const Container = styled.div`
    }
 `;
 
-const Form = ({ values, onClose }: Props) => {
+const Form = ({ onClose }: Props) => {
     const [form] = useForm();
     const { imageCreateHandler } = useContext(ImagesContext);
 
@@ -63,7 +63,7 @@ const Form = ({ values, onClose }: Props) => {
             await imageCreateHandler(formData);
             onClose();
         }catch(e){
-
+            console.error(e);
         } 
     };
 

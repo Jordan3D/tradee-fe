@@ -120,7 +120,7 @@ const Notes = ({ tradeId, notes, updateTrade }: { tradeId: string, notes: string
             </div>
         </div>
         <div className='values'>
-            {notes.map(tId => <NoteItem item={noteMap[tId]} onDelete={onDelete} />)}
+            {notes.map(tId => <NoteItem key={tId} item={noteMap[tId]} onDelete={onDelete} />)}
         </div>
     </Container>
 };

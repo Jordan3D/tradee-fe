@@ -32,7 +32,7 @@ export type TContext = Readonly<{
 export const ImagesContext = createContext<TContext>({
   ids: [],
   map: {},
-  clearData: () => {},
+  clearData: () => {return},
   imageListHandler: () => Promise.resolve(),
   imageCreateHandler: () => Promise.resolve(),
   imageDeleteHandler: () => Promise.resolve(),

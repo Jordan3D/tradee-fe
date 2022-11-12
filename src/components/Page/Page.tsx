@@ -31,7 +31,7 @@ const Container = styled.div`
     }
 `
 
-const Page = memo(({ children, isSecure = false }: Props): ReactElement => {
+const Page = memo(function Page({ children, isSecure = false }: Props): ReactElement {
     const navigate = useNavigate();
     const user = useSelector(selectUser);
     const { selfCheck } = useContext(GlobalContext);

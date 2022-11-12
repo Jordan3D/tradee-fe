@@ -17,7 +17,7 @@ type Props = Readonly<{
   onSetForm: (value: any) => () => void,
 }>
 
-const Tree = memo(({ className, onSetForm }: Props): ReactElement => {
+const Tree = memo(function Tree({ className, onSetForm }: Props): ReactElement {
   const tagTree = useSelector(selectTagTree);
   const { tagDeleteHandler } = useContext(GlobalContext);
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);

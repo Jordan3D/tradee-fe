@@ -16,7 +16,7 @@ import {
   
   export const LoaderContext = createContext<TContext>({
     isLoading: false,
-    setLoading: () => {}
+    setLoading: () => {return},
   });
   
   export const Provider = ({

@@ -35,7 +35,7 @@ export const NotesContext = createContext<TContext>({
   isLastItem: true,
   ids: [],
   map: {},
-  clearData: () => {},
+  clearData: () => {return},
   listHandler: () => Promise.resolve(),
   noteCreateHandler: () => Promise.resolve(),
   noteUpdateHandler: () => Promise.resolve(),

@@ -14,7 +14,7 @@ type ItemProps = {
     item: GridItem;
 }
 
-const Item = memo(({ item }: ItemProps): ReactElement => {
+const Item = memo(function Item({ item }: ItemProps): ReactElement {
     const { map, imageDeleteHandler } = useContext(ImagesContext);
     const itemData = map[item.id] as IFile;
 
@@ -45,7 +45,7 @@ type ListProps = {
     onSelectItem: (id: string) => void;
 }
 
-const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement => {
+const List = memo(function List({ className = '', onSelectItem }: ListProps): ReactElement{
     const { imageListHandler, ids, clearData } = useContext(ImagesContext);
     const savedValue = useRef<{ value: string }>({ value: '' });
     const timeout = useRef<{ value: number }>({ value: 0 });

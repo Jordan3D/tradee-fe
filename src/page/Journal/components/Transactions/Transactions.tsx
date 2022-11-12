@@ -1,6 +1,6 @@
-import { Button, Modal, Pagination, Table as AntdTable, Tag } from 'antd';
+import { Button, Table as AntdTable } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { memo, ReactElement, useEffect, useMemo, useState } from 'react';
+import { memo, ReactElement, useMemo } from 'react';
 import { format } from 'date-fns-tz';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -21,7 +21,7 @@ const Container = styled(Table)`
     
 `;
 
-const Transactions = memo(({onRemove}: {onRemove: any}): ReactElement => {
+const Transactions = memo(function Transactions({onRemove}: {onRemove: any}): ReactElement {
     const user = useSelector(selectUser);
     const navigate = useNavigate();
     const pairs = useSelector(selectPairsMap);

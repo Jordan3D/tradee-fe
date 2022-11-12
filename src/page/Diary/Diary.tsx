@@ -127,7 +127,7 @@ const Diary = (): ReactElement => {
         />
         <Modal width={1000} visible={!!chosen} onCancel={() => setChosen(undefined)} footer={null}>
             <Grid>
-                {chosen?.map(item => <GridItem onClick={onEditHandler(item.id)}>
+                {chosen?.map(item => <GridItem key={item.id} onClick={onEditHandler(item.id)}>
                     {
                         item.title
                     }

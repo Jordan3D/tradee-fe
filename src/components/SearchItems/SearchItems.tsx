@@ -4,12 +4,11 @@ import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import styled from 'styled-components';
 import { useUpdateEffect } from 'react-use';
 import TagRender from '../Tags/TagRender';
-;
 
 interface Item {
     id: string
     title: string
-};
+}
 
 const Container = styled.div`   
 
@@ -20,7 +19,7 @@ interface Props {
     predefinedValue?: string[], getItems(args: {text?: string}): Promise<Item[]>, onValues(values: string[]): void
 }
 
-const SearchItems = memo(({ className = '', predefinedValue = [], getItems, onValues }: Props): ReactElement => {
+const SearchItems = ({ className = '', predefinedValue = [], getItems, onValues }: Props): ReactElement => {
     const [value, setValue] = useState<string[]>(predefinedValue);
     const ref = useRef({value: ''});
     const isClearingRef = useRef({value: false}); // is needed for correct clearing beacuse of multiple paralel deselecting 
@@ -79,6 +78,6 @@ const SearchItems = memo(({ className = '', predefinedValue = [], getItems, onVa
                     options={options}
                 />
     </Container>
-});
+};
 
-export default SearchItems;
+export default memo(SearchItems);

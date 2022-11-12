@@ -20,7 +20,7 @@ type ItemProps = {
     onWatchItem: (id: string) => void;
 }
 
-const Item = memo(({ item, onEditItem, onWatchItem }: ItemProps): ReactElement => {
+const Item = memo(function Item({ item, onEditItem, onWatchItem }: ItemProps): ReactElement{
     const { map } = useContext(NotesContext);
     const itemData = map[item.id] as INote;
     // const className = `${isSelected ? ' --selected' : ''}`;
@@ -53,7 +53,7 @@ type ListProps = {
     onSelectItem: (id: string) => void;
 }
 
-const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement => {
+const List = memo(function List({ className = '', onSelectItem }: ListProps): ReactElement{
     const { tagsListHandler } = useContext(GlobalContext);
     const { isLastItem, ids, listHandler, clearData } = useContext(NotesContext);
     const savedValue = useRef<{ value: string }>({ value: '' });
@@ -74,7 +74,7 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
         setTagValues(values);
     }, [setTagValues]);
 
-    const getData = useCallback((isCleared: boolean = false) => 
+    const getData = useCallback((isCleared = false) => 
     listHandler({ text: searchText, limit: 25, tags: tagValues }, isCleared), [listHandler, searchText, tagValues]);
 
     const onChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -154,7 +154,7 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
                     }
                 }}
             >
-                {items.map((item: GridItem) => <Item item={item} data-grid-groupkey={item.groupKey} onWatchItem={onWatchItem} onEditItem={onSelectItem} />)}
+                {items.map((item: GridItem) => <Item key={item.id} item={item} data-grid-groupkey={item.groupKey} onWatchItem={onWatchItem} onEditItem={onSelectItem} />)}
             </MasonryInfiniteGrid>}
         </div>
         <Modal width={1300} destroyOnClose visible={!!watchItem} footer={false} onCancel={handleModalCancel}>

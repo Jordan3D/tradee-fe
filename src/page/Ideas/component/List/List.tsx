@@ -17,13 +17,15 @@ import ItemDemo from '../ItemDemo/ItemDemo';
 
 const { Search } = Input;
 
+type GridItem = { id: string, groupKey: number };
+
 type ItemProps = {
     item: GridItem;
     onEditItem: (id: string) => void;
     onWatchItem: (id: string) => void;
 }
 
-const Item = memo(({ item, onEditItem, onWatchItem }: ItemProps): ReactElement => {
+const Item = memo(function Item({ item, onEditItem, onWatchItem }: ItemProps): ReactElement{
     const { map } = useContext(IdeasContext);
     const itemData = map[item.id] as IIdea;
     // const className = `${isSelected ? ' --selected' : ''}`;
@@ -47,14 +49,12 @@ const Item = memo(({ item, onEditItem, onWatchItem }: ItemProps): ReactElement =
     </ItemContainer>
 })
 
-type GridItem = { id: string, groupKey: number };
-
 type ListProps = {
     className?: string;
     onSelectItem: (id: string) => void;
 }
 
-const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement => {
+const List = ({ className = '', onSelectItem }: ListProps): ReactElement => {
     const dispatch = useDispatch<AppDispatch>();
     const { tagsListHandler } = useContext(GlobalContext);
     const { isLastItem, ids, listHandler, clearData } = useContext(IdeasContext);
@@ -88,7 +88,7 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
         setWatchItem(undefined)
     }, [setWatchItem]);
 
-    const getData = (isCleared: boolean = false) => listHandler({ text: searchText, limit: 25, tags: tagValues, notes: noteValues }, isCleared);
+    const getData = (isCleared = false) => listHandler({ text: searchText, limit: 25, tags: tagValues, notes: noteValues }, isCleared);
 
     const onChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         const text = e.target.value?.toLowerCase();
@@ -173,6 +173,6 @@ const List = memo(({ className = '', onSelectItem }: ListProps): ReactElement =>
             <ItemDemo id={watchItem as string}/>
         </Modal>
     </Container>
-});
+};
 
-export default List;
+export default memo(List);

@@ -10,7 +10,7 @@ import { ITrade } from '../../../../interface/Trade';
 import routes from '../../../../router';
 import styled from 'styled-components';
 import { selectUser } from '../../../../store/common/meta';
-import { selectJIPnls, removePnlById } from '../../../../store/journalItem';
+import { selectJIPnls } from '../../../../store/journalItem';
 import { DeleteOutlined } from '@ant-design/icons';
 import {Table} from '../../../../components/Table';
 
@@ -21,7 +21,7 @@ interface DataType extends ITrade {
 const Container = styled(Table)`
 `;
 
-const Pnl = memo(({onRemove}: {onRemove: any}): ReactElement => {
+const Pnl = memo(function Pnl({onRemove}: {onRemove: any}): ReactElement{
     const user = useSelector(selectUser);
     const navigate = useNavigate();
     const pairs = useSelector(selectPairsMap);

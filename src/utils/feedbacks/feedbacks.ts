@@ -52,4 +52,4 @@ export type InvokeFeedbackProps = {
 }
 export function invokeFeedback ({msg, type, override}:InvokeFeedbackProps){
     toast(msg, toastConfigs(type, override));
-};
+}

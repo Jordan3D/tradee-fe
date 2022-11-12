@@ -199,7 +199,7 @@ const Brokers = ({ className = '' }: TableComponentProps): ReactElement => {
                     onFinishFailed={onFinishFailed}
                     autoComplete="off"
                 >
-                    <WarningText>Remember: you should set "Read only" flag for API key before adding</WarningText>
+                    <WarningText>Remember: you should set &quot;Read only&quot; flag for API key before adding</WarningText>
                     <FormItem name="title" label="Title">
                         <Input />
                     </FormItem>

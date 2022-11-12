@@ -15,13 +15,13 @@ const ItemDemo = ({id}: {id: string}):ReactElement => {
         <ItemTitle className="section">{title}</ItemTitle>
         <ItemContent className="section" dangerouslySetInnerHTML={{ __html: content }}/>
         <ItemTags className="section">
-            {tags.map(tag => <ItemTag>{tagMap[tag].title}</ItemTag>)}
+            {tags.map(tag => <ItemTag key={tag}>{tagMap[tag].title}</ItemTag>)}
         </ItemTags>
         <ItemNotes className="section">
-            {notes.map(note => <ItemNote>{noteMap[note]?.title}</ItemNote>)}
+            {notes.map(note => <ItemNote key={note}>{noteMap[note]?.title}</ItemNote>)}
         </ItemNotes>
         <ItemImages className="section">
-        {images.map(img => <ItemImg src={img.url} alt={img.url}/>)}
+        {images.map(img => <ItemImg key={img.id} src={img.url} alt={img.url}/>)}
         </ItemImages>
     </Container>
 };

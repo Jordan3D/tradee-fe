@@ -3,15 +3,12 @@ import { Button, Select, Tag } from 'antd';
 import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
 import { useSelector } from 'react-redux';
 import { selectTagMap } from '../../../../store/common/tags';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../../../store';
 import { ITag } from '../../../../interface/Tag';
 import { GlobalContext } from '../../../../state/context';
 import { selectTagList } from '../../../../store/common/tags';
 import { tradeUpdateApi } from '../../../../api/trade';
 import { CloseOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-;
 
 const tagRender = (props: CustomTagProps) => {
     const { label, closable, onClose } = props;
@@ -96,7 +93,6 @@ const Container = styled.div`
 `;
 
 const Tags = ({ tradeId, tags, updateTrade }: { tradeId: string, tags: string[], updateTrade: () => Promise<void> }): ReactElement => {
-    const dispatch = useDispatch<AppDispatch>();
     const { tagsListHandler } = useContext(GlobalContext);
     const tagMap = useSelector(selectTagMap);
     const tagList = useSelector(selectTagList);
@@ -141,7 +137,7 @@ const Tags = ({ tradeId, tags, updateTrade }: { tradeId: string, tags: string[],
             </div>
         </div>
         <div className='values'>
-            {tags.map(tId => <TagItem item={tagMap[tId]} onDelete={onDelete} />)}
+            {tags.map(tId => <TagItem key={tId} item={tagMap[tId]} onDelete={onDelete} />)}
         </div>
     </Container>
 };

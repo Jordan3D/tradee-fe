@@ -23,7 +23,7 @@ interface MapItem {
     content: string
 }
 
-const TagRender = ({color = 'orange', map, isTest}: {color?: string, map?: Record<string, MapItem | undefined>, isTest?: boolean}) => (props: CustomTagProps) => {
+const TagRender = ({color = 'orange', map, isTest}: {color?: string, map?: Record<string, MapItem | undefined>, isTest?: boolean}) => function Tag(props: CustomTagProps){
     const { label, value, closable, onClose } = props;
     const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
         event.preventDefault();

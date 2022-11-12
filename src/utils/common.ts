@@ -22,10 +22,10 @@ export function fromListToIdsAndMap<T extends MayHaveId>(list: T[]): {
   });
 
   return result;
-};
+}
 
 export function fromListToDatesMap<T extends MayHaveCreateDate>(list : T[], mode: 'month' | 'year'): Record<string, T[]> {
-  let result = {} as Record<string, T[]>;
+  const result = {} as Record<string, T[]>;
 
   list.forEach(item => {
     const n = format(new Date(item.createdAt), 'month' ? 'MM/dd' : 'MM');

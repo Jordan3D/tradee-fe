@@ -13,7 +13,7 @@ const ItemDemo = ({id}: {id: string}):ReactElement => {
         <ItemTitle className="section">{title}</ItemTitle>
         <ItemContent className="section" dangerouslySetInnerHTML={{ __html: content }}/>
         <ItemTags className="section">
-            {tags.map(tag => <ItemTag>{tagMap[tag].title}</ItemTag>)}
+            {tags.map(tag => <ItemTag key={tag}>{tagMap[tag].title}</ItemTag>)}
         </ItemTags>
     </Container>
 };
